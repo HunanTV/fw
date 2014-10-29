@@ -251,15 +251,15 @@ public class StringUtil {
 		return false;
 	}
 
-	public static String append(String str, String suffix) {
-		int len = str.length();
-		if (len == 0) {
-			return "/";
-		} else if (str.charAt(len - 1) != '/') {
-			return str + '/';
-		}
-		return str;
-	}
+    public static String ensureEndedWith(String str, String suffix) {
+        int len = str.length();
+        if (str == null || str.length() == 0) {
+            return suffix;
+        } else if (!str.endsWith(suffix)) {
+            return str + suffix;
+        }
+        return str;
+    }
 
 	public static void main(String[] args) {
 		String s1 = "abc abc";

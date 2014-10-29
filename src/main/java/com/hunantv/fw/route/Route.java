@@ -3,7 +3,10 @@ package com.hunantv.fw.route;
 import com.hunantv.fw.Controller;
 import com.hunantv.fw.utils.StringUtil;
 
+import java.util.Collection;
+
 public class Route {
+
 
 	public static class Method {
 		public static final Method GET = new Method("GET");
@@ -31,19 +34,28 @@ public class Route {
 	private String uriReg;
 	private Class<? extends Controller> controllerClass;
 	private String controllerMethod;
+    private URIMatcher matcher;
 
-	public Route(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
+    public Route(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
 		this(uriReg, controllerClass, controllerMethod, Method.GET);
 	}
 
 	public Route(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod, Method routeMethod) {
 
-		this.uriReg = StringUtil.append(uriReg, "/");
+		this.uriReg = StringUtil.ensureEndedWith(uriReg, "/");
 		this.routeMethod = routeMethod;
 		this.controllerClass = controllerClass;
 		this.controllerMethod = controllerMethod;
-
+        this.matcher = MongoURITemplateProcessor.process(this.uriReg);
 	}
+
+    public Class[] getParameterTypeList() {
+        return this.matcher.getParameterTypeList();
+    }
+
+    public Collection<URIMatcher.NamedValue> matches(String uri) {
+        return this.matcher.matches(uri);
+    }
 
 	public static Route get(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
 		return new Route(uriReg, controllerClass, controllerMethod, Method.GET);
