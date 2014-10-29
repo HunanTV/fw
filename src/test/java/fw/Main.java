@@ -10,9 +10,12 @@ public class Main {
 		Routes routes = new Routes(
 			Route.get("/user/index", UserController.class, "index"),
 			Route.get("/user/list", UserController.class, "list"),
-			Route.post("/user/get", UserController.class, "get"),
-			Route.post("/user/save", UserController.class, "save"),
+			Route.get("/user/get/<int:id>", UserController.class, "getById"),
+			Route.post("/user/save/<name>", UserController.class, "save"),
 			Route.post("/user/update", UserController.class, "update"),
+            Route.post("/user/update/<int:id>/<name>/hello",
+                        UserController.class,
+                        "updateWithIdAndName"),
 			Route.post("/user/delete", UserController.class, "delete")
 		);
 		return routes;

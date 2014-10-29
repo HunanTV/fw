@@ -19,22 +19,25 @@ public class Dispatcher extends HttpServlet {
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Routes routes = app.getRoutes();
-		String uri = StringUtil.append(request.getRequestURI(), "/");
+		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 
-		Route route = routes.match(request.getMethod(), uri);
-		if (route == null) {
+        Routes.RouteAndValues rv = routes.match(request.getMethod(), uri);
+		if (rv == null) {
 			Err404(response);
 			return;
 		}
 
-		Class<? extends Controller> controllerClass = route.getControllerClass();
+		Class<? extends Controller> controllerClass = rv.route.getControllerClass();
 		try {
-			Method method = controllerClass.getMethod(route.getControllerMethod());
+			Method method = controllerClass.getMethod(
+                    rv.route.getControllerMethod(),
+                    rv.route.getParameterTypeList());
+
 			Controller controller = controllerClass.newInstance();
 			controller.setRequest(request);
 			controller.setResponse(response);
 
-			View view = (View) method.invoke(controller);
+			View view = (View) method.invoke(controller, rv.getValuedObjectArrays());
 			response.getWriter().write(view.toString());
 		} catch (Exception ex) {
 			// catch (NoSuchMethodException e) {}
