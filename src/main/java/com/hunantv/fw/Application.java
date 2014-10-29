@@ -8,9 +8,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.SysConf;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-
 
 public class Application {
 
@@ -34,7 +34,7 @@ public class Application {
 		try {
 			conf = new SysConf();
 			ds = new ComboPooledDataSource();
-//			conf.getConfPath() + "c3p0.properties"
+			// conf.getConfPath() + "c3p0.properties"
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}

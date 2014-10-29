@@ -1,4 +1,4 @@
-package com.hunantv.fw;
+package com.hunantv.fw.view;
 
 public class JsonView implements View {
 
