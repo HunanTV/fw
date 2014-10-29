@@ -5,34 +5,31 @@ import com.hunantv.fw.view.View;
 
 public class UserController extends Controller {
 
-    public View index() {
-	return this.renderString("index");
-    }
+	public View index() {
+		return this.renderString("index");
+	}
 
-    public View list() {
-	return this.renderString("list");
-    }
+	public View list() {
+		return this.renderString("list");
+	}
 
-    public View getById(int id) {
-	return this.renderString("get: " + id);
-    }
+	public View save() {
+		return this.renderString("save");
+	}
 
-    public View updateWithIdAndName(int id, String name) {
-        return this.renderString(
-                String.format("updateWithIdAndName => id = %s ,name = %s",
-                        id,
-                        name ));
-    }
+	public View getById(int id) {
+		return this.renderString("get: " + id);
+	}
 
-    public View save(String name) {
-	return this.renderString("save: " + name);
-    }
+	public View updateWithIdAndName(int id, String name) {
+		return this.renderString(String.format("updateWithIdAndName => id = %s ,name = %s", id, name));
+	}
 
-    public View update() {
-	return this.renderString("update");
-    }
+	public View save(String name) {
+		return this.renderString("save: " + name);
+	}
 
-    public View delete() {
-	return this.renderString("delete");
-    }
+	public View delete() {
+		return this.renderString("delete");
+	}
 }

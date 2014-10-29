@@ -21,10 +21,14 @@ public class Main {
 		return routes;
     }
 
-	public static void main(String[] args) throws Exception {
-		Application app = Application.getInstance();
-		app.setRoutes(initRoutes());
-		app.listener(3030);
-		app.start();
+//	public static void main(String[] args) throws Exception {
+//		Application app = Application.getInstance();
+//		app.setRoutes(initRoutes());
+//		app.listener(3030);
+//		app.start();
+//    }
+    
+    public static void main(String[] args) throws Exception {
+    	
     }
 }
