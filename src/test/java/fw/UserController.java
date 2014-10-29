@@ -1,7 +1,7 @@
 package fw;
 
 import com.hunantv.fw.Controller;
-import com.hunantv.fw.View;
+import com.hunantv.fw.view.View;
 
 public class UserController extends Controller {
 
