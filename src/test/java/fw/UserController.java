@@ -13,12 +13,19 @@ public class UserController extends Controller {
 	return this.renderString("list");
     }
 
-    public View get() {
-	return this.renderString("get");
+    public View getById(int id) {
+	return this.renderString("get: " + id);
     }
 
-    public View save() {
-	return this.renderString("save");
+    public View updateWithIdAndName(int id, String name) {
+        return this.renderString(
+                String.format("updateWithIdAndName => id = %s ,name = %s",
+                        id,
+                        name ));
+    }
+
+    public View save(String name) {
+	return this.renderString("save: " + name);
     }
 
     public View update() {
