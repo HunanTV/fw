@@ -1,10 +1,10 @@
 package com.hunantv.fw.view;
 
-public class StringView implements View {
+public class RedirectView implements View {
 
 	private String v;
 
-	public StringView(String v) {
+	public RedirectView(String v) {
 		this.v = v;
 	}
 

@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.StringUtil;
+import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.View;
 
 public class Dispatcher extends HttpServlet {
@@ -21,7 +21,7 @@ public class Dispatcher extends HttpServlet {
 		Routes routes = app.getRoutes();
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 
-        Routes.RouteAndValues rv = routes.match(request.getMethod(), uri);
+		Routes.RouteAndValues rv = routes.match(request.getMethod(), uri);
 		if (rv == null) {
 			Err404(response);
 			return;
@@ -29,16 +29,18 @@ public class Dispatcher extends HttpServlet {
 
 		Class<? extends Controller> controllerClass = rv.route.getControllerClass();
 		try {
-			Method method = controllerClass.getMethod(
-                    rv.route.getControllerMethod(),
-                    rv.route.getParameterTypeList());
+			Method method = controllerClass.getMethod(rv.route.getControllerMethod(), rv.route.getParameterTypeList());
 
 			Controller controller = controllerClass.newInstance();
 			controller.setRequest(request);
 			controller.setResponse(response);
 
 			View view = (View) method.invoke(controller, rv.getValuedObjectArrays());
-			response.getWriter().write(view.toString());
+			if (view instanceof RedirectView) {
+				response.sendRedirect(view.render());
+			} else {
+				response.getWriter().write(view.render());
+			}
 		} catch (Exception ex) {
 			// catch (NoSuchMethodException e) {}
 			// catch (SecurityException e) {}

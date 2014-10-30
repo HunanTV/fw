@@ -97,5 +97,10 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.1.43.android</version>
+		</dependency>
 	</dependencies>
 </project>

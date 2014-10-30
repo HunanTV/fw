@@ -3,6 +3,8 @@ package com.hunantv.fw;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hunantv.fw.view.JsonView;
+import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.StringView;
 import com.hunantv.fw.view.View;
 
@@ -29,5 +31,13 @@ public class Controller {
 
 	public View renderString(String str) {
 		return new StringView(str);
+	}
+
+	public View renderJson(Object object) {
+		return new JsonView(object);
+	}
+
+	public View redirect(String str) {
+		return new RedirectView(str);
 	}
 }
