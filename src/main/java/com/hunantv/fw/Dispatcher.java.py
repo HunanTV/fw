@@ -1,6 +1,7 @@
 package com.hunantv.fw;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.servlet.ServletException;
@@ -21,34 +22,37 @@ public class Dispatcher extends HttpServlet {
 		Routes routes = app.getRoutes();
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 
-        Routes.RouteAndValues rv = routes.match(request.getMethod(), uri);
-		if (rv == null) {
+		Route route = routes.match(request.getMethod(), uri);
+		if (route == null) {
 			Err404(response);
 			return;
 		}
 
-		Class<? extends Controller> controllerClass = rv.route.getControllerClass();
+		Class<? extends Controller> controllerClass = route.getControllerClass();
 		try {
-			Method method = controllerClass.getMethod(
-                    rv.route.getControllerMethod(),
-                    rv.route.getParameterTypeList());
-
+			Method method = controllerClass.getMethod(route.getControllerMethod());
 			Controller controller = controllerClass.newInstance();
 			controller.setRequest(request);
 			controller.setResponse(response);
 
-			View view = (View) method.invoke(controller, rv.getValuedObjectArrays());
+			View view = (View) method.invoke(controller);
 			response.getWriter().write(view.toString());
-		} catch (Exception ex) {
-			// catch (NoSuchMethodException e) {}
-			// catch (SecurityException e) {}
-			// catch (InstantiationException e) {}
-			// catch (IllegalAccessException e) {}
-			// catch (IllegalArgumentException e) {}
-			// catch (InvocationTargetException e) {}
-			ex.printStackTrace();
-			Err404(response);
-		}
+//		} catch (NoSuchMethodException e) {
+//			Err404(response);
+//		} catch (SecurityException e) {
+//			Err404(response);
+//		} catch (InstantiationException e) {
+//			Err404(response);
+//		} catch (IllegalAccessException e) {
+//			Err404(response);
+//		} catch (IllegalArgumentException e) {
+//			Err404(response);
+//		} catch (InvocationTargetException e) {
+//			Err404(response);
+//		}
+		}catch (Exception ex) {
+			 ex.printStackTrace();
+		 }
 	}
 
 	public void Err404(HttpServletResponse response) throws IOException {
