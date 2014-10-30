@@ -7,10 +7,10 @@ import javax.sql.DataSource;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.SysConf;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class Application {
 
@@ -21,7 +21,9 @@ public class Application {
 	private Routes routes;
 	private Server server;
 	private DataSource ds;
-	private SysConf conf;
+	private SysConf sysConf;
+
+	private ClassPathXmlApplicationContext springCtx;
 
 	public static Application getInstance() {
 		if (null == instance) {
@@ -31,13 +33,21 @@ public class Application {
 	}
 
 	private Application() {
+		sysConf = new SysConf();
+		initSpring();
+	}
+
+	private void initSpring() {
 		try {
-			conf = new SysConf();
-			ds = new ComboPooledDataSource();
-			// conf.getConfPath() + "c3p0.properties"
+			String springXmlPath = sysConf.getConfUri() + "spring.xml";
+			springCtx = new ClassPathXmlApplicationContext(springXmlPath);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public ClassPathXmlApplicationContext getSpringCtx() {
+		return this.springCtx;
 	}
 
 	public Map<String, ?> getSettings() {
@@ -62,6 +72,10 @@ public class Application {
 
 	public DataSource getDs() {
 		return ds;
+	}
+
+	public SysConf getSysConf() {
+		return sysConf;
 	}
 
 	public void listener(int port) {

@@ -13,10 +13,6 @@ public class UserController extends Controller {
 		return this.renderString("list");
 	}
 
-	public View save() {
-		return this.renderString("save");
-	}
-
 	public View getById(int id) {
 		return this.renderString("get: " + id);
 	}

@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class Routes {
 
-	private Map<String, List<Route>> routes = new HashMap<>();
+	private Map<String, List<Route>> routes = new HashMap<String, List<Route>>();
 
 	public Routes(Route... routes) {
 		for (Route route : routes) {

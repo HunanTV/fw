@@ -36,12 +36,20 @@ public class SysConf {
 		return props;
 	}
 
+	public String getConfUri() throws Exception {
+		return "file:" + this.getConfPath();
+	}
+
 	public String getConfPath() throws Exception {
 		if (confPath != null)
 			return confPath;
 		sysPath = sysPath();
 		confPath = sysPath + "confs" + File.separator;
 		return confPath;
+	}
+
+	public String getSysUri() throws Exception {
+		return "file:" + this.getSysPath();
 	}
 
 	public String getSysPath() throws Exception {
