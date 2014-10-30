@@ -8,8 +8,8 @@ import com.hunantv.fw.view.View;
 
 public class Controller {
 
-	private HttpServletRequest request;
-	private HttpServletResponse response;
+	protected HttpServletRequest request;
+	protected HttpServletResponse response;
 
 	public HttpServletRequest getRequest() {
 		return request;
