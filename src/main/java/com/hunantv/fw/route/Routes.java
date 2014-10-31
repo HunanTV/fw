@@ -14,7 +14,7 @@ public class Routes {
 	}
 
 	public Routes add(Route route) {
-		String m = route.getRouteMethod().getV();
+		String m = route.getHttpMethod();
 		List<Route> tmpRoutes = this.routes.get(m);
 		if (null == tmpRoutes) {
 			tmpRoutes = new ArrayList<Route>();

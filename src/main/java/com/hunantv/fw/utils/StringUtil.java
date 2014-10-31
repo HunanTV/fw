@@ -2,6 +2,8 @@ package com.hunantv.fw.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,12 +113,30 @@ public class StringUtil {
 	 * @param regexStr
 	 * @return
 	 */
-	public static String firstMatchStr(String str, String regexStr) {
+	public static String matchStrFirst(String str, String regexStr) {
 		Pattern p = Pattern.compile(regexStr);
 		Matcher m = p.matcher(str);
 
 		if (m.find())
 			return m.group();
+		return null;
+	}
+
+	/**
+	 * 返回匹配正则表达式的串
+	 * 
+	 * @param str
+	 * @param regexStr
+	 * @return
+	 */
+	public static String[] matchStr(String str, String regexStr) {
+		Pattern p = Pattern.compile(regexStr);
+		Matcher m = p.matcher(str);
+		List<String> lst = new ArrayList<String>();
+		while (m.find())
+			lst.add(m.group());
+		if (lst.size() > 0)
+			return lst.toArray(new String[0]);
 		return null;
 	}
 
@@ -231,6 +251,38 @@ public class StringUtil {
 		return strb.append(str.substring(last)).toString();
 	}
 
+	/**
+	 * replace first r to t from str
+	 * 
+	 * @param str
+	 * @param r
+	 * @param t
+	 * @return
+	 */
+	public static String replaceFirst(String str, String r, String t) {
+		if (str == null || r == null || t == null)
+			return str;
+		if (str.trim().length() == 0 || r.length() == 0)
+			return str;
+		int p = str.indexOf(r); // 找到被取代串的位置
+		if (p == -1)
+			return str;
+
+		int last = 0;
+		StringBuffer strb = new StringBuffer(str.length() << 1); // 声明一个StringBuffer,
+		// 长度是 参数1
+		// 字符串的两倍
+
+		if (p >= 0) {
+			strb.append(str.substring(last, p));
+			if (t != null)
+				strb.append(t);
+			last = p + r.length();
+			p = str.indexOf(r, last);
+		}
+		return strb.append(str.substring(last)).toString();
+	}
+
 	public static boolean isEn(String target) {
 		for (int i = 0; i < target.length(); i++) {
 			if (!isLetter(target.charAt(i)))
@@ -251,15 +303,28 @@ public class StringUtil {
 		return false;
 	}
 
-    public static String ensureEndedWith(String str, String suffix) {
-        int len = str.length();
-        if (str == null || str.length() == 0) {
-            return suffix;
-        } else if (!str.endsWith(suffix)) {
-            return str + suffix;
-        }
-        return str;
-    }
+	public static String join(String[] strs, String s) {
+		StringBuilder strb = new StringBuilder();
+		for (int i = 0; i < strs.length - 1; i++) {
+			if (i == strs.length - 1)
+				break;
+			strb.append(strs[i]).append(s);
+		}
+		if (strs.length > 0) {
+			strb.append(strs[strs.length - 1]);
+		}
+		return strb.toString();
+	}
+
+	public static String ensureEndedWith(String str, String suffix) {
+		int len = str.length();
+		if (str == null || str.length() == 0) {
+			return suffix;
+		} else if (!str.endsWith(suffix)) {
+			return str + suffix;
+		}
+		return str;
+	}
 
 	public static void main(String[] args) {
 		String s1 = "abc abc";
