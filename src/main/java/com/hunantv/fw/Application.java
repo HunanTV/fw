@@ -4,6 +4,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -13,6 +15,8 @@ import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.SysConf;
 
 public class Application {
+
+	public final static Logger logger = Logger.getLogger(Application.class);
 
 	private static Application instance = null;
 	private Map<String, ?> settings;
@@ -34,14 +38,27 @@ public class Application {
 
 	private Application() {
 		sysConf = new SysConf();
+		initLog4j();
 		initSpring();
+	}
+
+	private void initLog4j() {
+		try {
+			PropertyConfigurator.configure(sysConf.getConfPath() + "log4j.properties");
+			logger.info("init log4j ok");
+		} catch (Exception ex) {
+			logger.error("init log4j failed", ex);
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private void initSpring() {
 		try {
 			String springXmlPath = sysConf.getConfUri() + "spring.xml";
 			springCtx = new ClassPathXmlApplicationContext(springXmlPath);
+			logger.info("init spring ok");
 		} catch (Exception ex) {
+			logger.error("init spring failed", ex);
 			throw new RuntimeException(ex);
 		}
 	}
@@ -99,6 +116,7 @@ public class Application {
 		webAppCtx.setParentLoaderPriority(true);
 		this.server.setHandler(webAppCtx);
 		this.server.start();
+		logger.info("application listen on " + port);
 	}
 
 	public void stop() throws Exception {

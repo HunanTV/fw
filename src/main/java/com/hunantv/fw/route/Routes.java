@@ -25,7 +25,7 @@ public class Routes {
 	}
 
 	public RouteAndValues match(String method, String uri) {
-		List<Route> routes = this.routes.get(method);
+		List<Route> routes = this.routes.get(method.toUpperCase());
 		if (null == routes || routes.size() == 0) {
 			return null;
 		}
