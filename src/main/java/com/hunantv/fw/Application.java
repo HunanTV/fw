@@ -16,7 +16,7 @@ import com.hunantv.fw.utils.SysConf;
 
 public class Application {
 
-	public final static Logger logger = Logger.getLogger(Application.class);
+	private static final Logger logger = Logger.getLogger(Application.class);
 
 	private static Application instance = null;
 	private Map<String, ?> settings;

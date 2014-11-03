@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -33,11 +34,19 @@ public class DB {
 	}
 
 	public Map<String, Object> get(String sql) {
-		return this.jdbcTemplate.queryForMap(sql);
+		try {
+			return this.jdbcTemplate.queryForMap(sql);
+		} catch (EmptyResultDataAccessException ex) {
+			return null;
+		}
 	}
 
 	public Map<String, Object> get(String sql, Object... args) {
-		return this.jdbcTemplate.queryForMap(sql, args);
+		try {
+			return this.jdbcTemplate.queryForMap(sql, args);
+		} catch (EmptyResultDataAccessException ex) {
+			return null;
+		}
 	}
 
 	public int execute(String sql) {
