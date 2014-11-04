@@ -2,7 +2,7 @@ package com.hunantv.fw;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.UUID;
+import java.util.Calendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +15,7 @@ import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.View;
 
+@SuppressWarnings("serial")
 public class Dispatcher extends HttpServlet {
 
 	public final static FwLogger logger = new FwLogger(Dispatcher.class);
@@ -22,14 +23,16 @@ public class Dispatcher extends HttpServlet {
 	private Application app = Application.getInstance();
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		logger.setSeqid(UUID.randomUUID().toString());
+		Long btime = Calendar.getInstance().getTimeInMillis();
+		logger.initSeqid();
+		
+		logger.debug(request.getRequestURL());
+		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
+		logger.delayInfo("uri", uri);
 		try {
 			logger.debug(request.getRequestURL());
 
 			Routes routes = app.getRoutes();
-			String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
-
 			Routes.RouteAndValues rv = routes.match(request.getMethod(), uri);
 			if (rv == null) {
 				Err404(response);
@@ -67,6 +70,8 @@ public class Dispatcher extends HttpServlet {
 				Err500(response, ex);
 			}
 		} finally {
+			Long etime = Calendar.getInstance().getTimeInMillis();
+			logger.delayInfo("cost", new Long(etime - btime).toString());
 			logger.clearSeqid();
 		}
 	}

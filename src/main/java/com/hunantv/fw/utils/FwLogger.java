@@ -1,21 +1,68 @@
 package com.hunantv.fw.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.log4j.Logger;
+
+class LoggerData {
+	private String id;
+	private List<String> data;
+
+	public LoggerData() {
+		this(UUID.randomUUID().toString());
+	}
+
+	public LoggerData(String id) {
+		this.id = id;
+		data = new ArrayList<String>();
+		// this.add("SeqID", this.id);
+	}
+
+	public void add(String key, String value) {
+		this.data.add(key + "=" + value);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String toString() {
+		if (data.size() == 0)
+			return "";
+		StringBuilder strb = new StringBuilder();
+		strb.append("[ ");
+		for (String ele : data) {
+			strb.append(ele).append(" ");
+		}
+		strb.append("]");
+		return strb.toString();
+	}
+}
 
 public class FwLogger {
 
 	private Logger logger = null;
-	private static ThreadLocal threadLocalVar = new ThreadLocal();
+	private static ThreadLocal<LoggerData> threadLocalVar = new ThreadLocal<LoggerData>();
 
 	public String getSeqid() {
-		return (String) FwLogger.threadLocalVar.get();
+		LoggerData data = (LoggerData) threadLocalVar.get();
+		return data.getId();
 	}
 
-	public void setSeqid(String seqid) {
-		FwLogger.threadLocalVar.set(seqid);
+	public void delayInfo(String key, String msg) {
+		LoggerData data = (LoggerData) threadLocalVar.get();
+		data.add(key, msg);
+	}
+
+	public void initSeqid() {
+		FwLogger.threadLocalVar.set(new LoggerData());
 	}
 
 	public void clearSeqid() {
+		LoggerData data = (LoggerData) threadLocalVar.get();
+		this.info(data.toString());
 		FwLogger.threadLocalVar.remove();
 	}
 

@@ -21,12 +21,12 @@ public class DemoServer {
     
     public static Routes initRoutes2() {
 		Routes routes = new Routes(
-			Route.get("/user/index", "UserController.index"),
-			Route.get("/user/list", "UserController.list"),
-			Route.get("/user/get/<int:id>", "UserController.get"),
-			Route.post("/user/save", "UserController.save"),
-            Route.post("/user/update/<int:id>", "UserController.update"),
-			Route.post("/user/delete/<int:id>", "UserController.delete")
+			Route.get("/user/index", "fw.test.functional.UserController.index"),
+			Route.get("/user/list", "fw.test.functional.UserController.list"),
+			Route.get("/user/get/<int:id>", "fw.test.functional.UserController.get"),
+			Route.post("/user/save", "fw.test.functional.UserController.save"),
+            Route.post("/user/update/<int:id>", "fw.test.functional.UserController.update"),
+			Route.post("/user/delete/<int:id>", "fw.test.functional.UserController.delete")
 		);
 		return routes;
     }

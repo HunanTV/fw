@@ -1,6 +1,5 @@
 package fw.test.functional;
 
-import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
@@ -20,7 +19,10 @@ public class UserController extends Controller {
 
 	public View list() throws Exception {
 		logger.info("Begin List");
-		Thread.sleep(100*1000);
+		Thread.sleep(10*1000);
+		logger.delayInfo("test1", "Hello");
+		logger.delayInfo("test2", "Word");
+		logger.delayInfo("test3", "Love");
 		logger.info("End List");
 		return this.renderString("[]");
 //		DB db = new DB();

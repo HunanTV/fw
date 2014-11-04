@@ -12,9 +12,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.hunantv.fw.Application;
+import com.hunantv.fw.utils.FwLogger;
 
 public class DB {
-
+	protected static FwLogger logger = new FwLogger(DB.class);
 	private JdbcTemplate jdbcTemplate;
 
 	public DB() {
@@ -26,7 +27,8 @@ public class DB {
 	}
 
 	public List<Map<String, Object>> query(String sql) {
-		return this.jdbcTemplate.queryForList(sql);
+		List<Map<String, Object>> relt = this.jdbcTemplate.queryForList(sql);
+		return relt;
 	}
 
 	public List<Map<String, Object>> query(String sql, Object... args) {
