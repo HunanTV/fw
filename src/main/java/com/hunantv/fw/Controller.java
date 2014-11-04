@@ -1,8 +1,12 @@
 package com.hunantv.fw;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.view.JsonView;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.StringView;
@@ -39,5 +43,61 @@ public class Controller {
 
 	public View redirect(String str) {
 		return new RedirectView(str);
+	}
+
+	public Integer getIntegerParam(String name) {
+		return getIntegerParam(name, null);
+	}
+
+	public Integer getIntegerParam(String name, Integer defaultValue) {
+		String value = this.request.getParameter(name);
+		if (value != null)
+			return Integer.valueOf(value);
+		return defaultValue;
+	}
+
+	public Long getLongParam(String name) {
+		return getLongParam(name, null);
+	}
+
+	public Long getLongParam(String name, Long defaultValue) {
+		String value = this.request.getParameter(name);
+		if (value != null)
+			return Long.valueOf(value);
+		return defaultValue;
+	}
+
+	public Float getFloatParam(String name) {
+		return getFloatParam(name, null);
+	}
+
+	public Float getFloatParam(String name, Float defaultValue) {
+		String value = this.request.getParameter(name);
+		if (value != null)
+			return Float.valueOf(value);
+		return defaultValue;
+	}
+
+	public Double getDoubleParam(String name) {
+		return getDoubleParam(name, null);
+	}
+
+	public Double getDoubleParam(String name, Double defaultValue) {
+		String value = this.request.getParameter(name);
+		if (value != null)
+			return Double.valueOf(value);
+		return defaultValue;
+	}
+
+	public List getListParam(String name) {
+		return this.getListParam(name, null);
+	}
+
+	public List getListParam(String name, List defaultValue) {
+		String value = this.request.getParameter(name);
+		if (value != null) {
+			return Arrays.asList(StringUtil.split(value, ","));
+		}
+		return defaultValue;
 	}
 }
