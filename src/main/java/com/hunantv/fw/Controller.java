@@ -89,6 +89,17 @@ public class Controller {
 		return defaultValue;
 	}
 
+	public String getStrParam(String name) {
+		return this.getStrParam(name, null);
+	}
+
+	public String getStrParam(String name, String defaultValue) {
+		String value = this.request.getParameter(name);
+		if (value != null)
+			return value;
+		return defaultValue;
+	}
+
 	public List getListParam(String name) {
 		return this.getListParam(name, null);
 	}
