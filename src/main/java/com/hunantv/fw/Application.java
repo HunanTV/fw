@@ -6,7 +6,11 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -97,7 +101,18 @@ public class Application {
 
 	public void listener(int port) {
 		this.port = port;
-		this.server = new Server(port);
+//		this.server = new Server(port);
+		
+		this.server = new Server();
+        HttpConfiguration httpConfiguration=new HttpConfiguration();
+        httpConfiguration.setOutputBufferSize(32768);
+        httpConfiguration.setRequestHeaderSize(8192);
+        httpConfiguration.setResponseHeaderSize(8192);
+        httpConfiguration.setSendServerVersion(false);
+        httpConfiguration.setHeaderCacheSize(512);
+        ServerConnector connector = new ServerConnector(server,new HttpConnectionFactory(httpConfiguration));
+        connector.setPort(this.port);
+        server.setConnectors(new Connector[] { connector });
 	}
 
 	public void start() throws Exception {
@@ -115,8 +130,9 @@ public class Application {
 		webAppCtx.setResourceBase("");
 		webAppCtx.setParentLoaderPriority(true);
 		this.server.setHandler(webAppCtx);
-		this.server.start();
 		logger.info("application listen on " + port);
+		this.server.start();
+		this.server.join();
 	}
 
 	public void stop() throws Exception {
