@@ -51,9 +51,9 @@ public class FwLogger {
 		return data.getId();
 	}
 
-	public void delayInfo(String key, String msg) {
+	public void delayInfo(String key, Object msg) {
 		LoggerData data = (LoggerData) threadLocalVar.get();
-		data.add(key, msg);
+		data.add(key, msg.toString());
 	}
 
 	public void initSeqid() {

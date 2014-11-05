@@ -125,13 +125,14 @@ public class FwHttpClient {
 		return strb.toString();
 	}
 
-	// public static void main(String[] args) throws Exception {
-	// FwHttpResponse res = FwHttpClient.get("localhost:3333/user/list");
-	// System.out.println(res.body);
-	// System.out.println(res.code);
-	// System.out.println("***************************");
-	//
-	// System.out.println(res.body);
-	// System.out.println(res.code);
-	// }
+	public static void main(String[] args) throws Exception {
+		FwHttpResponse res = FwHttpClient.get("localhost:3333/user/list");
+		System.out.println(res.body);
+		System.out.println(res.code);
+		System.out.println("***************************");
+		
+		res = FwHttpClient.post("localhost:3333/user/update/1"); 
+		System.out.println(res.body);
+		System.out.println(res.code);
+	}
 }
