@@ -1,5 +1,6 @@
 package fw.test.functional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
@@ -19,16 +20,16 @@ public class UserController extends Controller {
 
 	public View list() throws Exception {
 		logger.info("Begin List");
-		Thread.sleep(10*1000);
+//		Thread.sleep(10 * 1000);
 		logger.delayInfo("test1", "Hello");
 		logger.delayInfo("test2", "Word");
 		logger.delayInfo("test3", "Love");
 		logger.info("End List");
 		return this.renderString("[]");
-//		DB db = new DB();
-//		List<Map<String, Object>> records = db.query("SELECT * FROM user");
-//		logger.info("End List");
-//		return this.renderString(JSON.toJSONString(records));
+		// DB db = new DB();
+		// List<Map<String, Object>> records = db.query("SELECT * FROM user");
+		// logger.info("End List");
+		// return this.renderString(JSON.toJSONString(records));
 	}
 
 	public View get(int id) {
@@ -38,11 +39,17 @@ public class UserController extends Controller {
 	}
 
 	public View update(int id) {
-		String name = this.request.getParameter("name");
-		int age = Integer.valueOf(this.request.getParameter("age"));
-		DB db = new DB();
-		db.execute("UPDATE user SET name = ? , age = ? WHERE id = ?", name, age, id);
-		return this.renderString(String.format("updateWithIdAndName OK [id = %s, age = %s, name = %s]", id, age, name));
+		// String name = this.request.getParameter("name");
+		// int age = Integer.valueOf(this.request.getParameter("age"));
+		// DB db = new DB();
+		// db.execute("UPDATE user SET name = ? , age = ? WHERE id = ?", name,
+		// age, id);
+		// return
+		// this.renderString(String.format("updateWithIdAndName OK [id = %s, age = %s, name = %s]",
+		// id, age, name));
+		Map<String, Integer> m = new HashMap<String, Integer>();
+		m.put("id", id);
+		return this.renderJson(m);
 	}
 
 	public View save() {
