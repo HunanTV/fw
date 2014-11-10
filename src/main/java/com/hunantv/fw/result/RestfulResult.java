@@ -18,7 +18,7 @@ public class RestfulResult {
 	}
 
 	public RestfulResult(int ret) {
-		this(RestfulResult.OK, null);
+		this(ret, null);
 	}
 
 	public RestfulResult(Object data) {
@@ -32,7 +32,11 @@ public class RestfulResult {
 	public RestfulResult(int ret, String msg, Object data) {
 		this.setCode(ret);
 		this.setMsg(msg);
-		this.setData(data);
+		if (null == data) {
+			this.setData(new HashMap());
+		} else {
+			this.setData(data);
+		}
 	}
 
 	public void setCode(int ret) {
@@ -62,4 +66,5 @@ public class RestfulResult {
 	public String toJson() {
 		return JSON.toJSONString(c);
 	}
+
 }
