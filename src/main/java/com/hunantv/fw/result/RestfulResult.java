@@ -8,9 +8,9 @@ import com.alibaba.fastjson.JSON;
 public class RestfulResult {
 
 	private static final int OK = 0;
-	private int code = OK;
-	private String msg = "";
-	private Object data = null;
+	protected int code = OK;
+	protected String msg = "";
+	protected Object data = null;
 
 	public RestfulResult() {
 		this(OK, "", null);
