@@ -1,4 +1,4 @@
-package exceptions;
+package com.hunantv.fw.exceptions;
 
 public class NotSupportException extends RuntimeException {
 

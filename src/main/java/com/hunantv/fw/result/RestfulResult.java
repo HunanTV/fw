@@ -7,64 +7,67 @@ import com.alibaba.fastjson.JSON;
 
 public class RestfulResult {
 
-	private Map c = new HashMap();
 	private static final int OK = 0;
-	private static final String CODE_KEY = "code";
-	private static final String MSG_KEY = "msg";
-	private static final String DATA_KEY = "data";
+	private int code = OK;
+	private String msg = "";
+	private Object data = null;
 
 	public RestfulResult() {
-		this(RestfulResult.OK);
+		this(OK, "", null);
 	}
 
-	public RestfulResult(int ret) {
-		this(ret, null);
+	public RestfulResult(int code) {
+		this(code, "", null);
 	}
 
 	public RestfulResult(Object data) {
-		this(RestfulResult.OK, null, data);
+		this(OK, "", data);
 	}
 
-	public RestfulResult(int ret, String msg) {
-		this(ret, msg, null);
+	public RestfulResult(int code, String msg) {
+		this(code, msg, null);
 	}
 
-	public RestfulResult(int ret, String msg, Object data) {
-		this.setCode(ret);
-		this.setMsg(msg);
-		if (null == data) {
-			this.setData(new HashMap());
-		} else {
-			this.setData(data);
-		}
+	public RestfulResult(int code, String msg, Object data) {
+		this.code = code;
+		this.msg = msg;
+		this.data = data;
 	}
 
-	public void setCode(int ret) {
-		this.c.put(CODE_KEY, ret);
+	public void setCode(int code) {
+		this.code = code;
 	}
 
 	public void setMsg(String msg) {
-		this.c.put(MSG_KEY, msg);
+		this.msg = msg;
 	}
 
 	public void setData(Object data) {
-		this.c.put(DATA_KEY, data);
+		this.data = data;
 	}
 
 	public int getCode() {
-		return (Integer) this.c.get(CODE_KEY);
+		return this.code;
 	}
 
 	public String getMsg() {
-		return (String) this.c.get(MSG_KEY);
+		return this.msg;
 	}
 
 	public Object getData() {
-		return this.c.get(DATA_KEY);
+		return this.data;
 	}
 
 	public String toJson() {
-		return JSON.toJSONString(c);
+		Map<String, Object> m = this.toMap();
+		return JSON.toJSONString(m);
 	}
 
+	public Map<String, Object> toMap() {
+		Map<String, Object> m = new HashMap<String, Object>();
+		m.put("code", this.code);
+		m.put("msg", this.msg);
+		m.put("data", this.data == null ? new HashMap() : data);
+		return m;
+	}
 }
