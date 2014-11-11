@@ -48,6 +48,10 @@ public class FwLogger {
 
 	public String getSeqid() {
 		LoggerData data = (LoggerData) threadLocalVar.get();
+		if (data == null) {
+			initSeqid();
+			data = (LoggerData) threadLocalVar.get();
+		}
 		return data.getId();
 	}
 
