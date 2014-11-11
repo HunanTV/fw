@@ -14,22 +14,33 @@ import com.hunantv.fw.view.View;
  * @TODO: 需要考虑put, delete
  */
 public class FakeBrowser {
-	
-	private Routes routes;
+
+	FakeDispatcher dis = null;
 
 	public FakeBrowser(Routes routes) {
-		this.routes = routes;
+		dis = new FakeDispatcher();
+		dis.setRoutes(routes);
 	}
-	
+
+	public View get(String url) {
+		return this.get(url, new HashMap<String, Object>());
+	}
+
 	public View get(String url, Map<String, Object> params) {
-		FakeDispatcher dis = new FakeDispatcher();
-		
-		Map<String, String> m = new HashMap<String, String>();
 		URLParser urlParser = new URLParser(url);
+		urlParser.addQuery(params);
 		
 		FakeRequest req = new FakeRequest();
+		req.setURLParser(urlParser);
+		req.setMethod("GET");
 		req.setParameter(urlParser.getQueryPair());
-		return dis.doIt(req, null);
+
+		try {
+			return dis.doIt(req, null);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		}
 	}
 
 	// public Response get(String url, Map<String, String> params) {

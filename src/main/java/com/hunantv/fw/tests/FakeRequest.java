@@ -26,10 +26,20 @@ import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 import com.hunantv.fw.exceptions.NotImplementException;
+import com.hunantv.fw.net.URLParser;
 
 public class FakeRequest implements HttpServletRequest {
 
 	private Map<String, String> parameter = new HashMap<String, String>();
+	private URLParser urlParser;
+	private String method;
+		
+	public void setMethod(String method) {
+		this.method = method;
+	}
+	public void setURLParser(URLParser urlParser) {
+		this.urlParser = urlParser;
+	}
 
 	public void setParameter(Map<String, String> parameter) {
 		this.parameter = parameter;
@@ -274,10 +284,10 @@ public class FakeRequest implements HttpServletRequest {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
+	
 	@Override
 	public String getMethod() {
-		throw new NotImplementException();
+		return this.method;
 	}
 
 	@Override
@@ -322,12 +332,12 @@ public class FakeRequest implements HttpServletRequest {
 
 	@Override
 	public String getRequestURI() {
-		throw new NotImplementException();
+		return this.urlParser.getUri();
 	}
 
 	@Override
 	public StringBuffer getRequestURL() {
-		throw new NotImplementException();
+		return new StringBuffer(this.urlParser.getFullUrl());
 	}
 
 	@Override

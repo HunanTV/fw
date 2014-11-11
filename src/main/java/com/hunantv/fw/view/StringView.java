@@ -1,14 +1,12 @@
 package com.hunantv.fw.view;
 
-public class StringView implements View {
-
-	private String v;
+public class StringView extends AbsView {
 
 	public StringView(String v) {
 		this.v = v;
 	}
 
 	public String render() {
-		return v;
+		return (String) v;
 	}
 }

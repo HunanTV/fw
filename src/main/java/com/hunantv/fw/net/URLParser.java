@@ -106,6 +106,10 @@ public class URLParser {
 		return strb.toString();
 	}
 
+	public String getUri() {
+		return this.url.getPath();
+	}
+
 	public String toString() {
 		return this.getFullUrl();
 	}

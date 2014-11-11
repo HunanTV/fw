@@ -1,5 +1,6 @@
-package fw.test.functional;
+package fw.test.demo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,12 +8,13 @@ import com.alibaba.fastjson.JSON;
 import com.hunantv.fw.Controller;
 import com.hunantv.fw.db.DB;
 import com.hunantv.fw.db.DB.Transaction;
+import com.hunantv.fw.result.RestfulResult;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.view.View;
 
-public class UserController extends Controller {
+public class DemoController extends Controller {
 
-	protected static FwLogger logger = new FwLogger(UserController.class);
+	protected static FwLogger logger = new FwLogger(DemoController.class);
 
 	public View index() {
 		return this.redirect("/user/list");
@@ -20,16 +22,21 @@ public class UserController extends Controller {
 
 	public View list() throws Exception {
 		logger.info("Begin List");
-//		Thread.sleep(10 * 1000);
 		logger.delayInfo("test1", "Hello");
 		logger.delayInfo("test2", "Word");
 		logger.delayInfo("test3", "Love");
 		logger.info("End List");
-		return this.renderString("[]");
-		// DB db = new DB();
-		// List<Map<String, Object>> records = db.query("SELECT * FROM user");
-		// logger.info("End List");
-		// return this.renderString(JSON.toJSONString(records));
+
+		Integer offset = this.getIntegerParam("offset", 0);
+		Integer limit = this.getIntegerParam("limit", 0);
+
+		RestfulResult relt = new RestfulResult(new HashMap<String, Integer>() {
+			{
+				put("req-offset", offset);
+				put("req-limit", limit);
+			}
+		});
+		return this.renderString(relt.toJson());
 	}
 
 	public View get(int id) {

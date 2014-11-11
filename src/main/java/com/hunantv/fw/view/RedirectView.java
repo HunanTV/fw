@@ -1,6 +1,6 @@
 package com.hunantv.fw.view;
 
-public class RedirectView implements View {
+public class RedirectView extends AbsView {
 
 	private String v;
 

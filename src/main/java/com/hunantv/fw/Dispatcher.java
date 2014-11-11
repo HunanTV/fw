@@ -46,6 +46,8 @@ public class Dispatcher extends HttpServlet {
 			this.Err404(response);
 		} catch (HttpException500 ex) {
 			this.Err500(response, ex);
+		} catch (Exception ex) {
+			this.Err500(response, ex);
 		} finally {
 			Long etime = Calendar.getInstance().getTimeInMillis();
 			logger.delayInfo("cost", new Long(etime - btime).toString());
@@ -53,11 +55,11 @@ public class Dispatcher extends HttpServlet {
 		}
 	}
 
-	protected View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, HttpException404,
+	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, HttpException404,
 	        HttpException500 {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
-
+		
 		Routes.RouteAndValues rv = routes.match(request.getMethod(), uri);
 		if (rv == null) {
 			throw new HttpException404();

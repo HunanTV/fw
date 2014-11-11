@@ -47,21 +47,22 @@ public class FwLogger {
 	private static ThreadLocal<LoggerData> threadLocalVar = new ThreadLocal<LoggerData>();
 
 	public String getSeqid() {
+		initSeqid();
 		LoggerData data = (LoggerData) threadLocalVar.get();
-		if (data == null) {
-			initSeqid();
-			data = (LoggerData) threadLocalVar.get();
-		}
 		return data.getId();
 	}
 
 	public void delayInfo(String key, Object msg) {
+		initSeqid();
 		LoggerData data = (LoggerData) threadLocalVar.get();
 		data.add(key, msg.toString());
 	}
 
 	public void initSeqid() {
-		FwLogger.threadLocalVar.set(new LoggerData());
+		LoggerData data = (LoggerData) threadLocalVar.get();
+		if (data == null) {
+			FwLogger.threadLocalVar.set(new LoggerData());
+		}
 	}
 
 	public void clearSeqid() {
