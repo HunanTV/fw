@@ -44,7 +44,7 @@ public class FwHttpClient {
 	}
 
 	public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
-		URLParser urlParser = new URLParser(buildURL(url));
+		URLParser urlParser = new URLParser(url);
 		urlParser.addQuery(params);
 
 		HttpGet httpGet = new HttpGet(urlParser.getFullUrl());
@@ -72,7 +72,7 @@ public class FwHttpClient {
 
 	public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
 
-		URLParser urlParser = new URLParser(buildURL(url));
+		URLParser urlParser = new URLParser(url);
 		HttpPost httpPost = new HttpPost(urlParser.getFullUrl());
 
 		if (connTimeoutSec > 0) {
@@ -103,16 +103,6 @@ public class FwHttpClient {
 		}
 	}
 
-	private static URL buildURL(String url) throws MalformedURLException {
-		URL u = null;
-		try {
-			u = new URL(url);
-		} catch (java.net.MalformedURLException ex) {
-			u = new URL("http://" + url);
-		}
-		return u;
-	}
-
 	private static String getContent(HttpResponse res) throws Exception {
 		StringBuilder strb = new StringBuilder();
 		BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
@@ -130,8 +120,8 @@ public class FwHttpClient {
 		System.out.println(res.body);
 		System.out.println(res.code);
 		System.out.println("***************************");
-		
-		res = FwHttpClient.post("localhost:3333/user/update/1"); 
+
+		res = FwHttpClient.post("localhost:3333/user/update/1");
 		System.out.println(res.body);
 		System.out.println(res.code);
 	}

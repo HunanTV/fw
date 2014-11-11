@@ -1,9 +1,11 @@
 package com.hunantv.fw.net;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,10 @@ public class URLParser {
 	private int port;
 	private String path;
 	private List<String> queries = new ArrayList<String>();
+
+	public URLParser(String url) {
+		this(buildURL(url));
+	}
 
 	public URLParser(URL url) {
 		this.url = url;
@@ -43,6 +49,20 @@ public class URLParser {
 		}
 	}
 
+	private static URL buildURL(String url) {
+		URL u = null;
+		try {
+			u = new URL(url);
+		} catch (java.net.MalformedURLException ex) {
+			try {
+				u = new URL("http://" + url);
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return u;
+	}
+
 	public URLParser addQuery(Map<String, Object> queries) {
 		if (null != queries) {
 			for (Iterator<String> iter = queries.keySet().iterator(); iter.hasNext();) {
@@ -56,6 +76,22 @@ public class URLParser {
 	public URLParser addQuery(String key, Object value) {
 		queries.add(key + "=" + value.toString());
 		return this;
+	}
+
+	public Map<String, String> getQueryPair() {
+		Map<String, String> m = new HashMap<String, String>();
+		for (String q : queries) {
+			String[] vs = StringUtil.split(q, "=");
+			if (vs.length == 1)
+				m.put(vs[0], "");
+			else
+				m.put(vs[0], vs[1]);
+		}
+		return m;
+	}
+
+	public List<String> getQueries() {
+		return this.queries;
 	}
 
 	public String getFullUrl() {

@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hunantv.fw.exceptions.HttpException404;
+import com.hunantv.fw.exceptions.HttpException500;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.StringUtil;
@@ -20,59 +22,71 @@ public class Dispatcher extends HttpServlet {
 
 	public final static FwLogger logger = new FwLogger(Dispatcher.class);
 
-	private Application app = Application.getInstance();
+	protected Routes routes = null;
 
+	@Override
+	public void init() {
+		this.routes = Application.getInstance().getRoutes();
+	}
+
+	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Long btime = Calendar.getInstance().getTimeInMillis();
 		logger.initSeqid();
-		
+
 		logger.debug(request.getRequestURL());
-		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
-		logger.delayInfo("uri", uri);
 		try {
-			logger.debug(request.getRequestURL());
-
-			Routes routes = app.getRoutes();
-			Routes.RouteAndValues rv = routes.match(request.getMethod(), uri);
-			if (rv == null) {
-				Err404(response);
-				return;
+			View view = doIt(request, response);
+			if (view instanceof RedirectView) {
+				response.sendRedirect(view.render());
+			} else {
+				response.getWriter().write(view.render());
 			}
-
-			Class<? extends Controller> controllerClass = rv.route.getControllerClass();
-			Method method = null;
-			Controller controller = null;
-			try {
-				method = controllerClass.getMethod(rv.route.getControllerMethod(), rv.route.getParameterTypeList());
-
-				controller = controllerClass.newInstance();
-				controller.setRequest(request);
-				controller.setResponse(response);
-			} catch (NoSuchMethodException e) {
-				Err404(response);
-			} catch (SecurityException e) {
-				Err404(response);
-			} catch (InstantiationException e) {
-				Err404(response);
-			} catch (IllegalAccessException e) {
-				Err404(response);
-			} catch (IllegalArgumentException e) {
-				Err404(response);
-			}
-			try {
-				View view = (View) method.invoke(controller, rv.getValuedObjectArrays());
-				if (view instanceof RedirectView) {
-					response.sendRedirect(view.render());
-				} else {
-					response.getWriter().write(view.render());
-				}
-			} catch (Exception ex) {
-				Err500(response, ex);
-			}
+		} catch (HttpException404 ex) {
+			this.Err404(response);
+		} catch (HttpException500 ex) {
+			this.Err500(response, ex);
 		} finally {
 			Long etime = Calendar.getInstance().getTimeInMillis();
 			logger.delayInfo("cost", new Long(etime - btime).toString());
 			logger.clearSeqid();
+		}
+	}
+
+	protected View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, HttpException404,
+	        HttpException500 {
+		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
+		logger.delayInfo("uri", uri);
+
+		Routes.RouteAndValues rv = routes.match(request.getMethod(), uri);
+		if (rv == null) {
+			throw new HttpException404();
+		}
+
+		Class<? extends Controller> controllerClass = rv.route.getControllerClass();
+		Method method = null;
+		Controller controller = null;
+		try {
+			method = controllerClass.getMethod(rv.route.getControllerMethod(), rv.route.getParameterTypeList());
+
+			controller = controllerClass.newInstance();
+			controller.setRequest(request);
+			controller.setResponse(response);
+		} catch (NoSuchMethodException e) {
+			throw new HttpException404(e);
+		} catch (SecurityException e) {
+			throw new HttpException404(e);
+		} catch (InstantiationException e) {
+			throw new HttpException404(e);
+		} catch (IllegalAccessException e) {
+			throw new HttpException404(e);
+		} catch (IllegalArgumentException e) {
+			throw new HttpException404(e);
+		}
+		try {
+			return (View) method.invoke(controller, rv.getValuedObjectArrays());
+		} catch (Exception e) {
+			throw new HttpException500(e);
 		}
 	}
 
