@@ -20,3 +20,5 @@ darkevil-logs/
 /target/
 /target/
 src/main/resources/config.yaml
+.idea
+logs/
