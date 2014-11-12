@@ -1,11 +1,14 @@
 package com.hunantv.fw.tests;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.hunantv.fw.Dispatcher;
+import com.hunantv.fw.exceptions.HttpException404;
+import com.hunantv.fw.exceptions.HttpException500;
 import com.hunantv.fw.net.URLParser;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.view.View;
@@ -22,34 +25,35 @@ public class FakeBrowser {
 		dis.setRoutes(routes);
 	}
 
-	public View get(String url) {
+	public View get(String url) throws Exception {
 		return this.get(url, new HashMap<String, Object>());
 	}
 
-	public View get(String url, Map<String, Object> params) {
+	public View get(String url, Map<String, Object> params) throws Exception {
 		URLParser urlParser = new URLParser(url);
 		urlParser.addQuery(params);
-		
+
 		FakeRequest req = new FakeRequest();
 		req.setURLParser(urlParser);
 		req.setMethod("GET");
 		req.setParameter(urlParser.getQueryPair());
 
-		try {
-			return dis.doIt(req, null);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
-		}
+		return dis.doIt(req, null);
+	}
+	
+	public View post(String url) throws Exception {
+		return this.post(url, new HashMap<String, Object>());
 	}
 
-	// public Response get(String url, Map<String, String> params) {
-	//
-	// }
+	public View post(String url, Map<String, Object> params) throws Exception {
+		URLParser urlParser = new URLParser(url);
+		urlParser.addQuery(params);
 
-	// public void post() {
-	//
-	// }
-	//
-	// public void
+		FakeRequest req = new FakeRequest();
+		req.setURLParser(urlParser);
+		req.setMethod("POST");
+		req.setParameter(urlParser.getQueryPair());
+
+		return dis.doIt(req, null);
+	}
 }

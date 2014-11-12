@@ -9,12 +9,10 @@ public class DemoServer {
 
     public static Routes initRoutes() {
 		Routes routes = new Routes(
-			Route.get("/user/index", DemoController.class, "index"),
-			Route.get("/user/list", DemoController.class, "list"),
-			Route.get("/user/get/<int:id>", DemoController.class, "get"),
-			Route.post("/user/save", DemoController.class, "save"),
-            Route.post("/user/update/<int:id>", DemoController.class, "update"),
-			Route.post("/user/delete/<int:id>", DemoController.class, "delete")
+			Route.get("/demo/index", DemoController.class, "index"),
+			Route.get("/demo/list", DemoController.class, "list"),
+            Route.post("/demo/update/<int:id>", DemoController.class, "update"),
+            Route.get("/demo/500err", DemoController.class, "err500")
 		);
 		return routes;
     }
@@ -26,12 +24,9 @@ public class DemoServer {
      */
     public static Routes initRoutes2() {
 		Routes routes = new Routes(
-			Route.get("/user/index", "fw.test.functional.DemoController.index"),
-			Route.get("/user/list", "fw.test.functional.DemoController.list"),
-			Route.get("/user/get/<int:id>", "fw.test.functional.DemoController.get"),
-			Route.post("/user/save", "fw.test.functional.DemoController.save"),
-            Route.post("/user/update/<int:id>", "fw.test.functional.DemoController.update"),
-			Route.post("/user/delete/<int:id>", "fw.test.functional.DemoController.delete")
+			Route.get("/demo/index", "fw.test.functional.DemoController.index"),
+			Route.get("/demo/list", "fw.test.functional.DemoController.list"),
+            Route.post("/demo/update/<int:id>", "fw.test.functional.DemoController.update")
 		);
 		return routes;
     }
