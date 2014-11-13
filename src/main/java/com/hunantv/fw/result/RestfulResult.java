@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 
-public class RestfulResult {
+public class RestfulResult implements Result {
 
 	private static final int OK = 0;
 	protected int code = OK;
