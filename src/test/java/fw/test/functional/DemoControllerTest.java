@@ -73,8 +73,9 @@ public class DemoControllerTest extends TestCase {
 	}
 	
 	public void testUpdate() throws Exception {
-		View view = fb.post("/demo/update/10", new HashMap<String, Object>() {
+		View view = fb.post("/demo/update", new HashMap<String, Object>() {
 			{
+				put("id", 10);
 				put("age", 100);
 				put("name", "pengyi");
 			}

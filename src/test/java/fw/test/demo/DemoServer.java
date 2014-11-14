@@ -11,7 +11,7 @@ public class DemoServer {
 		Routes routes = new Routes(
 			Route.get("/demo/index", DemoController.class, "index"),
 			Route.get("/demo/list", DemoController.class, "list"),
-            Route.post("/demo/update/<int:id>", DemoController.class, "update"),
+            Route.post("/demo/update", DemoController.class, "update"),
             Route.get("/demo/500err", DemoController.class, "err500")
 		);
 		return routes;
@@ -26,7 +26,7 @@ public class DemoServer {
 		Routes routes = new Routes(
 			Route.get("/demo/index", "fw.test.functional.DemoController.index"),
 			Route.get("/demo/list", "fw.test.functional.DemoController.list"),
-            Route.post("/demo/update/<int:id>", "fw.test.functional.DemoController.update")
+            Route.post("/demo/update", "fw.test.functional.DemoController.update")
 		);
 		return routes;
     }

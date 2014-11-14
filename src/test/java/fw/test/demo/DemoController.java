@@ -42,7 +42,8 @@ public class DemoController extends Controller {
 		return this.renderString(relt.toJson());
 	}
 
-	public View update(int id) {
+	public View update() {
+		int id = this.getIntegerParam("id", 10);
 		String name = this.getStrParam("name");
 		int age = this.getIntegerParam("age", 0);
 //		DB db = new DB();

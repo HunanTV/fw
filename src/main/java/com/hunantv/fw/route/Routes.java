@@ -1,11 +1,14 @@
 package com.hunantv.fw.route;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Routes {
 
-	private Map<String, List<Route>> routes = new HashMap<String, List<Route>>();
+	private Map<String, Map<String, Route>> routes = new HashMap<String, Map<String, Route>>();
+
+	public Routes() {
+	}
 
 	public Routes(Route... routes) {
 		for (Route route : routes) {
@@ -14,49 +17,22 @@ public class Routes {
 	}
 
 	public Routes add(Route route) {
-		String m = route.getHttpMethod();
-		List<Route> tmpRoutes = this.routes.get(m);
-		if (null == tmpRoutes) {
-			tmpRoutes = new ArrayList<Route>();
-			this.routes.put(m, tmpRoutes);
+		String m = route.getRouteMethod().getV();
+		Map<String, Route> tmpMap = this.routes.get(m);
+		if (null == tmpMap) {
+			tmpMap = new HashMap<String, Route>();
+			this.routes.put(m, tmpMap);
 		}
-		tmpRoutes.add(route);
+		tmpMap.put(route.getUriReg(), route);
 		return this;
 	}
 
-	public RouteAndValues match(String method, String uri) {
-		List<Route> routes = this.routes.get(method.toUpperCase());
-		if (null == routes || routes.size() == 0) {
+	public Route match(String method, String uri) {
+		Map<String, Route> tmpMap = this.routes.get(method);
+		if (null == tmpMap) {
 			return null;
 		}
-
-        RouteAndValues rv = null;
-        for (Route route : routes) {
-            Collection<URIMatcher.NamedValue> values = route.matches(uri);
-            if (values == null) continue;
-
-            rv = new RouteAndValues(route, values);
-            break;
-        }
-		return rv;
+		Route route = tmpMap.get(uri);
+		return route;
 	}
-
-    public static class RouteAndValues {
-        public final Route route;
-        public final Collection<URIMatcher.NamedValue> values;
-
-        public RouteAndValues(Route route,
-                              Collection<URIMatcher.NamedValue> values) {
-            this.route = route;
-            this.values = values;
-        }
-
-        public Object[] getValuedObjectArrays() {
-            return this.values
-                    .stream()
-                    .map( nv -> nv.value)
-                    .collect(Collectors.toList())
-                    .toArray(new Object[0]);
-        }
-    }
 }

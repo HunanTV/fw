@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.hunantv.fw.exceptions.HttpException404;
 import com.hunantv.fw.exceptions.HttpException500;
-import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.StringUtil;
@@ -61,16 +60,16 @@ public class Dispatcher extends HttpServlet {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
 		
-		Route route = routes.match(request.getMethod(), uri);
-        if (route == null) {
-        	throw new HttpException404();
-        }
+		Routes.RouteAndValues rv = routes.match(request.getMethod(), uri);
+		if (rv == null) {
+			throw new HttpException404();
+		}
 
-		Class<? extends Controller> controllerClass = route.getControllerClass();
+		Class<? extends Controller> controllerClass = rv.route.getControllerClass();
 		Method method = null;
 		Controller controller = null;
 		try {
-			method = controllerClass.getMethod(route.getControllerMethod());
+			method = controllerClass.getMethod(rv.route.getControllerMethod(), rv.route.getParameterTypeList());
 
 			controller = controllerClass.newInstance();
 			controller.setRequest(request);
@@ -87,7 +86,7 @@ public class Dispatcher extends HttpServlet {
 			throw new HttpException404(e);
 		}
 		try {
-			return (View) method.invoke(controller);
+			return (View) method.invoke(controller, rv.getValuedObjectArrays());
 		} catch (Exception e) {
 			throw new HttpException500(e);
 		}
