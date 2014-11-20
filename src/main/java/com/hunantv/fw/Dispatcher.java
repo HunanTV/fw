@@ -99,7 +99,7 @@ public class Dispatcher extends HttpServlet {
 
 	public void Err500(HttpServletResponse response, Exception ex) throws IOException {
 		logger.error("500 Internal Server Error", ex);
-		ex.printStackTrace(response.getWriter());
+//		ex.printStackTrace(response.getWriter());
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	}
 }
