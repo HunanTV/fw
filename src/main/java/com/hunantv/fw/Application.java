@@ -23,6 +23,7 @@ public class Application {
 	private static final Logger logger = Logger.getLogger(Application.class);
 
 	private static Application instance = null;
+	private boolean debug = false;
 	private Map<String, ?> settings;
 	private int port;
 
@@ -101,18 +102,18 @@ public class Application {
 
 	public void listener(int port) {
 		this.port = port;
-//		this.server = new Server(port);
-		
+		// this.server = new Server(port);
+
 		this.server = new Server();
-        HttpConfiguration httpConfiguration=new HttpConfiguration();
-        httpConfiguration.setOutputBufferSize(32768);
-        httpConfiguration.setRequestHeaderSize(8192);
-        httpConfiguration.setResponseHeaderSize(8192);
-        httpConfiguration.setSendServerVersion(false);
-        httpConfiguration.setHeaderCacheSize(512);
-        ServerConnector connector = new ServerConnector(server,new HttpConnectionFactory(httpConfiguration));
-        connector.setPort(this.port);
-        server.setConnectors(new Connector[] { connector });
+		HttpConfiguration httpConfiguration = new HttpConfiguration();
+		httpConfiguration.setOutputBufferSize(32768);
+		httpConfiguration.setRequestHeaderSize(8192);
+		httpConfiguration.setResponseHeaderSize(8192);
+		httpConfiguration.setSendServerVersion(false);
+		httpConfiguration.setHeaderCacheSize(512);
+		ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(httpConfiguration));
+		connector.setPort(this.port);
+		server.setConnectors(new Connector[] { connector });
 	}
 
 	public void start() throws Exception {
@@ -137,5 +138,13 @@ public class Application {
 
 	public void stop() throws Exception {
 		this.server.stop();
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
+	public boolean isDebug() {
+		return this.debug;
 	}
 }

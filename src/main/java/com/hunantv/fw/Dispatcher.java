@@ -24,10 +24,12 @@ public class Dispatcher extends HttpServlet {
 	public final static FwLogger logger = new FwLogger(Dispatcher.class);
 
 	protected Routes routes = null;
-
+	protected boolean debug = false;
 	@Override
 	public void init() {
-		this.routes = Application.getInstance().getRoutes();
+		Application app =Application.getInstance(); 
+		this.routes = app.getRoutes();
+		this.debug = app.isDebug();
 	}
 
 	@Override
@@ -60,11 +62,11 @@ public class Dispatcher extends HttpServlet {
 	        HttpException500 {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
-		
+
 		Route route = routes.match(request.getMethod(), uri);
-        if (route == null) {
-        	throw new HttpException404();
-        }
+		if (route == null) {
+			throw new HttpException404();
+		}
 
 		Class<? extends Controller> controllerClass = route.getControllerClass();
 		Method method = null;
@@ -99,7 +101,9 @@ public class Dispatcher extends HttpServlet {
 
 	public void Err500(HttpServletResponse response, Exception ex) throws IOException {
 		logger.error("500 Internal Server Error", ex);
-//		ex.printStackTrace(response.getWriter());
+		if (this.debug) {
+			ex.printStackTrace(response.getWriter());
+		}
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	}
 }

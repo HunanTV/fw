@@ -33,6 +33,7 @@ public class DemoServer {
     
 	public static void main(String[] args) throws Exception {
 		Application app = Application.getInstance();
+		app.setDebug(true);
 		app.setRoutes(initRoutes());
 //		app.setRoutes(initRoutes2());
 		app.listener(3333);
