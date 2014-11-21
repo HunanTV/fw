@@ -68,7 +68,7 @@ public class RestfulResult implements Result {
 
 	public Map<String, Object> toMap() {
 		Map<String, Object> m = new HashMap<String, Object>();
-		m.put("fw", this.logger.getSeqid());
+		m.put("seqid", this.logger.getSeqid());
 		m.put("code", this.code);
 		m.put("msg", this.msg);
 		m.put("data", this.data == null ? new HashMap() : data);
