@@ -5,8 +5,8 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.hunantv.fw.exceptions.HttpException404;
-import com.hunantv.fw.exceptions.HttpException500;
+import com.hunantv.fw.exceptions.Http404;
+import com.hunantv.fw.exceptions.Http500;
 import com.hunantv.fw.result.RestfulResult;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.tests.FakeBrowser;
@@ -32,7 +32,7 @@ public class DemoControllerTest extends TestCase {
 			View view = fb.get("/demo/does-not-exists-url");
 			throw new RuntimeException("the line should not be run");
 		} catch (Exception ex) {
-			assertTrue(ex instanceof HttpException404);
+			assertTrue(ex instanceof Http404);
 		}
 	}
 	
@@ -41,7 +41,7 @@ public class DemoControllerTest extends TestCase {
 			View view = fb.get("/demo/500err");
 			throw new RuntimeException("the line should not be run");
 		} catch (Exception ex) {
-			assertTrue(ex instanceof HttpException500);
+			assertTrue(ex instanceof Http500);
 		}
 	}
 	
