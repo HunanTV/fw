@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtil {
-	public static String data2(String s) {
+	public static String toMd5Str(String s) {
 		if (s == null)
 			return null;
 
