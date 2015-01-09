@@ -7,8 +7,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.hunantv.fw.Dispatcher;
-import com.hunantv.fw.exceptions.HttpException404;
-import com.hunantv.fw.exceptions.HttpException500;
+import com.hunantv.fw.exceptions.Http404;
+import com.hunantv.fw.exceptions.Http500;
 import com.hunantv.fw.net.URLParser;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.view.View;

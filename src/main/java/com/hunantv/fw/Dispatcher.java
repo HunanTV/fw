@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.hunantv.fw.exceptions.HttpException404;
-import com.hunantv.fw.exceptions.HttpException500;
+import com.hunantv.fw.exceptions.Http404;
+import com.hunantv.fw.exceptions.Http500;
 import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.FwLogger;
@@ -45,9 +45,9 @@ public class Dispatcher extends HttpServlet {
 			} else {
 				response.getWriter().write(view.render());
 			}
-		} catch (HttpException404 ex) {
+		} catch (Http404 ex) {
 			this.Err404(response);
-		} catch (HttpException500 ex) {
+		} catch (Http500 ex) {
 			this.Err500(response, ex);
 		} catch (Exception ex) {
 			this.Err500(response, ex);
@@ -58,14 +58,14 @@ public class Dispatcher extends HttpServlet {
 		}
 	}
 
-	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, HttpException404,
-	        HttpException500 {
+	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, Http404,
+	        Http500 {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
 
 		Route route = routes.match(request.getMethod(), uri);
 		if (route == null) {
-			throw new HttpException404();
+			throw new Http404();
 		}
 
 		Class<? extends Controller> controllerClass = route.getControllerClass();
@@ -78,20 +78,20 @@ public class Dispatcher extends HttpServlet {
 			controller.setRequest(request);
 			controller.setResponse(response);
 		} catch (NoSuchMethodException e) {
-			throw new HttpException404(e);
+			throw new Http404(e);
 		} catch (SecurityException e) {
-			throw new HttpException404(e);
+			throw new Http404(e);
 		} catch (InstantiationException e) {
-			throw new HttpException404(e);
+			throw new Http404(e);
 		} catch (IllegalAccessException e) {
-			throw new HttpException404(e);
+			throw new Http404(e);
 		} catch (IllegalArgumentException e) {
-			throw new HttpException404(e);
+			throw new Http404(e);
 		}
 		try {
 			return (View) method.invoke(controller);
 		} catch (Exception e) {
-			throw new HttpException500(e);
+			throw new Http500(e);
 		}
 	}
 
