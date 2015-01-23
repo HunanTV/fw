@@ -1,7 +1,6 @@
 package com.hunantv.fw;
 
 import java.io.File;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -17,11 +16,13 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.hunantv.fw.fmext.BlockDirective;
+import com.hunantv.fw.fmext.ExtendsDirective;
+import com.hunantv.fw.fmext.OverrideDirective;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.SysConf;
 
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 
 public class Application {
 
@@ -59,6 +60,9 @@ public class Application {
 			freeMarkerCfg = new Configuration();
 			freeMarkerCfg.setDirectoryForTemplateLoading(new File(sysConf.getSysPath() + "views"));
 			freeMarkerCfg.setDefaultEncoding("UTF-8");
+			freeMarkerCfg.setSharedVariable("block", new BlockDirective());  
+			freeMarkerCfg.setSharedVariable("override", new OverrideDirective());  
+			freeMarkerCfg.setSharedVariable("extends", new ExtendsDirective());  
 			logger.info("init freemarker ok");
 		} catch (Exception ex) {
 			logger.error("init freemarker failed", ex);
