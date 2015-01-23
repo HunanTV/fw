@@ -1,6 +1,7 @@
 package com.hunantv.fw;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,10 @@ public class Controller {
 
 	public void setResponse(HttpServletResponse response) {
 		this.response = response;
+	}
+
+	public View renderHtml(String htmlPath) {
+		return new HtmlView(htmlPath, new HashMap<String, Object>());
 	}
 
 	public View renderHtml(String htmlPath, Map<String, Object> data) {
