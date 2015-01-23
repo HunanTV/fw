@@ -15,6 +15,7 @@ import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.StringUtil;
+import com.hunantv.fw.view.HtmlView;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.View;
 
@@ -25,9 +26,10 @@ public class Dispatcher extends HttpServlet {
 
 	protected Routes routes = null;
 	protected boolean debug = false;
+
 	@Override
 	public void init() {
-		Application app =Application.getInstance(); 
+		Application app = Application.getInstance();
 		this.routes = app.getRoutes();
 		this.debug = app.isDebug();
 	}
@@ -38,10 +40,15 @@ public class Dispatcher extends HttpServlet {
 		logger.initSeqid();
 
 		logger.debug(request.getRequestURL());
+		String charset = "UTF-8";
+		response.setCharacterEncoding(charset);
+		response.setContentType("textml;charset=" + charset);
 		try {
 			View view = doIt(request, response);
 			if (view instanceof RedirectView) {
 				response.sendRedirect(view.render());
+			} else if (view instanceof HtmlView) {
+				view.renderTo(response.getWriter());
 			} else {
 				response.getWriter().write(view.render());
 			}
@@ -58,8 +65,7 @@ public class Dispatcher extends HttpServlet {
 		}
 	}
 
-	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, Http404,
-	        Http500 {
+	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, Http404, Http500 {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
 
@@ -100,7 +106,6 @@ public class Dispatcher extends HttpServlet {
 	}
 
 	public void Err500(HttpServletResponse response, Exception ex) throws IOException {
-		logger.error("500 Internal Server Error", ex);
 		if (this.debug) {
 			ex.printStackTrace(response.getWriter());
 		}

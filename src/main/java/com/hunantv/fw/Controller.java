@@ -2,11 +2,13 @@ package com.hunantv.fw;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.hunantv.fw.utils.StringUtil;
+import com.hunantv.fw.view.HtmlView;
 import com.hunantv.fw.view.JsonView;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.StringView;
@@ -31,6 +33,10 @@ public class Controller {
 
 	public void setResponse(HttpServletResponse response) {
 		this.response = response;
+	}
+
+	public View renderHtml(String htmlPath, Map<String, Object> data) {
+		return new HtmlView(htmlPath, data);
 	}
 
 	public View renderString(String str) {

@@ -39,7 +39,7 @@ public class DemoController extends Controller {
 				put("req-limit", limit);
 			}
 		});
-		return this.renderString(relt.toJson());
+		return this.renderJson(relt);
 	}
 
 	public View update() {
@@ -50,13 +50,13 @@ public class DemoController extends Controller {
 //		Transaction tran = db.beginTransaction();
 //		try {
 //			tran.commit();
-			return this.renderString(new RestfulResult(new HashMap<String, Object>() {
+			return this.renderJson(new RestfulResult(new HashMap<String, Object>() {
 				{
 					put("id", id);
 					put("name", name);
 					put("age", age);
 				}
-			}).toJson());
+			}));
 //		} catch (Exception ex) {
 //			tran.rollback();
 //			return this.renderString("failed");

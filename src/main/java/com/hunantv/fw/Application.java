@@ -1,5 +1,7 @@
 package com.hunantv.fw;
 
+import java.io.File;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -18,6 +20,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.SysConf;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+
 public class Application {
 
 	private static final Logger logger = Logger.getLogger(Application.class);
@@ -30,6 +35,7 @@ public class Application {
 	private Routes routes;
 	private Server server;
 	private DataSource ds;
+	private Configuration freeMarkerCfg;
 	private SysConf sysConf;
 
 	private ClassPathXmlApplicationContext springCtx;
@@ -44,7 +50,20 @@ public class Application {
 	private Application() {
 		sysConf = new SysConf();
 		initLog4j();
+		initFreemarker();
 		initSpring();
+	}
+
+	private void initFreemarker() {
+		try {
+			freeMarkerCfg = new Configuration();
+			freeMarkerCfg.setDirectoryForTemplateLoading(new File(sysConf.getSysPath() + "views"));
+			freeMarkerCfg.setDefaultEncoding("UTF-8");
+			logger.info("init freemarker ok");
+		} catch (Exception ex) {
+			logger.error("init freemarker failed", ex);
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private void initLog4j() {
@@ -70,6 +89,10 @@ public class Application {
 
 	public ClassPathXmlApplicationContext getSpringCtx() {
 		return this.springCtx;
+	}
+
+	public Configuration getFreeMarkerCfg() {
+		return this.freeMarkerCfg;
 	}
 
 	public Map<String, ?> getSettings() {
@@ -118,15 +141,13 @@ public class Application {
 
 	public void start() throws Exception {
 		WebAppContext webAppCtx = new WebAppContext();
-
 		webAppCtx.setContextPath("/");
 		webAppCtx.addServlet(new ServletHolder(new Dispatcher()), "/*");
-		// String projectPath = new
-		// String("/Users/ryan/Workspace/happy_sunshine");
-		// webAppCtx.setDefaultsDescriptor(projectPath +
-		// "/demo-war/target/jetty-demo-war/WEB-INF/web.xml");
-		// webAppCtx.setResourceBase(projectPath +
-		// "/demo-war/target/jetty-demo-war");
+		/*
+		 * String projectPath = new String("/Users/ryan/Workspace/happy_sunshine");
+		 * webAppCtx.setDefaultsDescriptor(projectPath + "/demo-war/target/jetty-demo-war/WEB-INF/web.xml");
+		 * webAppCtx.setResourceBase(projectPath + "/demo-war/target/jetty-demo-war");
+		 */
 		webAppCtx.setDefaultsDescriptor("");
 		webAppCtx.setResourceBase("");
 		webAppCtx.setParentLoaderPriority(true);
