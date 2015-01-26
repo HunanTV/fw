@@ -1,9 +1,7 @@
 package com.hunantv.fw.route;
 
-import java.lang.reflect.Method;
-
 import com.hunantv.fw.Controller;
-import com.hunantv.fw.ControllerAndMethod;
+import com.hunantv.fw.ControllerAndAction;
 import com.hunantv.fw.exceptions.Http404;
 import com.hunantv.fw.utils.StringUtil;
 
@@ -34,14 +32,14 @@ public class Route {
 	private Method routeMethod;
 	private String uriReg;
 	private Class<? extends Controller> controllerClass;
-	private String methodStr;
+	private String actionStr;
 
-	public Route(String uriReg, String controllerAndMethodStr) {
-		this(uriReg, controllerAndMethodStr, Method.GET);
+	public Route(String uriReg, String controllerAndActionStr) {
+		this(uriReg, controllerAndActionStr, Method.GET);
 	}
 
-	public Route(String uriReg, String controllerAndMethodStr, Method httpMethod) {
-		String[] vs = StringUtil.split(controllerAndMethodStr, ".");
+	public Route(String uriReg, String controllerAndActionStr, Method httpMethod) {
+		String[] vs = StringUtil.split(controllerAndActionStr, ".");
 		if (vs.length < 2) {
 			throw new RuntimeException();
 		}
@@ -50,28 +48,28 @@ public class Route {
 			tmp[i] = vs[i];
 		}
 		String controllerString = StringUtil.join(tmp, ".");
-		String methodString = vs[vs.length - 1];
+		String actionString = vs[vs.length - 1];
 		try {
 			Class<? extends Controller> controllerClass = (Class<? extends Controller>) Class.forName(controllerString);
-			init(uriReg, controllerClass, methodString, httpMethod);
+			init(uriReg, controllerClass, actionString, httpMethod);
 		} catch (ClassNotFoundException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	public Route(String uriReg, Class<? extends Controller> controllerClass, String methodStr) {
-		this(uriReg, controllerClass, methodStr, Method.GET);
+	public Route(String uriReg, Class<? extends Controller> controllerClass, String actionStr) {
+		this(uriReg, controllerClass, actionStr, Method.GET);
 	}
 
-	public Route(String uriReg, Class<? extends Controller> controllerClass, String methodStr, Method routeMethod) {
-		init(uriReg, controllerClass, methodStr, routeMethod);
+	public Route(String uriReg, Class<? extends Controller> controllerClass, String actionStr, Method routeMethod) {
+		init(uriReg, controllerClass, actionStr, routeMethod);
 	}
 
-	private void init(String uriReg, Class<? extends Controller> controllerClass, String methodStr, Method httpMethod) {
+	private void init(String uriReg, Class<? extends Controller> controllerClass, String actionStr, Method httpMethod) {
 		this.uriReg = StringUtil.ensureEndedWith(uriReg, "/");
 		this.routeMethod = httpMethod;
 		this.controllerClass = controllerClass;
-		this.methodStr = methodStr;
+		this.actionStr = actionStr;
 
 	}
 
@@ -147,19 +145,19 @@ public class Route {
 		return controllerClass;
 	}
 
-	public String getMethodStr() {
-		return methodStr;
+	public String getActionStr() {
+		return actionStr;
 	}
 
-	public ControllerAndMethod buildControllerAndMethod() throws Http404 {
+	public ControllerAndAction buildControllerAndAction() throws Http404 {
 
 		Class<? extends Controller> controllerClass = this.getControllerClass();
 		java.lang.reflect.Method method = null;
 		Controller controller = null;
 		try {
-			method = controllerClass.getMethod(this.getMethodStr());
+			method = controllerClass.getMethod(this.getActionStr());
 			controller = controllerClass.newInstance();
-			return new ControllerAndMethod(controller, method);
+			return new ControllerAndAction(controller, method);
 		} catch (NoSuchMethodException e) {
 			throw new Http404(e);
 		} catch (SecurityException e) {

@@ -63,22 +63,13 @@ public class Dispatcher extends HttpServlet {
 		}
 	}
 
-	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, HttpException,
-	        Http500 {
+	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, HttpException {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
 
 		Route route = routes.match(request.getMethod(), uri);
-		
-		ControllerAndMethod controllerAndMethod = route.buildControllerAndMethod();
-		controllerAndMethod.controller.setRequest(request);
-		controllerAndMethod.controller.setResponse(response);
-		
-		try {
-			return (View) controllerAndMethod.method.invoke(controllerAndMethod.controller);
-		} catch (Exception e) {
-			throw new Http500(e);
-		}
+		ControllerAndAction controllerAndAction = route.buildControllerAndAction();
+		return controllerAndAction.doAction(request, response);
 	}
 
 	public void httpErr(HttpServletResponse response, HttpException ex) throws IOException {
