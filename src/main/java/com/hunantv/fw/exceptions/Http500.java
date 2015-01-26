@@ -1,6 +1,11 @@
 package com.hunantv.fw.exceptions;
 
-public class Http500 extends Exception {
+import javax.servlet.http.HttpServletResponse;
+
+public class Http500 extends HttpException {
+	
+	protected int code = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
 	public Http500() {
 		super();
 	}

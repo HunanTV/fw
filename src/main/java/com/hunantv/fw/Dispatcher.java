@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.hunantv.fw.exceptions.Http404;
+import com.hunantv.fw.exceptions.Http405;
 import com.hunantv.fw.exceptions.Http500;
+import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.FwLogger;
@@ -52,12 +54,10 @@ public class Dispatcher extends HttpServlet {
 			} else {
 				response.getWriter().write(view.render());
 			}
-		} catch (Http404 ex) {
-			this.Err404(response);
-		} catch (Http500 ex) {
-			this.Err500(response, ex);
+		} catch (HttpException ex) {
+			this.httpErr(response, ex);
 		} catch (Exception ex) {
-			this.Err500(response, ex);
+			this.err500(response, ex);
 		} finally {
 			Long etime = Calendar.getInstance().getTimeInMillis();
 			logger.delayInfo("cost", new Long(etime - btime).toString());
@@ -65,15 +65,12 @@ public class Dispatcher extends HttpServlet {
 		}
 	}
 
-	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, Http404, Http500 {
+	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, HttpException,
+	        Http500 {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
 
 		Route route = routes.match(request.getMethod(), uri);
-		if (route == null) {
-			throw new Http404();
-		}
-
 		Class<? extends Controller> controllerClass = route.getControllerClass();
 		Method method = null;
 		Controller controller = null;
@@ -101,11 +98,16 @@ public class Dispatcher extends HttpServlet {
 		}
 	}
 
-	public void Err404(HttpServletResponse response) throws IOException {
-		response.sendError(HttpServletResponse.SC_NOT_FOUND);
+	public void httpErr(HttpServletResponse response, HttpException ex) throws IOException {
+		int code = ex.getCode();
+		if (HttpServletResponse.SC_INTERNAL_SERVER_ERROR == code) {
+			err500(response, ex);
+		} else {
+			response.sendError(ex.getCode());
+		}
 	}
 
-	public void Err500(HttpServletResponse response, Exception ex) throws IOException {
+	public void err500(HttpServletResponse response, Exception ex) throws IOException {
 		if (this.debug) {
 			ex.printStackTrace(response.getWriter());
 		}

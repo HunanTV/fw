@@ -3,6 +3,10 @@ package com.hunantv.fw.route;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.hunantv.fw.exceptions.Http404;
+import com.hunantv.fw.exceptions.Http405;
+
+
 public class Routes {
 
 	private Map<String, Map<String, Route>> routes = new HashMap<String, Map<String, Route>>();
@@ -16,23 +20,46 @@ public class Routes {
 		}
 	}
 
+//	public Routes add(Route route) {
+//		String m = route.getRouteMethod().getV();
+//		Map<String, Route> tmpMap = this.routes.get(m);
+//		if (null == tmpMap) {
+//			tmpMap = new HashMap<String, Route>();
+//			this.routes.put(m, tmpMap);
+//		}
+//		tmpMap.put(route.getUriReg(), route);
+//		return this;
+//	}
+//
+//	public Route match(String method, String uri) {
+//		Map<String, Route> tmpMap = this.routes.get(method);
+//		if (null == tmpMap) {
+//			return null;
+//		}
+//		Route route = tmpMap.get(uri);
+//		return route;
+//	}
+	
 	public Routes add(Route route) {
-		String m = route.getRouteMethod().getV();
-		Map<String, Route> tmpMap = this.routes.get(m);
+		String routeUri = route.getUriReg();
+		Map<String, Route> tmpMap = this.routes.get(routeUri);
 		if (null == tmpMap) {
 			tmpMap = new HashMap<String, Route>();
-			this.routes.put(m, tmpMap);
+			this.routes.put(routeUri, tmpMap);
 		}
-		tmpMap.put(route.getUriReg(), route);
+		tmpMap.put(route.getRouteMethod().getV(), route);
 		return this;
 	}
 
-	public Route match(String method, String uri) {
-		Map<String, Route> tmpMap = this.routes.get(method);
-		if (null == tmpMap) {
-			return null;
-		}
-		Route route = tmpMap.get(uri);
+	public Route match(String method, String uri) throws Http404, Http405 {
+		Map<String, Route> tmpMap = this.routes.get(uri);
+		if (null == tmpMap)
+			throw new Http404();
+		
+		Route route = tmpMap.get(method);
+		if (null == route)
+			throw new Http405();
+
 		return route;
 	}
 }

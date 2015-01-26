@@ -22,6 +22,7 @@ import com.hunantv.fw.fmext.OverrideDirective;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.SysConf;
 
+import freemarker.cache.SoftCacheStorage;
 import freemarker.template.Configuration;
 
 public class Application {
@@ -62,7 +63,9 @@ public class Application {
 			freeMarkerCfg.setDefaultEncoding("UTF-8");
 			freeMarkerCfg.setSharedVariable("block", new BlockDirective());  
 			freeMarkerCfg.setSharedVariable("override", new OverrideDirective());  
-			freeMarkerCfg.setSharedVariable("extends", new ExtendsDirective());  
+			freeMarkerCfg.setSharedVariable("extends", new ExtendsDirective());
+			freeMarkerCfg.setClassicCompatible(true);
+			freeMarkerCfg.setCacheStorage(new SoftCacheStorage());
 			logger.info("init freemarker ok");
 		} catch (Exception ex) {
 			logger.error("init freemarker failed", ex);

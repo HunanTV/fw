@@ -1,6 +1,11 @@
 package com.hunantv.fw.exceptions;
 
-public class Http404 extends Exception {
+import javax.servlet.http.HttpServletResponse;
+
+public class Http404 extends HttpException {
+
+	protected int code = HttpServletResponse.SC_NOT_FOUND;
+
 	public Http404() {
 		super();
 	}
