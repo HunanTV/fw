@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.hunantv.fw.exceptions.Http404;
-import com.hunantv.fw.exceptions.Http405;
 import com.hunantv.fw.exceptions.Http500;
 import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.route.Route;
@@ -21,7 +20,6 @@ import com.hunantv.fw.view.HtmlView;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.View;
 
-@SuppressWarnings("serial")
 public class Dispatcher extends HttpServlet {
 
 	public final static FwLogger logger = new FwLogger(Dispatcher.class);
@@ -71,28 +69,13 @@ public class Dispatcher extends HttpServlet {
 		logger.delayInfo("uri", uri);
 
 		Route route = routes.match(request.getMethod(), uri);
-		Class<? extends Controller> controllerClass = route.getControllerClass();
-		Method method = null;
-		Controller controller = null;
+		
+		ControllerAndMethod controllerAndMethod = route.buildControllerAndMethod();
+		controllerAndMethod.controller.setRequest(request);
+		controllerAndMethod.controller.setResponse(response);
+		
 		try {
-			method = controllerClass.getMethod(route.getControllerMethod());
-
-			controller = controllerClass.newInstance();
-			controller.setRequest(request);
-			controller.setResponse(response);
-		} catch (NoSuchMethodException e) {
-			throw new Http404(e);
-		} catch (SecurityException e) {
-			throw new Http404(e);
-		} catch (InstantiationException e) {
-			throw new Http404(e);
-		} catch (IllegalAccessException e) {
-			throw new Http404(e);
-		} catch (IllegalArgumentException e) {
-			throw new Http404(e);
-		}
-		try {
-			return (View) method.invoke(controller);
+			return (View) controllerAndMethod.method.invoke(controllerAndMethod.controller);
 		} catch (Exception e) {
 			throw new Http500(e);
 		}

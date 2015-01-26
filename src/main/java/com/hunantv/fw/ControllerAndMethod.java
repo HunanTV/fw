@@ -2,7 +2,7 @@ package com.hunantv.fw;
 
 import java.lang.reflect.Method;
 
-class ControllerAndMethod {
+public class ControllerAndMethod {
 
 	public Controller controller;
 	public Method method;
