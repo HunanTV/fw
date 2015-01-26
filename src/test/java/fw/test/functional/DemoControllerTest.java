@@ -1,22 +1,18 @@
 package fw.test.functional;
 
 import java.util.HashMap;
-import java.util.Map;
+
+import junit.framework.TestCase;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.hunantv.fw.exceptions.Http404;
-import com.hunantv.fw.exceptions.Http500;
-import com.hunantv.fw.result.RestfulResult;
+import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.tests.FakeBrowser;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.View;
 
 import fw.test.demo.DemoServer;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
 
 public class DemoControllerTest extends TestCase {
 
@@ -31,20 +27,20 @@ public class DemoControllerTest extends TestCase {
 		try {
 			View view = fb.get("/demo/does-not-exists-url");
 			throw new RuntimeException("the line should not be run");
-		} catch (Exception ex) {
-			assertTrue(ex instanceof Http404);
+		} catch (HttpException ex) {
+			assertEquals(404, ex.getCode());
 		}
 	}
-	
+
 	public void test500() {
 		try {
 			View view = fb.get("/demo/500err");
 			throw new RuntimeException("the line should not be run");
-		} catch (Exception ex) {
-			assertTrue(ex instanceof Http500);
+		} catch (HttpException ex) {
+			assertEquals(500, ex.getCode());
 		}
 	}
-	
+
 	public void testList() throws Exception {
 		View view = fb.get("/demo/list", new HashMap<String, Object>() {
 			{
@@ -71,7 +67,7 @@ public class DemoControllerTest extends TestCase {
 		assertTrue(view instanceof RedirectView);
 		assertEquals("/demo/list", view.getV());
 	}
-	
+
 	public void testUpdate() throws Exception {
 		View view = fb.post("/demo/update", new HashMap<String, Object>() {
 			{

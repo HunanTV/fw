@@ -2,7 +2,7 @@ package com.hunantv.fw.route;
 
 import com.hunantv.fw.Controller;
 import com.hunantv.fw.ControllerAndAction;
-import com.hunantv.fw.exceptions.Http404;
+import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.utils.StringUtil;
 
 public class Route {
@@ -149,7 +149,7 @@ public class Route {
 		return actionStr;
 	}
 
-	public ControllerAndAction buildControllerAndAction() throws Http404 {
+	public ControllerAndAction buildControllerAndAction() throws HttpException {
 
 		Class<? extends Controller> controllerClass = this.getControllerClass();
 		java.lang.reflect.Method method = null;
@@ -159,15 +159,15 @@ public class Route {
 			controller = controllerClass.newInstance();
 			return new ControllerAndAction(controller, method);
 		} catch (NoSuchMethodException e) {
-			throw new Http404(e);
+			throw HttpException.ERR_404;
 		} catch (SecurityException e) {
-			throw new Http404(e);
+			throw HttpException.ERR_404;
 		} catch (InstantiationException e) {
-			throw new Http404(e);
+			throw HttpException.ERR_404;
 		} catch (IllegalAccessException e) {
-			throw new Http404(e);
+			throw HttpException.ERR_404;
 		} catch (IllegalArgumentException e) {
-			throw new Http404(e);
+			throw HttpException.ERR_404;
 		}
 	}
 }

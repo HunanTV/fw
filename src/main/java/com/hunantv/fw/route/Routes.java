@@ -3,8 +3,7 @@ package com.hunantv.fw.route;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hunantv.fw.exceptions.Http404;
-import com.hunantv.fw.exceptions.Http405;
+import com.hunantv.fw.exceptions.HttpException;
 
 
 public class Routes {
@@ -51,14 +50,14 @@ public class Routes {
 		return this;
 	}
 
-	public Route match(String method, String uri) throws Http404, Http405 {
+	public Route match(String method, String uri) throws HttpException {
 		Map<String, Route> tmpMap = this.routes.get(uri);
 		if (null == tmpMap)
-			throw new Http404();
+			throw HttpException.ERR_404;
 		
 		Route route = tmpMap.get(method);
 		if (null == route)
-			throw new Http405();
+			throw HttpException.ERR_405;
 
 		return route;
 	}

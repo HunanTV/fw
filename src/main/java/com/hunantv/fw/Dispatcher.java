@@ -1,7 +1,6 @@
 package com.hunantv.fw;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 
 import javax.servlet.ServletException;
@@ -9,8 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.hunantv.fw.exceptions.Http404;
-import com.hunantv.fw.exceptions.Http500;
 import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
@@ -63,7 +60,7 @@ public class Dispatcher extends HttpServlet {
 		}
 	}
 
-	public View doIt(HttpServletRequest request, HttpServletResponse response) throws IOException, HttpException {
+	public View doIt(HttpServletRequest request, HttpServletResponse response) throws HttpException {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
 

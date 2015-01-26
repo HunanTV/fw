@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.hunantv.fw.exceptions.Http500;
+import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.view.View;
 
 public class ControllerAndAction {
@@ -29,13 +29,13 @@ public class ControllerAndAction {
 		this.action = action;
 	}
 
-	public View doAction(HttpServletRequest request, HttpServletResponse response) throws Http500 {
+	public View doAction(HttpServletRequest request, HttpServletResponse response) throws HttpException {
 		controller.setRequest(request);
 		controller.setResponse(response);
 		try {
 			return (View) action.invoke(controller);
 		} catch (Exception e) {
-			throw new Http500(e);
+			throw HttpException.ERR_500;
 		}
 	}
 }
