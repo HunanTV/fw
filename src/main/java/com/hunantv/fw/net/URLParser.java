@@ -94,15 +94,29 @@ public class URLParser {
 		return this.queries;
 	}
 
+	private List<String> buildEncodeQueries() {
+		List<String> encodeQueries = new ArrayList<String>();
+		for (String q : queries) {
+			String[] vs = StringUtil.split(q, "=");
+			if (vs.length == 1) {
+				encodeQueries.add(vs[0] + "=");
+			} else {
+				encodeQueries.add(vs[0] + "=" + URLEncoder.encode(vs[1]));
+			}
+		}
+		return encodeQueries;
+	}
+
 	public String getFullUrl() {
 		StringBuilder strb = new StringBuilder();
 		strb.append(protocol).append("://").append(host);
 		if (port != -1)
 			strb.append(":").append(port);
 		strb.append(path);
-		String qs = StringUtil.join(queries.toArray(new String[0]), "&");
+		List<String> encodeQueries = buildEncodeQueries();
+		String qs = StringUtil.join(encodeQueries.toArray(new String[0]), "&");
 		if (qs != null)
-			strb.append("?").append(URLEncoder.encode(qs));
+			strb.append("?").append(qs);
 		return strb.toString();
 	}
 

@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class FwHttpClient {
 	}
 
 	public static FwHttpResponse get(String url, Map<String, Object> params) throws Exception {
-		return get(url, null, -1);
+		return get(url, params, -1);
 	}
 
 	public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
@@ -67,7 +68,7 @@ public class FwHttpClient {
 	}
 
 	public static FwHttpResponse post(String url, Map<String, Object> params) throws Exception {
-		return post(url, null, -1);
+		return post(url, params, -1);
 	}
 
 	public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
@@ -116,13 +117,22 @@ public class FwHttpClient {
 	}
 
 	public static void main(String[] args) throws Exception {
-		FwHttpResponse res = FwHttpClient.get("localhost:3333/user/list");
+//		FwHttpResponse res = FwHttpClient.get("localhost:3333/user/list");
+		String url = "http://hws.hunantv.com/index.php?format=array&debug=0&method=comment.comment.videocomment.getcomment";
+		Map<String, Object> params = new HashMap<String, Object>() {
+			{
+				put("type", "hunantv2014");
+				put("subject_id", 1071865);
+				put("page", 1);
+			}
+		};
+		FwHttpResponse res = FwHttpClient.post(url, params);
 		System.out.println(res.body);
 		System.out.println(res.code);
 		System.out.println("***************************");
 
-		res = FwHttpClient.post("localhost:3333/user/update/1");
-		System.out.println(res.body);
-		System.out.println(res.code);
+//		res = FwHttpClient.post("localhost:3333/user/update/1");
+//		System.out.println(res.body);
+//		System.out.println(res.code);
 	}
 }
