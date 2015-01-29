@@ -2,6 +2,7 @@ package com.hunantv.fw;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -131,6 +132,14 @@ public class Application {
 	}
 
 	public void listener(int port) {
+		Properties pros = null;
+		try {
+			pros = sysConf.read("jetty.properties");
+			logger.info("init log4j ok");
+		} catch (Exception ex) {
+			logger.warn("init log4j failed", ex);
+		}
+		
 		this.port = port;
 		// this.server = new Server(port);
 
@@ -143,6 +152,10 @@ public class Application {
 		httpConfiguration.setHeaderCacheSize(512);
 		ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(httpConfiguration));
 		connector.setPort(this.port);
+		if (pros != null) {
+			connector.setAcceptQueueSize(Integer.valueOf(pros.getProperty("acceptQueueSize")));
+		}
+		
 		server.setConnectors(new Connector[] { connector });
 	}
 
@@ -159,6 +172,7 @@ public class Application {
 		webAppCtx.setResourceBase("");
 		webAppCtx.setParentLoaderPriority(true);
 		this.server.setHandler(webAppCtx);
+
 		logger.info("application listen on " + port);
 		this.server.start();
 		this.server.join();
