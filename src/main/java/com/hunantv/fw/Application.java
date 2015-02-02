@@ -1,11 +1,15 @@
 package com.hunantv.fw;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.server.Connector;
@@ -14,6 +18,7 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -40,9 +45,10 @@ public class Application {
 	private DataSource ds;
 	private Configuration freeMarkerCfg;
 	private SysConf sysConf;
-
+	private Properties jettyPros;
 	private ClassPathXmlApplicationContext springCtx;
-
+	
+	
 	public static Application getInstance() {
 		if (null == instance) {
 			instance = new Application();
@@ -73,7 +79,7 @@ public class Application {
 			throw new RuntimeException(ex);
 		}
 	}
-
+	
 	private void initLog4j() {
 		try {
 			PropertyConfigurator.configure(sysConf.getConfPath() + "log4j.properties");
@@ -94,7 +100,7 @@ public class Application {
 			throw new RuntimeException(ex);
 		}
 	}
-
+	
 	public ClassPathXmlApplicationContext getSpringCtx() {
 		return this.springCtx;
 	}
@@ -130,35 +136,81 @@ public class Application {
 	public SysConf getSysConf() {
 		return sysConf;
 	}
+	
+	private Map<String, Object> filterProperties(Properties pros, String prefix) {
 
+		Map<String, Object> map = new HashMap<String, Object>();
+		for (Iterator iter = pros.keySet().iterator(); iter.hasNext();) {
+			String key = (String) iter.next();
+			if (key.startsWith(prefix)) {
+				System.out.println(key.substring(prefix.length()+1));
+				map.put(key.substring(prefix.length()+1), pros.get(key));
+			}
+			map.put(key, pros.get(key));
+		}
+		return map;
+	}
+	
 	public void listener(int port) {
-		Properties pros = null;
-		try {
-			pros = sysConf.read("jetty.properties");
-			logger.info("init log4j ok");
-		} catch (Exception ex) {
-			logger.warn("init log4j failed", ex);
-		}
-		
-		this.port = port;
-		// this.server = new Server(port);
+		initJettyConfig();
 
-		this.server = new Server();
-		HttpConfiguration httpConfiguration = new HttpConfiguration();
-		httpConfiguration.setOutputBufferSize(32768);
-		httpConfiguration.setRequestHeaderSize(8192);
-		httpConfiguration.setResponseHeaderSize(8192);
-		httpConfiguration.setSendServerVersion(false);
-		httpConfiguration.setHeaderCacheSize(512);
-		ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(httpConfiguration));
-		connector.setPort(this.port);
-		if (pros != null) {
-			connector.setAcceptQueueSize(Integer.valueOf(pros.getProperty("acceptQueueSize")));
-		}
+		this.port = port;
+		HttpConfiguration httpConfiguration = initHttpConfiguration();
+		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
 		
+		
+		
+		QueuedThreadPool threadPool = this.initThreadPool();
+		this.server = new Server(threadPool);
+
+		ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
+		initConnector(connector);
+		connector.setPort(this.port);
 		server.setConnectors(new Connector[] { connector });
 	}
+	
+	private ServerConnector initConnector(ServerConnector connector) {
+		Map<String, Object> poolCfg = filterProperties(jettyPros, "jetty.connector");
+		try {
+	        BeanUtils.populate(connector, poolCfg);
+        } catch (Exception ex) {
+        	throw new RuntimeException(ex);
+        }
+		return connector;
+    }
 
+	private QueuedThreadPool initThreadPool() {
+		QueuedThreadPool threadPool = new QueuedThreadPool();
+		Map<String, Object> poolCfg = filterProperties(jettyPros, "jetty.threadpool");
+		try {
+	        BeanUtils.populate(threadPool, poolCfg);
+        } catch (Exception ex) {
+        	throw new RuntimeException(ex);
+        }
+		return threadPool;
+	}
+	
+	private void initJettyConfig() {
+		try {
+			this.jettyPros = sysConf.read("jetty.properties");
+			logger.info("init jetty ok");
+		} catch (Exception ex) {
+			logger.warn("init jetty failed", ex);
+			throw new RuntimeException(ex);
+		}
+	}
+
+	private HttpConfiguration initHttpConfiguration() {
+		HttpConfiguration httpConfiguration = new HttpConfiguration();
+		Map<String, Object> httpCfg = filterProperties(jettyPros, "jetty.http");
+		try {
+	        BeanUtils.populate(httpConfiguration, httpCfg);
+        } catch (Exception ex) {
+        	throw new RuntimeException(ex);
+        }
+		return httpConfiguration;
+	}
+	
 	public void start() throws Exception {
 		WebAppContext webAppCtx = new WebAppContext();
 		webAppCtx.setContextPath("/");
