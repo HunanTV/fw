@@ -158,8 +158,6 @@ public class Application {
 		HttpConfiguration httpConfiguration = initHttpConfiguration();
 		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
 		
-		
-		
 		QueuedThreadPool threadPool = this.initThreadPool();
 		this.server = new Server(threadPool);
 
