@@ -62,8 +62,13 @@ public class Controller {
 
 	public Integer getIntegerParam(String name, Integer defaultValue) {
 		String value = this.request.getParameter(name);
-		if (value != null)
-			return Integer.valueOf(value);
+		if (value != null) {
+			try {
+				return Integer.valueOf(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}
 		return defaultValue;
 	}
 
@@ -73,8 +78,13 @@ public class Controller {
 
 	public Long getLongParam(String name, Long defaultValue) {
 		String value = this.request.getParameter(name);
-		if (value != null)
-			return Long.valueOf(value);
+		if (value != null) {
+			try {
+				return Long.valueOf(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}
 		return defaultValue;
 	}
 
@@ -84,8 +94,13 @@ public class Controller {
 
 	public Float getFloatParam(String name, Float defaultValue) {
 		String value = this.request.getParameter(name);
-		if (value != null)
-			return Float.valueOf(value);
+		if (value != null) {
+			try {
+				return Float.valueOf(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}
 		return defaultValue;
 	}
 
@@ -95,8 +110,13 @@ public class Controller {
 
 	public Double getDoubleParam(String name, Double defaultValue) {
 		String value = this.request.getParameter(name);
-		if (value != null)
-			return Double.valueOf(value);
+		if (value != null) {
+			try {
+				return Double.valueOf(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}
 		return defaultValue;
 	}
 

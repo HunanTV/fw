@@ -154,15 +154,18 @@ public class Application {
 	
 	public void listener(int port) {
 		initJettyConfig();
-
+		
 		this.port = port;
 		HttpConfiguration httpConfiguration = initHttpConfiguration();
 		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
 		
 		QueuedThreadPool threadPool = this.initThreadPool();
 		this.server = new Server(threadPool);
-
-		ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
+		
+//		ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
+		
+		int cores = Runtime.getRuntime().availableProcessors();
+		ServerConnector connector = new ServerConnector(server, null, null, null, 1+cores/2, -1, httpConnectionFactory);
 		initConnector(connector);
 		connector.setPort(this.port);
 		
