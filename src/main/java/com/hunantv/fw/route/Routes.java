@@ -53,11 +53,11 @@ public class Routes {
 	public Route match(String method, String uri) throws HttpException {
 		Map<String, Route> tmpMap = this.routes.get(uri);
 		if (null == tmpMap)
-			throw HttpException.ERR_404;
+			throw HttpException.err404();
 		
 		Route route = tmpMap.get(method);
 		if (null == route)
-			throw HttpException.ERR_405;
+			throw HttpException.err405();
 
 		return route;
 	}

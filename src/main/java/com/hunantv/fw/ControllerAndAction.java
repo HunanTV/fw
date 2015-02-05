@@ -34,8 +34,8 @@ public class ControllerAndAction {
 		controller.setResponse(response);
 		try {
 			return (View) action.invoke(controller);
-		} catch (Exception e) {
-			throw HttpException.ERR_500;
+		} catch (Exception ex) {
+			throw HttpException.err500(ex);
 		}
 	}
 }

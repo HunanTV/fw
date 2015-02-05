@@ -158,16 +158,9 @@ public class Route {
 			method = controllerClass.getMethod(this.getActionStr());
 			controller = controllerClass.newInstance();
 			return new ControllerAndAction(controller, method);
-		} catch (NoSuchMethodException e) {
-			throw HttpException.ERR_404;
-		} catch (SecurityException e) {
-			throw HttpException.ERR_404;
-		} catch (InstantiationException e) {
-			throw HttpException.ERR_404;
-		} catch (IllegalAccessException e) {
-			throw HttpException.ERR_404;
-		} catch (IllegalArgumentException e) {
-			throw HttpException.ERR_404;
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+		        | IllegalArgumentException ex) {
+			throw HttpException.err404();
 		}
 	}
 }

@@ -4,9 +4,9 @@ import javax.servlet.http.HttpServletResponse;
 
 public class HttpException extends Exception {
 
-	public final static HttpException ERR_404 = new HttpException(HttpServletResponse.SC_NOT_FOUND);
-	public final static HttpException ERR_405 = new HttpException(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-	public final static HttpException ERR_500 = new HttpException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	public final static int ERR_404 = HttpServletResponse.SC_NOT_FOUND;
+	public final static int ERR_405 = HttpServletResponse.SC_METHOD_NOT_ALLOWED;
+	public final static int ERR_500 = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 	protected int code;
 
@@ -27,7 +27,24 @@ public class HttpException extends Exception {
 		super(ex);
 	}
 
+	public HttpException(int code, Exception ex) {
+		super(ex);
+		this.code = code;
+	}
+
 	public int getCode() {
 		return code;
+	}
+	
+	public static HttpException err404() {
+		return new HttpException(ERR_404);
+	}
+
+	public static HttpException err405() {
+		return new HttpException(ERR_405);
+	}
+
+	public static HttpException err500(Exception ex) {
+		return new HttpException(ERR_500, ex);
 	}
 }
