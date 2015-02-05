@@ -63,7 +63,6 @@ public class Dispatcher extends HttpServlet {
 	public View doIt(HttpServletRequest request, HttpServletResponse response) throws HttpException {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
-
 		Route route = routes.match(request.getMethod(), uri);
 		ControllerAndAction controllerAndAction = route.buildControllerAndAction();
 		return controllerAndAction.doAction(request, response);
@@ -82,6 +81,7 @@ public class Dispatcher extends HttpServlet {
 		if (this.debug) {
 			ex.printStackTrace(response.getWriter());
 		}
+		logger.error(ex, ex);
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	}
 }
