@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtil {
+	private static final long DAY_SECONDS = 3600 * 24 * 1000L;
+
 	/**
 	 * convert a date string to a Date data with the format default format:
 	 * yyyy-MM-dd
@@ -90,9 +92,25 @@ public class DateUtil {
 		return cal.get(Calendar.MONTH) + 1;
 	}
 
-	public static Date before(int days) {
+	public static Date dateBefore(int days) {
 		Date date = new Date();
-		date.setTime(date.getTime() - days);
+		date.setTime(date.getTime() - days * DAY_SECONDS);
+		return date;
+	}
+
+	public static Date dateAfter(int days) {
+		Date date = new Date();
+		date.setTime(date.getTime() + days * DAY_SECONDS);
+		return date;
+	}
+
+	public static Date before(Date date, int days) {
+		date.setTime(date.getTime() - days * DAY_SECONDS);
+		return date;
+	}
+
+	public static Date after(Date date, int days) {
+		date.setTime(date.getTime() + days * DAY_SECONDS);
 		return date;
 	}
 
