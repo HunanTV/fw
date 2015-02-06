@@ -105,13 +105,15 @@ public class DateUtil {
 	}
 
 	public static Date before(Date date, int days) {
-		date.setTime(date.getTime() - days * DAY_SECONDS);
-		return date;
+		Date newDate = new Date();
+		newDate.setTime(date.getTime() - days * DAY_SECONDS);
+		return newDate;
 	}
 
 	public static Date after(Date date, int days) {
-		date.setTime(date.getTime() + days * DAY_SECONDS);
-		return date;
+		Date newDate = new Date();
+		newDate.setTime(date.getTime() + days * DAY_SECONDS);
+		return newDate;
 	}
 
 	public static void main(String[] args) throws ParseException {
