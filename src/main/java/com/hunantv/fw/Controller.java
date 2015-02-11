@@ -151,7 +151,7 @@ public class Controller {
 
 	public String[] getArrayParam(String name, String[] defaultValue) {
 		String value = this.request.getParameter(name);
-		if (value != null && value.trim().length() <= 0) {
+		if (value != null && value.trim().length() > 0) {
 			return StringUtil.split(value, ",");
 		}
 		return defaultValue;
