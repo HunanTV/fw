@@ -3,27 +3,31 @@ package com.hunantv.fw;
 import java.io.IOException;
 import java.util.Calendar;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.server.Request;
 
 import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.StringUtil;
+import com.hunantv.fw.utils.WebUtil;
 import com.hunantv.fw.view.HtmlView;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.View;
 
 public class Dispatcher extends HttpServlet {
-
+	
 	public final static FwLogger logger = new FwLogger(Dispatcher.class);
-
 	protected Routes routes = null;
 	protected boolean debug = false;
-
+	protected static final MultipartConfigElement MULTI_PART_CONFIG = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
+	
 	@Override
 	public void init() {
 		Application app = Application.getInstance();
@@ -39,6 +43,11 @@ public class Dispatcher extends HttpServlet {
 		String charset = "UTF-8";
 		response.setCharacterEncoding(charset);
 		response.setContentType("textml;charset=" + charset);
+		
+		if (WebUtil.isMultipart(request)) {
+			request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, MULTI_PART_CONFIG);
+		}
+
 		try {
 			View view = doIt(request, response);
 			if (view instanceof RedirectView) {

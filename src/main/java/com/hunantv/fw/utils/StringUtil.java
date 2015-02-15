@@ -3,6 +3,7 @@ package com.hunantv.fw.utils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -324,6 +325,88 @@ public class StringUtil {
 			return str + suffix;
 		}
 		return str;
+	}
+
+	public static Integer str2Integer(String value) {
+		return str2Integer(value, null);
+	}
+
+	public static Integer str2Integer(String value, Integer defaultValue) {
+		if (value != null) {
+			try {
+				return Integer.valueOf(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}
+		return defaultValue;
+	}
+
+	public static Long str2Long(String value) {
+		return str2Long(value, null);
+	}
+
+	public static Long str2Long(String value, Long defaultValue) {
+		if (value != null) {
+			try {
+				return Long.valueOf(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}
+		return defaultValue;
+	}
+
+	public static Float str2Float(String value) {
+		return str2Float(value, null);
+	}
+
+	public static Float str2Float(String value, Float defaultValue) {
+		if (value != null) {
+			try {
+				return Float.valueOf(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}
+		return defaultValue;
+	}
+
+	public static Double str2Double(String value) {
+		return str2Double(value, null);
+	}
+
+	public static Double str2Double(String value, Double defaultValue) {
+		if (value != null) {
+			try {
+				return Double.valueOf(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}
+		return defaultValue;
+	}
+
+	public static String[] str2Array(String value) {
+		return str2Array(value, null);
+	}
+
+	public static String[] str2Array(String value, String[] defaultValue) {
+		if (value != null && value.trim().length() > 0) {
+			return split(value, ",");
+		}
+		return defaultValue;
+	}
+
+	public static List str2List(String value) {
+		return str2List(value, null);
+	}
+
+	public static List str2List(String value, List defaultValue) {
+		if (value != null) {
+			return Arrays.asList(StringUtil.split(value, ","));
+		}
+		return defaultValue;
 	}
 
 	public static void main(String[] args) {
