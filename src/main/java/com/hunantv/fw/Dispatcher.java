@@ -35,7 +35,6 @@ public class Dispatcher extends HttpServlet {
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Long btime = Calendar.getInstance().getTimeInMillis();
 		logger.initSeqid();
-
 		logger.debug(request.getRequestURL());
 		String charset = "UTF-8";
 		response.setCharacterEncoding(charset);

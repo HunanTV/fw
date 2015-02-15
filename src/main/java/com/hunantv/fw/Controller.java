@@ -1,6 +1,6 @@
 package com.hunantv.fw;
 
-import java.lang.reflect.Array;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.view.HtmlView;
@@ -15,7 +16,6 @@ import com.hunantv.fw.view.JsonView;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.StringView;
 import com.hunantv.fw.view.View;
-import com.sun.xml.internal.ws.util.StringUtils;
 
 public class Controller {
 
@@ -155,5 +155,17 @@ public class Controller {
 			return StringUtil.split(value, ",");
 		}
 		return defaultValue;
+	}
+	
+	public String getStrPartParam(String name) throws Exception {
+		Part part = this.request.getPart(name);
+		InputStream in = part.getInputStream();
+		StringBuilder strb = new StringBuilder();
+		byte[] bytes = new byte[20<<10];
+		int len = -1;
+		while (-1 != (len = in.read(bytes))) {
+			strb.append(new String(bytes, 0, len));
+		}
+		return strb.toString();
 	}
 }

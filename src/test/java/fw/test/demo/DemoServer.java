@@ -16,7 +16,7 @@ public class DemoServer {
 		);
 		return routes;
     }
-    
+
     /**
      * 可以用，但是不推荐用，除非是用配置文件。
      * 因为字符串不利于重构
