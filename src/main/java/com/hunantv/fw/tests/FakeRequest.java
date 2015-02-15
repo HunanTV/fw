@@ -82,7 +82,7 @@ public class FakeRequest implements HttpServletRequest {
 
 	@Override
 	public String getContentType() {
-		throw new NotImplementException();
+		return "text/html; charset=utf-8";
 	}
 
 	@Override
