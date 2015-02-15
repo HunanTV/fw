@@ -66,6 +66,16 @@ public class DateUtil {
 		return cal.getTimeInMillis();
 	}
 
+	public static String getCurrentTimeString() {
+		return getCurrentTimeString("yyyyMMddhhmmss");
+	}
+
+	public static String getCurrentTimeString(String format) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		String currTime = sdf.format(new Date());
+		return currTime;
+	}
+
 	/**
 	 * 得到当天指定时分秒的毫秒数
 	 * 

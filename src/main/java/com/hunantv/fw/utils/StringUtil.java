@@ -10,6 +10,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtil {
+
+	/**
+	 * 针对中文字符转码
+	 * 
+	 * @param inputStr
+	 * @return
+	 */
+	public String toUnicodeString(String inputStr) {
+		StringBuffer strb = new StringBuffer();
+		for (int i = 0, length = inputStr.length(); i < length; i++) {
+			int c = inputStr.codePointAt(i);
+			if (c > 0x4e00 && c <= 0x9fa5) {
+				strb.append("\\u").append(Integer.toHexString(c));
+			} else {
+				strb.append(inputStr.charAt(i));
+			}
+		}
+		return strb.toString();
+	}
+
 	public static String toMd5Str(String s) {
 		if (s == null)
 			return null;
