@@ -21,6 +21,7 @@ public class Controller {
 
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
+	protected Map<String, String> partParams = new HashMap<String, String>();
 
 	public HttpServletRequest getRequest() {
 		return request;
@@ -156,16 +157,19 @@ public class Controller {
 		}
 		return defaultValue;
 	}
-	
+
 	public String getStrPartParam(String name) throws Exception {
-		Part part = this.request.getPart(name);
-		InputStream in = part.getInputStream();
-		StringBuilder strb = new StringBuilder();
-		byte[] bytes = new byte[20<<10];
-		int len = -1;
-		while (-1 != (len = in.read(bytes))) {
-			strb.append(new String(bytes, 0, len));
+		if (!partParams.containsKey(name)) {
+			Part part = this.request.getPart(name);
+			InputStream in = part.getInputStream();
+			StringBuilder strb = new StringBuilder();
+			byte[] bytes = new byte[20 << 10];
+			int len = -1;
+			while (-1 != (len = in.read(bytes))) {
+				strb.append(new String(bytes, 0, len));
+			}
+			partParams.put(name, strb.toString());
 		}
-		return strb.toString();
+		return partParams.get(name);
 	}
 }
