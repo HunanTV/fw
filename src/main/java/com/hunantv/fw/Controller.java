@@ -302,6 +302,8 @@ public class Controller {
 		try {
 			if (!partParams.containsKey(name)) {
 				Part part = this.request.getPart(name);
+				if (part == null)
+					return null;
 				InputStream in = part.getInputStream();
 				StringBuilder strb = new StringBuilder();
 				byte[] bytes = new byte[20 << 10];
