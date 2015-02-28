@@ -354,6 +354,7 @@ public class StringUtil {
 	public static Integer str2Integer(String value, Integer defaultValue) {
 		if (value != null) {
 			try {
+				value = value.trim();
 				return Integer.valueOf(value);
 			} catch (NumberFormatException ex) {
 				return defaultValue;
@@ -369,6 +370,7 @@ public class StringUtil {
 	public static Long str2Long(String value, Long defaultValue) {
 		if (value != null) {
 			try {
+				value = value.trim();
 				return Long.valueOf(value);
 			} catch (NumberFormatException ex) {
 				return defaultValue;
@@ -384,6 +386,7 @@ public class StringUtil {
 	public static Float str2Float(String value, Float defaultValue) {
 		if (value != null) {
 			try {
+				value = value.trim();
 				return Float.valueOf(value);
 			} catch (NumberFormatException ex) {
 				return defaultValue;
@@ -399,6 +402,7 @@ public class StringUtil {
 	public static Double str2Double(String value, Double defaultValue) {
 		if (value != null) {
 			try {
+				value = value.trim();
 				return Double.valueOf(value);
 			} catch (NumberFormatException ex) {
 				return defaultValue;
