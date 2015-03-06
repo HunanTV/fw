@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -37,9 +38,13 @@ public class DB {
 		return this.jdbcTemplate.queryForList(sql, args);
 	}
 
-    public <T> List<T> query(String sql, RowMapper<T> rowMapper, Object... args) {
-        return this.jdbcTemplate.query(sql, args, new RowMapperResultSetExtractor<T>(rowMapper));
-    }
+	public <T> List<T> query(String sql, RowMapper<T> rowMapper, Object... args) {
+		return this.jdbcTemplate.query(sql, args, rowMapper);
+	}
+
+	public void query(String sql, RowCallbackHandler rowCallbackHandler, Object... args) {
+		this.jdbcTemplate.query(sql, args, rowCallbackHandler);
+	}
 
 	public Map<String, Object> get(String sql) {
 		try {
