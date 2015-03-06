@@ -17,13 +17,22 @@ public class DateUtil {
 	 * @return
 	 * @throws ParseException
 	 */
-	public static Date str2Date(String datestr, String format) throws ParseException {
-		if (datestr == null)
-			return null;
+	public static Date str2Date(String datestr, String format) {
+		return str2Date(datestr, format, null);
+	}
+
+	public static Date str2Date(String datestr, String format, Date defaultDate) {
+		if (datestr == null) {
+			return defaultDate;
+		}
 		if (format == null)
 			format = "yyyy-MM-dd";
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		return sdf.parse(datestr);
+		try {
+			return sdf.parse(datestr);
+		} catch (ParseException e) {
+			return defaultDate;
+		}
 	}
 
 	public static String long2Datestr(long time, String format) {
