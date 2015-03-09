@@ -29,7 +29,11 @@ public class DB {
 	}
 
 	public Transaction beginTransaction() {
-		return new Transaction();
+		return this.beginTransaction("txManager");
+	}
+
+	public Transaction beginTransaction(String transactionName) {
+		return new Transaction(transactionName);
 	}
 
 	public List<Map<String, Object>> query(String sql) {
@@ -86,9 +90,9 @@ public class DB {
 		private DataSourceTransactionManager transactionManager;
 		private TransactionStatus status;
 
-		private Transaction() {
+		private Transaction(String transactionName) {
 			transactionManager = Application.getInstance().getSpringCtx()
-			        .getBean("txManager", DataSourceTransactionManager.class);
+			        .getBean(transactionName, DataSourceTransactionManager.class);
 			def = new DefaultTransactionDefinition();
 			def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
 			status = transactionManager.getTransaction(def);
