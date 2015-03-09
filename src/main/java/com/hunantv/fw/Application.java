@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -40,7 +38,6 @@ public class Application {
 
 	private Routes routes;
 	private Server server;
-	private DataSource ds;
 	private Configuration freeMarkerCfg;
 	private SysConf sysConf;
 	private Properties jettyPros;
@@ -125,10 +122,6 @@ public class Application {
 
 	public int getPort() {
 		return port;
-	}
-
-	public DataSource getDs() {
-		return ds;
 	}
 
 	public SysConf getSysConf() {

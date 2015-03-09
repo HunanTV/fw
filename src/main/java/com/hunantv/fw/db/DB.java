@@ -8,7 +8,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -22,7 +21,11 @@ public class DB {
 	private JdbcTemplate jdbcTemplate;
 
 	public DB() {
-		jdbcTemplate = Application.getInstance().getSpringCtx().getBean("jdbcTemplate", JdbcTemplate.class);
+		this("jdbcTemplate");
+	}
+
+	public DB(String name) {
+		jdbcTemplate = Application.getInstance().getSpringCtx().getBean(name, JdbcTemplate.class);
 	}
 
 	public Transaction beginTransaction() {
