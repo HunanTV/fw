@@ -91,8 +91,7 @@ public class DB {
 		private TransactionStatus status;
 
 		private Transaction(String transactionName) {
-			transactionManager = Application.getInstance().getSpringCtx()
-			        .getBean(transactionName, DataSourceTransactionManager.class);
+			transactionManager = new DataSourceTransactionManager();
 			def = new DefaultTransactionDefinition();
 			def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
 			status = transactionManager.getTransaction(def);

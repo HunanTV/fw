@@ -46,11 +46,4 @@
 		<property name="dataSource" ref ="dataSource" />
 	</bean>
 
-	<!-- a PlatformTransactionManager is still required -->
-	<tx:annotation-driven transaction-manager="txManager"/>
-	<bean id="txManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-
 </beans>
