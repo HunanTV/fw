@@ -79,10 +79,6 @@ public class DB {
 		}
 	}
 	
-	public int count(String sql, Object... args) {
-	    return this.jdbcTemplate.queryForInt(sql, args);    
-	}
-
 	public int execute(String sql) {
 		return this.jdbcTemplate.update(sql);
 	}
