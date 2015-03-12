@@ -44,7 +44,7 @@ public class DB {
 	public List<Map<String, Object>> query(String sql, Object... args) {
 		return this.jdbcTemplate.queryForList(sql, args);
 	}
-
+	
 	public <T> List<T> query(String sql, RowMapper<T> rowMapper, Object... args) {
 		return this.jdbcTemplate.query(sql, args, rowMapper);
 	}
@@ -67,6 +67,10 @@ public class DB {
 		} catch (EmptyResultDataAccessException ex) {
 			return null;
 		}
+	}
+	
+	public int count(String sql, Object... args) {
+	    return this.jdbcTemplate.queryForInt(sql, args);    
 	}
 
 	public int execute(String sql) {
