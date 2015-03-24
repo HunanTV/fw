@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.hunantv.mpp.fw</groupId>
 	<artifactId>mpp-fw</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<name>fw</name>
 
 	<properties>
@@ -119,9 +119,17 @@
 		    <groupId>junit</groupId>
 		    <artifactId>junit</artifactId>
 		    <version>4.11</version>
+			<scope>test</scope>
 		</dependency>
-        
-        <dependency>
+
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.9.2</version>

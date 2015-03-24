@@ -21,7 +21,6 @@ public class FwC3p0 {
 		for (Iterator iter = pros.keySet().iterator(); iter.hasNext();) {
 			String key = (String) iter.next();
 			if (key.startsWith("c3p0.")) {
-				System.out.println(key.substring(5));
 				dsPros.put(key.substring(5), pros.get(key));;
 			}
 			dsPros.put(key, pros.get(key));

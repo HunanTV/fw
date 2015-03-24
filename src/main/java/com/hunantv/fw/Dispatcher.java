@@ -50,13 +50,7 @@ public class Dispatcher extends HttpServlet {
 
 		try {
 			View view = doIt(request, response);
-			if (view instanceof RedirectView) {
-				response.sendRedirect(view.render());
-			} else if (view instanceof HtmlView) {
-				view.renderTo(response.getWriter());
-			} else {
-				response.getWriter().write(view.render());
-			}
+			view.renderTo(response);
 		} catch (HttpException ex) {
 			this.httpErr(response, ex);
 		} catch (Exception ex) {
