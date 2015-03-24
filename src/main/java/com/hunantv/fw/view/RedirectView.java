@@ -1,5 +1,6 @@
 package com.hunantv.fw.view;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -15,6 +16,11 @@ public class RedirectView extends AbsView {
 
 	@Override
 	public void renderTo(Writer out) throws IOException {
-		out.write(this.render());
+		/* Ignore method. */
+	}
+
+	@Override
+	public void renderTo(HttpServletResponse response) throws IOException {
+		response.sendRedirect(this.render());
 	}
 }
