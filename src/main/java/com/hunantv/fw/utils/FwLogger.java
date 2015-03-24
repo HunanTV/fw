@@ -71,7 +71,19 @@ public class FwLogger {
 		FwLogger.threadLocalVar.remove();
 	}
 
+	public static FwLogger getLogger(Class<?> clz) {
+		return new FwLogger(clz);
+	}
+
+	public static FwLogger getLogger(String clz) {
+		return new FwLogger(clz);
+	}
+
 	public FwLogger(Class<?> clazz) {
+		this(clazz.getName());
+	}
+
+	public FwLogger(String clazz) {
 		logger = Logger.getLogger(clazz);
 	}
 
