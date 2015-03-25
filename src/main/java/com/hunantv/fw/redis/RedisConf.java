@@ -1,5 +1,6 @@
 package com.hunantv.fw.redis;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -13,7 +14,7 @@ import freemarker.template.utility.StringUtil;
 
 public class RedisConf {
 	public static final FwLogger logger = new FwLogger(RedisConf.class);
-	protected Map<String, JedisPool> pools;
+	protected Map<String, JedisPool> pools = new HashMap<String, JedisPool>();
 	private static RedisConf conf = null;
 
 	public static RedisConf getInstance() {
