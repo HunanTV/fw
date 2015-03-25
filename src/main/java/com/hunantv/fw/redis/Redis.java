@@ -6,8 +6,8 @@ import redis.clients.jedis.JedisPool;
 public class Redis {
 	public Jedis jedis;
 	public String name;
-	public JedisPool pool;
-	public RedisConf conf = RedisConf.getInstance();
+	private JedisPool pool;
+	private RedisConf conf = RedisConf.getInstance();
 
 	public Redis(String name) {
 		this.name = name;
