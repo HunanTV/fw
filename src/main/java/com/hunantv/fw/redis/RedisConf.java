@@ -8,9 +8,8 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import com.hunantv.fw.utils.FwLogger;
+import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.SysConf;
-
-import freemarker.template.utility.StringUtil;
 
 public class RedisConf {
 	public static final FwLogger logger = new FwLogger(RedisConf.class);
@@ -28,7 +27,7 @@ public class RedisConf {
 		try {
 			SysConf conf = new SysConf();
 			Properties pros = conf.read("redis.properties");
-			String[] names = StringUtil.split((String) pros.get("redis.names"), ',');
+			String[] names = StringUtil.split((String) pros.get("redis.names"), ",");
 			for (String name : names) {
 				initJedisPool(pros, name);
 			}
