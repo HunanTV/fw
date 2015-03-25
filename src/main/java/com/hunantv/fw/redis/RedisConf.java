@@ -47,15 +47,15 @@ public class RedisConf {
 	protected JedisPoolConfig initJedisPoolConfig(Properties pros) {
 		JedisPoolConfig config = new JedisPoolConfig();
 		// pool可以分配的Jedis实例
-		config.setMaxTotal(Integer.valueOf(pros.getProperty("jedis.pool.maxActive").trim()));
+		config.setMaxTotal(Integer.valueOf(pros.getProperty("redis.pool.maxActive").trim()));
 
 		// 控制一个pool最多有多少个状态为idle(空闲的)的jedis实例
-		config.setMaxIdle(Integer.valueOf(pros.getProperty("jedis.pool.maxIdle").trim()));
+		config.setMaxIdle(Integer.valueOf(pros.getProperty("redis.pool.maxIdle").trim()));
 
 		// 表示当borrow(引入)一个jedis实例时，最大的等待时间，如果超过等待时间，则直接抛出JedisConnectionException
-		config.setMaxWaitMillis(Integer.valueOf(pros.getProperty("jedis.pool.maxWait").trim()));
+		config.setMaxWaitMillis(Integer.valueOf(pros.getProperty("redis.pool.maxWait").trim()));
 
-		config.setTestOnBorrow(Boolean.valueOf(pros.getProperty("jedis.pool.testOnBorrow").trim()));
+		config.setTestOnBorrow(Boolean.valueOf(pros.getProperty("redis.pool.testOnBorrow").trim()));
 		return config;
 	}
 
