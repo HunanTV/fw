@@ -12,6 +12,7 @@ import javax.servlet.http.Part;
 import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.WebUtil;
 import com.hunantv.fw.view.HtmlView;
+import com.hunantv.fw.view.JsonPView;
 import com.hunantv.fw.view.JsonView;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.StringView;
@@ -53,6 +54,11 @@ public class Controller {
 
 	public View renderJson(Object object) {
 		return new JsonView(object);
+	}
+	
+	public View renderJsonP(Object object) {
+		String callback = this.getStrNormalParam("callback", "JQuery_").trim();
+		return new JsonPView(callback, object);
 	}
 
 	public View redirect(String str) {
