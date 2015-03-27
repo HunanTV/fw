@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
+import junit.framework.TestCase;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +23,7 @@ import com.hunantv.fw.view.StringView;
 /**
  * Created by thomas on 15/3/24.
  */
-public class ViewTestCase {
+public class ViewTestCase extends TestCase {
 
 	private ByteArrayOutputStream outputStream = null;
 	private PrintWriter writer = null;

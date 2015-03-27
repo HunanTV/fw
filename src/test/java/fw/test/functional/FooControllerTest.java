@@ -18,13 +18,10 @@ public class FooControllerTest extends TestCase {
 	FakeBrowser fb = null;
 
 	public void setUp() {
-		Routes routes = new Routes(
-			Route.get("/demo/index", FooController.class, "index"),
-			Route.get("/demo/list", FooController.class, "list"),
-			Route.get("/demo/jsonp", FooController.class, "jsonp"),
-            Route.post("/demo/update", FooController.class, "update"),
-            Route.get("/demo/500err", FooController.class, "err500")
-		);
+		Routes routes = new Routes(Route.get("/demo/index", FooController.class, "index"), Route.get("/demo/list",
+		        FooController.class, "list"), Route.get("/demo/jsonp", FooController.class, "jsonp"), Route.post(
+		        "/demo/update", FooController.class, "update"),
+		        Route.get("/demo/500err", FooController.class, "err500"));
 		fb = new FakeBrowser(routes);
 	}
 
@@ -90,22 +87,13 @@ public class FooControllerTest extends TestCase {
 		assertEquals(100, jsonObj.getInteger("age").intValue());
 		assertEquals("pengyi", jsonObj.getString("name"));
 	}
-	
+
 	public void testJsonP() throws Exception {
 		View view = fb.get("/demo/jsonp", new HashMap<String, Object>() {
 			{
 				put("callback", "JQuery_123456");
 			}
 		});
-		System.out.println("**************");
 		System.out.println(view.render());
-		System.out.println("**************");
-//		HashMap m = JSON.parseObject(view.render(), HashMap.class);
-//		assertEquals(0, m.get("code"));
-//		assertEquals("", m.get("msg"));
-//
-//		JSONObject jsonObj = (JSONObject) m.get("data");
-//		assertEquals(10, jsonObj.getInteger("req-limit").intValue());
-//		assertEquals(100, jsonObj.getInteger("req-offset").intValue());
 	}
 }
