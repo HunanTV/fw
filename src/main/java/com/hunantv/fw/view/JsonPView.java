@@ -25,7 +25,8 @@ public class JsonPView extends AbsView {
 		strb.append(callback).append("(");
 		if (v instanceof Result)
 			strb.append(((Result) v).toJson());
-		strb.append(JSON.toJSONString(v));
+		else
+			strb.append(JSON.toJSONString(v));
 		strb.append(")");
 		return strb.toString();
 	}
