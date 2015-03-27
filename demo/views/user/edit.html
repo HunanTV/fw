@@ -1,0 +1,12 @@
+<@override name="title">编辑用户</@override>
+
+<@override name="content">        
+	<form action="/user/update" method="POST" enctype="multipart/form-data" >
+		<input type="hidden" value="${user.id}" name="id" />
+		<p>姓名: <input type="text" value="${user.name}" name="name"></p>
+		<p>年龄: <input type="text" value="${user.age}" name="age"></p>
+		<p><input type="submit" value="编辑" /></p>
+	</form>
+</@override>
+
+<@extends name="base.html" />

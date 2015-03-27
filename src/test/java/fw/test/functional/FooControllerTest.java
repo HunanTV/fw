@@ -7,19 +7,24 @@ import junit.framework.TestCase;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hunantv.fw.exceptions.HttpException;
+import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.tests.FakeBrowser;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.View;
-
-import fw.test.functional.helper.FooServer;
 
 public class FooControllerTest extends TestCase {
 
 	FakeBrowser fb = null;
 
 	public void setUp() {
-		Routes routes = FooServer.initRoutes();
+		Routes routes = new Routes(
+			Route.get("/demo/index", FooController.class, "index"),
+			Route.get("/demo/list", FooController.class, "list"),
+			Route.get("/demo/jsonp", FooController.class, "jsonp"),
+            Route.post("/demo/update", FooController.class, "update"),
+            Route.get("/demo/500err", FooController.class, "err500")
+		);
 		fb = new FakeBrowser(routes);
 	}
 

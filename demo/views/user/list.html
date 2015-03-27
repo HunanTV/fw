@@ -1,0 +1,29 @@
+<@override name="title">用户列表</@override>
+
+<@override name="content">
+	<table>
+	    <tr>
+	        <th>ID</th>
+	        <th>姓名</th>
+	        <th>年龄</th>
+	        <th>操作</th>
+	    </tr>
+	    <#list users as user>
+	    <tr>
+	        <form action="/user/delete" method="POST" id="form_${user.id}">
+	        <td>${user.id}</td>
+	        <td>${user.name}</td>
+	        <td>${user.age}</td>
+	        <td>
+	            <input type="hidden" value="${user.id}" name="id"/>
+	            <a href="/user/show?id=${user.id}">详细</a>
+	            <a href="/user/edit?id=${user.id}">编辑</a>
+	            <a href="javascript: if(confirm('确定要删除么？')) {document.getElementById('form_${user.id}').submit();}">删除</a>
+	        </td>
+	        </form>
+	    </tr>
+	    </#list>
+	</table>
+</@override>
+
+<@extends name="base.html" />

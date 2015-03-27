@@ -1,0 +1,11 @@
+<@override name="title">新增用户</@override>
+
+<@override name="content">   
+	<form action="/user/create" method="POST">
+		<p>姓名: <input type="text" value="" name="name"></p>
+		<p>年龄: <input type="text" value="" name="age"></p>
+		<p><input type="submit" value="新增" /></p>
+	</form>
+</@override>
+
+<@extends name="base.html" />

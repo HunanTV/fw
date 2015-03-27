@@ -1,9 +1,7 @@
-package fw.test.functional.helper;
+package fw.test.functional;
 
 import java.util.HashMap;
 import com.hunantv.fw.Controller;
-import com.hunantv.fw.db.DB;
-import com.hunantv.fw.db.DB.Transaction;
 import com.hunantv.fw.result.RestfulResult;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.view.View;
