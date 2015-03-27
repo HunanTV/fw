@@ -23,10 +23,12 @@ public class JsonPView extends AbsView {
 	public String render() {
 		StringBuilder strb = new StringBuilder();
 		strb.append(callback).append("(");
-		if (v instanceof Result)
+
+		if (v instanceof Result) {
 			strb.append(((Result) v).toJson());
-		else
+		} else {
 			strb.append(JSON.toJSONString(v));
+		}
 		strb.append(")");
 		return strb.toString();
 	}
