@@ -12,14 +12,14 @@ import com.hunantv.fw.tests.FakeBrowser;
 import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.View;
 
-import fw.test.demo.DemoServer;
+import fw.test.functional.helper.FooServer;
 
-public class DemoControllerTest extends TestCase {
+public class FooControllerTest extends TestCase {
 
 	FakeBrowser fb = null;
 
 	public void setUp() {
-		Routes routes = DemoServer.initRoutes();
+		Routes routes = FooServer.initRoutes();
 		fb = new FakeBrowser(routes);
 	}
 

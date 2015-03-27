@@ -8,7 +8,7 @@ public class All {
 	public static void main(String[] args) {
 		TestRunner runner = new TestRunner();
 		TestSuite suite = new TestSuite();
-		suite.addTestSuite(DemoControllerTest.class);
+		suite.addTestSuite(FooControllerTest.class);
 		runner.run(suite);
 	}
 }

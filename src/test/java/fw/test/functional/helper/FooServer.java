@@ -1,18 +1,18 @@
-package fw.test.demo;
+package fw.test.functional.helper;
 
 import com.hunantv.fw.Application;
 import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
 
 
-public class DemoServer {
+public class FooServer {
 
     public static Routes initRoutes() {
 		Routes routes = new Routes(
-			Route.get("/demo/index", DemoController.class, "index"),
-			Route.get("/demo/list", DemoController.class, "list"),
-            Route.post("/demo/update", DemoController.class, "update"),
-            Route.get("/demo/500err", DemoController.class, "err500")
+			Route.get("/demo/index", FooController.class, "index"),
+			Route.get("/demo/list", FooController.class, "list"),
+            Route.post("/demo/update", FooController.class, "update"),
+            Route.get("/demo/500err", FooController.class, "err500")
 		);
 		return routes;
     }

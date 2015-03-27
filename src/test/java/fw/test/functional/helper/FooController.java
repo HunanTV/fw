@@ -1,4 +1,4 @@
-package fw.test.demo;
+package fw.test.functional.helper;
 
 import java.util.HashMap;
 import com.hunantv.fw.Controller;
@@ -9,9 +9,9 @@ import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.view.View;
 
 
-public class DemoController extends Controller {
+public class FooController extends Controller {
 
-	protected static FwLogger logger = new FwLogger(DemoController.class);
+	protected static FwLogger logger = new FwLogger(FooController.class);
 
 	public View index() {
 		return this.redirect("/demo/list");
