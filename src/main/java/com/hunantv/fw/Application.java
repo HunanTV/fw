@@ -1,13 +1,11 @@
 package com.hunantv.fw;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -18,18 +16,13 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.hunantv.fw.fmext.BlockDirective;
-import com.hunantv.fw.fmext.ExtendsDirective;
-import com.hunantv.fw.fmext.OverrideDirective;
 import com.hunantv.fw.route.Routes;
+import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.SysConf;
 
-import freemarker.cache.SoftCacheStorage;
-import freemarker.template.Configuration;
-
 public class Application {
-
-	private static final Logger logger = Logger.getLogger(Application.class);
+	
+	private static final FwLogger logger = new FwLogger(Application.class);
 
 	private static Application instance = null;
 	private boolean debug = false;
@@ -38,7 +31,6 @@ public class Application {
 
 	private Routes routes;
 	private Server server;
-	private Configuration freeMarkerCfg;
 	private SysConf sysConf;
 	private Properties jettyPros;
 	private ClassPathXmlApplicationContext springCtx;
@@ -54,27 +46,9 @@ public class Application {
 	private Application() {
 		sysConf = new SysConf();
 		initLog4j();
-		initFreemarker();
 		initSpring();
 	}
 
-	private void initFreemarker() {
-		try {
-			freeMarkerCfg = new Configuration();
-			freeMarkerCfg.setDirectoryForTemplateLoading(new File(sysConf.getSysPath() + "views"));
-			freeMarkerCfg.setDefaultEncoding("UTF-8");
-			freeMarkerCfg.setSharedVariable("block", new BlockDirective());  
-			freeMarkerCfg.setSharedVariable("override", new OverrideDirective());  
-			freeMarkerCfg.setSharedVariable("extends", new ExtendsDirective());
-			freeMarkerCfg.setClassicCompatible(true);
-			freeMarkerCfg.setCacheStorage(new SoftCacheStorage());
-			logger.info("init freemarker ok");
-		} catch (Exception ex) {
-			logger.error("init freemarker failed", ex);
-			throw new RuntimeException(ex);
-		}
-	}
-	
 	private void initLog4j() {
 		try {
 			PropertyConfigurator.configure(sysConf.getConfPath() + "log4j.properties");
@@ -98,10 +72,6 @@ public class Application {
 	
 	public ClassPathXmlApplicationContext getSpringCtx() {
 		return this.springCtx;
-	}
-
-	public Configuration getFreeMarkerCfg() {
-		return this.freeMarkerCfg;
 	}
 
 	public Map<String, ?> getSettings() {

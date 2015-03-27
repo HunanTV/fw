@@ -1,14 +1,12 @@
 package com.hunantv.fw.view;
 
-import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
-import com.hunantv.fw.Application;
 import com.hunantv.fw.exceptions.NotImplementException;
+import com.hunantv.fw.fmext.FmExt;
 
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 public class HtmlView implements View {
 
@@ -29,7 +27,7 @@ public class HtmlView implements View {
 	public void renderTo(Writer writer) {
 		Template tmpl;
 		try {
-			tmpl = Application.getInstance().getFreeMarkerCfg().getTemplate(htmlPath);
+			tmpl = FmExt.getInstance().getFreeMarkerCfg().getTemplate(htmlPath);
 			tmpl.process(this.data, writer);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
