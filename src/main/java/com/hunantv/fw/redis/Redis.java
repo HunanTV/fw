@@ -1,13 +1,17 @@
 package com.hunantv.fw.redis;
 
+import com.hunantv.fw.utils.FwLogger;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisException;
 
 public class Redis {
 	public Jedis jedis;
 	public String name;
 	private JedisPool pool;
 	private RedisConf conf = RedisConf.getInstance();
+	public static final FwLogger logger = new FwLogger(Redis.class);
 
 	public Redis(String name) {
 		this.name = name;
@@ -16,6 +20,10 @@ public class Redis {
 	}
 
 	public void close() {
-		pool.returnResource(this.jedis);
+		try {
+			pool.returnResource(this.jedis);
+		} catch (JedisException ex) {
+			logger.warn("redis close error.", ex);
+		}
 	}
 }
