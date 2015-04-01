@@ -3,7 +3,8 @@ package fw.test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import fw.test.functional.FooControllerTest;
-import fw.test.unit.view.ViewTestCase;
+import fw.test.unit.cache.LRUTest;
+import fw.test.unit.view.ViewTest;
 
 public class All {
 
@@ -11,7 +12,8 @@ public class All {
 		TestRunner runner = new TestRunner();
 		TestSuite suite = new TestSuite();
 		suite.addTestSuite(FooControllerTest.class);
-		suite.addTestSuite(ViewTestCase.class);
+		suite.addTestSuite(ViewTest.class);
+		suite.addTestSuite(LRUTest.class);
 		runner.run(suite);
 	}
 }

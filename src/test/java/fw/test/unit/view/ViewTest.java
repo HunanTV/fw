@@ -23,7 +23,7 @@ import com.hunantv.fw.view.StringView;
 /**
  * Created by thomas on 15/3/24.
  */
-public class ViewTestCase extends TestCase {
+public class ViewTest extends TestCase {
 
 	private ByteArrayOutputStream outputStream = null;
 	private PrintWriter writer = null;
