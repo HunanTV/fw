@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LRU<K, V> extends LinkedHashMap<K, V> {
+public class LRU extends LinkedHashMap {
 	private final int maxCapacity;
 	private static final float DEFAULT_LOAD_FACTOR = 0.75f;
 	private final Lock lock = new ReentrantLock();
@@ -15,25 +15,40 @@ public class LRU<K, V> extends LinkedHashMap<K, V> {
 	}
 
 	@Override
-	protected boolean removeEldestEntry(java.util.Map.Entry<K, V> eldest) {
+	protected boolean removeEldestEntry(java.util.Map.Entry eldest) {
 		return size() > maxCapacity;
 	}
 
 	@Override
-	public V get(Object key) {
+	public Object get(Object key) {
 		try {
 			lock.lock();
-			return super.get(key);
+			Object obj = super.get(key);
+			if (null == obj)
+				return null;
+			LRUNode node = (LRUNode) obj;
+			if (node.isExpired()) {
+				this.remove(key);
+				return null;
+			} else {
+				return node.getData();
+			}
 		} finally {
 			lock.unlock();
 		}
 	}
 
 	@Override
-	public V put(K key, V value) {
+	public Object put(Object key, Object value) {
+		return this.put(key, value, 0L);
+	}
+
+	public Object put(Object key, Object value, Long expiredSeconds) {
 		try {
 			lock.lock();
-			return super.put(key, value);
+			LRUNode node = new LRUNode(value, expiredSeconds);
+			Object obj = super.put(key, node);
+			return obj == null ? null : ((LRUNode) obj).getData();
 		} finally {
 			lock.unlock();
 		}
