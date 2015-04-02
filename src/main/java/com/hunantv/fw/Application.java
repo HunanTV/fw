@@ -33,7 +33,7 @@ public class Application {
 	private Server server;
 	private SysConf sysConf;
 	private Properties jettyPros;
-	private ClassPathXmlApplicationContext springCtx;
+//	private ClassPathXmlApplicationContext springCtx;
 	
 	
 	public static Application getInstance() {
@@ -46,7 +46,7 @@ public class Application {
 	private Application() {
 		sysConf = new SysConf();
 		initLog4j();
-		initSpring();
+//		initSpring();
 	}
 
 	private void initLog4j() {
@@ -59,20 +59,20 @@ public class Application {
 		}
 	}
 
-	private void initSpring() {
-		try {
-			String springXmlPath = sysConf.getConfUri() + "spring.xml";
-			springCtx = new ClassPathXmlApplicationContext(springXmlPath);
-			logger.info("init spring ok");
-		} catch (Exception ex) {
-			logger.error("init spring failed", ex);
-			throw new RuntimeException(ex);
-		}
-	}
-	
-	public ClassPathXmlApplicationContext getSpringCtx() {
-		return this.springCtx;
-	}
+//	private void initSpring() {
+//		try {
+//			String springXmlPath = sysConf.getConfUri() + "spring.xml";
+//			springCtx = new ClassPathXmlApplicationContext(springXmlPath);
+//			logger.info("init spring ok");
+//		} catch (Exception ex) {
+//			logger.error("init spring failed", ex);
+//			throw new RuntimeException(ex);
+//		}
+//	}
+//	
+//	public ClassPathXmlApplicationContext getSpringCtx() {
+//		return this.springCtx;
+//	}
 
 	public Map<String, ?> getSettings() {
 		return settings;
