@@ -8,6 +8,7 @@ import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.SysConf;
 
 public class LocalCache {
+	public static final String DEFAULT_TABLE = "_DEFAULT_TABLE_";
 	public static final FwLogger logger = new FwLogger(LocalCache.class);
 	public static int LRU_MAX_LEN = 1024;
 	public static long LRU_EXPIRED_SECONDS = 0L;
@@ -41,6 +42,10 @@ public class LocalCache {
 		return lc;
 	}
 
+	public void set(String key, Object value) {
+		this.set(DEFAULT_TABLE, key, value);
+	}
+
 	public void set(String tableName, String key, Object value) {
 		LRU lru = caches.get(tableName);
 		if (null == lru) {
@@ -50,6 +55,10 @@ public class LocalCache {
 		} else {
 			lru.put(key, value);
 		}
+	}
+
+	public Object get(String key) {
+		return this.get(DEFAULT_TABLE, key);
 	}
 
 	public Object get(String tableName, String key) {
@@ -63,6 +72,10 @@ public class LocalCache {
 
 	public void clearAll() {
 		caches.clear();
+	}
+
+	public void clear() {
+		this.clear(DEFAULT_TABLE);
 	}
 
 	public void clear(String tableName) {
