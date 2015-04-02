@@ -1,4 +1,4 @@
-package fw.test.unit.cache;
+package fw.test.unit;
 
 import junit.framework.TestCase;
 

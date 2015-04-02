@@ -3,9 +3,9 @@ package fw.test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import fw.test.functional.FooControllerTest;
-import fw.test.unit.cache.LRUTest;
-import fw.test.unit.cache.LocalCacheTest;
-import fw.test.unit.view.ViewTest;
+import fw.test.unit.LRUTest;
+import fw.test.unit.LocalCacheTest;
+import fw.test.unit.ViewTest;
 
 public class All {
 

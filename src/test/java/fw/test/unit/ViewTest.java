@@ -1,4 +1,4 @@
-package fw.test.unit.view;
+package fw.test.unit;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;

@@ -1,4 +1,4 @@
-package fw.test.unit.view;
+package fw.test.unit;
 
 import java.io.IOException;
 import java.io.OutputStream;
