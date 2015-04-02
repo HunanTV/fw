@@ -3,6 +3,8 @@ package com.hunantv.fw.db;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
@@ -27,7 +29,10 @@ public class DB {
 	}
 
 	public DB(String name) {
-		jdbcTemplate = Application.getInstance().getSpringCtx().getBean(name, JdbcTemplate.class);
+//		jdbcTemplate = Application.getInstance().getSpringCtx().getBean(name, JdbcTemplate.class);
+		jdbcTemplate = new JdbcTemplate();
+		DataSource ds = (DataSource) Application.getInstance().getSpringCtx().getBean("dataSource");
+		jdbcTemplate.setDataSource(ds);
 	}
 
 	public Transaction beginTransaction() {
@@ -101,8 +106,11 @@ public class DB {
 		private TransactionStatus status;
 
 		private Transaction(String transactionName) {
-			transactionManager = Application.getInstance().getSpringCtx()
-			        .getBean(transactionName, DataSourceTransactionManager.class);
+//			transactionManager = Application.getInstance().getSpringCtx()
+//			        .getBean(transactionName, DataSourceTransactionManager.class);
+			transactionManager = new DataSourceTransactionManager();
+			DataSource ds = (DataSource) Application.getInstance().getSpringCtx().getBean("dataSource");
+			transactionManager.setDataSource(ds);
 			def = new DefaultTransactionDefinition();
 			def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
 			status = transactionManager.getTransaction(def);
