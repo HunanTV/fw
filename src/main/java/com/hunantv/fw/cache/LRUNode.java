@@ -30,12 +30,12 @@ public class LRUNode {
 		if (0 == expiredSeconds)
 			this.expiredSeconds = 0;
 		else
-			this.expiredSeconds = expiredSeconds + new Date().getTime();
+			this.expiredSeconds = expiredSeconds + (new Date().getTime()/1000);
 	}
 
 	public boolean isExpired() {
 		if (0 == this.expiredSeconds)
 			return false;
-		return new Date().getTime() > this.expiredSeconds;
+		return new Date().getTime() > (this.expiredSeconds*1000);
 	}
 }
