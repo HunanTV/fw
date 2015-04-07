@@ -53,7 +53,7 @@ public class LocalCache {
 			lru.put(key, value, LocalCache.LRU_EXPIRED_SECONDS);
 			caches.put(tableName, lru);
 		} else {
-			lru.put(key, value);
+			lru.put(key, value, LocalCache.LRU_EXPIRED_SECONDS);
 		}
 	}
 
