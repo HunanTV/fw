@@ -29,11 +29,8 @@ public class DB {
 	}
 
 	public DB(String name) {
-//		jdbcTemplate = Application.getInstance().getSpringCtx().getBean(name, JdbcTemplate.class);
-		jdbcTemplate = new JdbcTemplate();
-//		DataSource ds = (DataSource) Application.getInstance().getSpringCtx().getBean("dataSource");
 		DataSource ds = C3P0.instance().getDataSource();
-		jdbcTemplate.setDataSource(ds);
+		jdbcTemplate = new JdbcTemplate(ds);
 	}
 
 	public Transaction beginTransaction() {
@@ -109,10 +106,9 @@ public class DB {
 		private Transaction(String transactionName) {
 //			transactionManager = Application.getInstance().getSpringCtx()
 //			        .getBean(transactionName, DataSourceTransactionManager.class);
-			transactionManager = new DataSourceTransactionManager();
 //			DataSource ds = (DataSource) Application.getInstance().getSpringCtx().getBean("dataSource");
 			DataSource ds = C3P0.instance().getDataSource();
-			transactionManager.setDataSource(ds);
+			transactionManager = new DataSourceTransactionManager(ds);
 			def = new DefaultTransactionDefinition();
 			def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
 			status = transactionManager.getTransaction(def);
