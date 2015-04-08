@@ -32,7 +32,7 @@ public class DB {
 //		jdbcTemplate = Application.getInstance().getSpringCtx().getBean(name, JdbcTemplate.class);
 		jdbcTemplate = new JdbcTemplate();
 //		DataSource ds = (DataSource) Application.getInstance().getSpringCtx().getBean("dataSource");
-		DataSource ds = FwC3p0.instance().getDataSource();
+		DataSource ds = C3P0.instance().getDataSource();
 		jdbcTemplate.setDataSource(ds);
 	}
 
@@ -111,7 +111,7 @@ public class DB {
 //			        .getBean(transactionName, DataSourceTransactionManager.class);
 			transactionManager = new DataSourceTransactionManager();
 //			DataSource ds = (DataSource) Application.getInstance().getSpringCtx().getBean("dataSource");
-			DataSource ds = FwC3p0.instance().getDataSource();
+			DataSource ds = C3P0.instance().getDataSource();
 			transactionManager.setDataSource(ds);
 			def = new DefaultTransactionDefinition();
 			def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
