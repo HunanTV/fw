@@ -6,7 +6,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisException;
 
-public class Redis implements AutoCloseable{
+public class Redis implements AutoCloseable {
 	public Jedis jedis;
 	public String name;
 	private JedisPool pool;

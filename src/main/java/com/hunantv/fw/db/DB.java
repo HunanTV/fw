@@ -25,11 +25,11 @@ public class DB {
 	private JdbcTemplate jdbcTemplate;
 
 	public DB() {
-		this("jdbcTemplate");
+		this("write");
 	}
 
 	public DB(String name) {
-		DataSource ds = C3P0.instance().getDataSource();
+		DataSource ds = C3P0.instance().getDataSource(name);
 		jdbcTemplate = new JdbcTemplate(ds);
 	}
 
