@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import com.hunantv.fw.Application;
 
 class LoggerData {
 	private String id;
@@ -45,6 +48,15 @@ public class FwLogger {
 
 	private Logger logger = null;
 	private static ThreadLocal<LoggerData> threadLocalVar = new ThreadLocal<LoggerData>();
+	
+	static {
+		try {
+			SysConf sysConf = Application.getInstance().getSysConf();
+			PropertyConfigurator.configure(sysConf.getConfPath() + "log4j.properties");
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
 	public String getSeqid() {
 		initSeqid();

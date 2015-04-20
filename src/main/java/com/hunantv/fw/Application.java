@@ -45,18 +45,7 @@ public class Application {
 
 	private Application() {
 		sysConf = new SysConf();
-		initLog4j();
 //		initSpring();
-	}
-
-	private void initLog4j() {
-		try {
-			PropertyConfigurator.configure(sysConf.getConfPath() + "log4j.properties");
-			logger.info("init log4j ok");
-		} catch (Exception ex) {
-			logger.error("init log4j failed", ex);
-			throw new RuntimeException(ex);
-		}
 	}
 
 //	private void initSpring() {
