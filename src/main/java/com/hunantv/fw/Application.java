@@ -5,8 +5,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.servlet.Filter;
+
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -14,7 +15,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.FwLogger;
@@ -31,6 +31,7 @@ public class Application {
 
 	private Routes routes;
 	private Server server;
+	private ServletHandler handler;
 	private SysConf sysConf;
 	private Properties jettyPros;
 //	private ClassPathXmlApplicationContext springCtx;
@@ -110,6 +111,8 @@ public class Application {
 		
 		QueuedThreadPool threadPool = this.initThreadPool();
 		this.server = new Server(threadPool);
+	    this.handler = new ServletHandler();
+	    this.server.setHandler(handler);
 		
 //		ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
 		
@@ -181,27 +184,28 @@ public class Application {
 //		this.server.start();
 //		this.server.join();
 //	}
-	
-	
-	public void start() throws Exception {
-	    ServletHandler handler = new ServletHandler();
-	    server.setHandler(handler);
-	    handler.addServletWithMapping(Dispatcher.class, "/*");
 
-	    logger.info("application listen on " + port);
-		this.server.start();
-		this.server.join();
-	}
+    public void start() throws Exception {
+        handler.addServletWithMapping(Dispatcher.class, "/*");
+        logger.info("Application listen on " + port);
+        this.server.start();
+        this.server.join();
+    }
 
-	public void stop() throws Exception {
-		this.server.stop();
-	}
+    public void addFilterWithMapping(Class<? extends Filter> filter,
+            String pathSpec, int dispatches) {
+        this.handler.addFilterWithMapping(filter, pathSpec, dispatches);
+    }
 
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
+    public void stop() throws Exception {
+        this.server.stop();
+    }
 
-	public boolean isDebug() {
-		return this.debug;
-	}
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public boolean isDebug() {
+        return this.debug;
+    }
 }
