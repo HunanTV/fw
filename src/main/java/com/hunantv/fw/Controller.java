@@ -55,10 +55,17 @@ public class Controller {
 	public View renderJson(Object object) {
 		return new JsonView(object);
 	}
-	
+
 	public View renderJsonP(Object object) {
 		String callback = this.getStrNormalParam("callback", "JQuery_").trim();
 		return new JsonPView(callback, object);
+	}
+
+	public View renderJsonOrJsonP(Object object) {
+		String callback = this.getStrNormalParam("callback", "").trim();
+		if (callback.length() == 0) // json
+			return new JsonView(object);
+		return new JsonPView(callback, object); // jsonp
 	}
 
 	public View redirect(String str) {
