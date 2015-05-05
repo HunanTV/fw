@@ -1,45 +1,36 @@
 package com.hunantv.fw.cache;
 
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 import com.hunantv.fw.utils.FwLogger;
-import com.hunantv.fw.utils.SysConf;
 
 public class LocalCache {
-	public static final String DEFAULT_TABLE = "_DEFAULT_TABLE_";
+
 	public static final FwLogger logger = new FwLogger(LocalCache.class);
-	public static int LRU_MAX_LEN = 1024;
-	public static long LRU_EXPIRED_SECONDS = 0L;
-
-	private ConcurrentMap<String, LRU> caches = new ConcurrentHashMap<String, LRU>();
-
+	public static final String DEFAULT_TABLE = "_DEFAULT_TABLE_";
+	CacheManager cacheManager = CacheManager.create();
 	private static LocalCache lc = null;
+	private LocalCacheConf conf;
 
 	private LocalCache() {
-		try {
-			SysConf conf = new SysConf();
-			Properties pros = conf.read("cache.properties");
-			Object obj = pros.get("cache.local.length");
-			if (null != obj) {
-				LocalCache.LRU_MAX_LEN = Integer.valueOf(((String) obj).trim());
-			}
-			logger.debug("Local Cache Max Length: " + LocalCache.LRU_MAX_LEN);
-			obj = pros.get("cache.local.expired");
-			if (null != obj) {
-				LocalCache.LRU_EXPIRED_SECONDS = Long.valueOf(((String) obj).trim());
-			}
-			logger.debug("Local Cache Default Expired Seconds: " + LocalCache.LRU_EXPIRED_SECONDS);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
 	}
 
 	public static LocalCache instance() {
-		if (null == lc)
+		if (null == lc) {
 			lc = new LocalCache();
+			lc.setConf(new LocalCacheConf());
+		}
 		return lc;
+	}
+
+	public void setConf(LocalCacheConf conf) {
+		this.conf = conf;
+	}
+
+	public LocalCacheConf getConf() {
+		return this.conf;
 	}
 
 	public void set(String key, Object value) {
@@ -47,14 +38,24 @@ public class LocalCache {
 	}
 
 	public void set(String tableName, String key, Object value) {
-		LRU lru = caches.get(tableName);
+		Cache lru = cacheManager.getCache(tableName);
 		if (null == lru) {
-			lru = new LRU(LRU_MAX_LEN);
-			lru.put(key, value, LocalCache.LRU_EXPIRED_SECONDS);
-			caches.put(tableName, lru);
-		} else {
-			lru.put(key, value, LocalCache.LRU_EXPIRED_SECONDS);
+			// public Cache(String name, int maxElementsInMemory, boolean
+			// overflowToDisk,
+			// boolean eternal, long timeToLiveSeconds, long timeToIdleSeconds)
+			lru = new Cache(tableName, conf.max_len, conf.overflowToDisk, conf.eternal, conf.expired_seconds,
+			        conf.expired_seconds);
+			cacheManager.addCache(lru);
 		}
+		lru.put(new Element(key, value));
+	}
+
+	public Cache table() {
+		return table(DEFAULT_TABLE);
+	}
+
+	public Cache table(String tableName) {
+		return this.cacheManager.getCache(tableName);
 	}
 
 	public Object get(String key) {
@@ -62,16 +63,15 @@ public class LocalCache {
 	}
 
 	public Object get(String tableName, String key) {
-		LRU lru = caches.get(tableName);
-		return null == lru ? null : lru.get(key);
-	}
-
-	public LRU table(String name) {
-		return this.caches.get(name);
+		Cache lru = cacheManager.getCache(tableName);
+		if (null == lru)
+			return null;
+		Element ele = lru.get(key);
+		return null == ele ? null : ele.getObjectValue();
 	}
 
 	public void clearAll() {
-		caches.clear();
+		cacheManager.removeAllCaches();
 	}
 
 	public void clear() {
@@ -79,8 +79,6 @@ public class LocalCache {
 	}
 
 	public void clear(String tableName) {
-		if (caches.containsKey(tableName)) {
-			caches.remove(tableName);
-		}
+		cacheManager.removeCache(tableName);
 	}
 }
