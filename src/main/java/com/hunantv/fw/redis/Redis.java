@@ -12,6 +12,11 @@ public class Redis implements AutoCloseable {
 	private JedisPool pool;
 	private RedisConf conf = RedisConf.getInstance();
 	public static final FwLogger logger = new FwLogger(Redis.class);
+	public static final String DEFAULT_NAME = "write";
+
+	public Redis() {
+		this(Redis.DEFAULT_NAME);
+	}
 
 	public Redis(String name) {
 		this.name = name;

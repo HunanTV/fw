@@ -15,7 +15,6 @@ public class RedisConf {
 	public static final FwLogger logger = new FwLogger(RedisConf.class);
 	protected Map<String, JedisPool> pools = new HashMap<String, JedisPool>();
 	private static RedisConf conf = null;
-	public static final String DEFAULT_NAME = "write";
 
 	public static RedisConf getInstance() {
 		if (null == conf) {
@@ -60,9 +59,6 @@ public class RedisConf {
 		return config;
 	}
 	
-	public JedisPool getPool() {
-		return this.getPool(DEFAULT_NAME);
-	}
 	public JedisPool getPool(String name) {
 		return this.pools.get(name);
 	}
