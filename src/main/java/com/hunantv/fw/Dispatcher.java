@@ -42,7 +42,7 @@ public class Dispatcher extends HttpServlet {
 		logger.debug(request.getRequestURL());
 		String charset = "UTF-8";
 		response.setCharacterEncoding(charset);
-		response.setContentType("textml;charset=" + charset);
+		response.setContentType("text/html;charset=" + charset);
 		
 		if (WebUtil.isMultipart(request)) {
 			request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, MULTI_PART_CONFIG);
