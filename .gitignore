@@ -22,3 +22,6 @@ darkevil-logs/
 src/main/resources/config.yaml
 .idea
 logs/
+*.py
+*.pyc
+*.pyx
