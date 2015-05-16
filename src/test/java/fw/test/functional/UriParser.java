@@ -1,4 +1,4 @@
-package com.hunantv.fw.route;
+package fw.test.functional;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +19,7 @@ public class UriParser {
 
 	public static void main2() {
 		String[] ss = new String[] { "<int:age>", "<str:name>", "<password>" };
-		String r = "<(int:|str:|float:|list:)?(.*)>";
+		String r = "<(int:|str:|float:|list:)?([^>]*)>";
 
 		for (String s : ss) {
 			Pattern p = Pattern.compile(r);

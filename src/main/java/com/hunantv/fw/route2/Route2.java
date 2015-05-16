@@ -1,4 +1,4 @@
-package com.hunantv.fw.route;
+package com.hunantv.fw.route2;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,18 +17,18 @@ public class Route2 {
 
 	Map<String, Object[]> classAndRegMapping = new HashMap<String, Object[]>() {
 		{
-			put("int:", new Object[] { Integer.TYPE, "\\d+" });
-			put("long:", new Object[] { Long.TYPE, "\\d+" });
-			put("float:", new Object[] { Long.TYPE, "\\d+(\\.\\d)?" });
-			put("double:", new Object[] { Long.TYPE, "\\d+(\\.\\d)?" });
-			put("str:", new Object[] { String.class, "\\w+" });
-			put("string:", new Object[] { String.class, "\\w+" });
-			put("list:", new Object[] { List.class, "\\w+(,\\w+)*?" });
+			put("int:", new Object[] { Integer.TYPE, "(\\d+)" });
+			put("long:", new Object[] { Long.TYPE, "(\\d+)" });
+			put("float:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)?)" });
+			put("double:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)?)" });
+			put("str:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
+			put("string:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
+			put("list:", new Object[] { List.class, "([\\w\u4E00-\u9FA5]+(,[\\w\u4E00-\u9FA5]+)*)" });
 		}
 	};
 
 	Pattern uriP = Pattern.compile("<([a-zA-Z_][a-zA-Z_0-9]*)(:[^>]*)?>");
-	Pattern argP = Pattern.compile("<(int:|long:|float:|double:|str:|string:|list:)?(.*)>");
+	Pattern argP = Pattern.compile("^<(int:|long:|float:|double:|str:|string:|list:)?([^>]*)>$");
 
 	private String originUriReg; // 原始传进来的uri, 例如：/save/<name>/<int:age>
 	private String uriReg; // 转换后的uri正则, 例如：/save/\\w+/\\d+
@@ -36,7 +36,7 @@ public class Route2 {
 
 	private Class<? extends Controller> controllerClass;
 	private String httpMethod;
-	private Method controllerMethod;
+	private Method controllerAction;
 
 	public Route2(String uriReg, String controllerAndMethod) {
 		String[] vs = StringUtil.split(controllerAndMethod, ".");
@@ -61,16 +61,16 @@ public class Route2 {
 		init(uriReg, controllerClass, methodString, "GET");
 	}
 
-	protected void init(String uriReg, Class<? extends Controller> controllerClass, String methodString,
+	protected void init(String uriReg, Class<? extends Controller> controllerClass, String actionString,
 	        String httpMethod) {
 		this.originUriReg = StringUtil.ensureEndedWith(uriReg, "/");
 		this.uriReg = this.originUriReg;
 		this.controllerClass = controllerClass;
 		this.httpMethod = httpMethod;
-		this.controllerMethod = initControllerMethod(methodString);
+		this.controllerAction = initControllerAction(actionString);
 	}
 
-	protected Method initControllerMethod(String methodString) {
+	protected Method initControllerAction(String methodString) {
 		try {
 			List<Class<?>> typeList = new ArrayList<Class<?>>();
 			Matcher uriM = uriP.matcher(originUriReg);
@@ -83,11 +83,11 @@ public class Route2 {
 						type = "str:";
 					type = type.toLowerCase();
 					if (!classAndRegMapping.containsKey(type)) {
-						throw new RouteDefineException("can not support type[" + type + "]");
+						throw new RouteDefineException("Can not support type[" + type + "]");
 					}
 					Object[] classAndReg = this.classAndRegMapping.get(type);
 					typeList.add((Class<?>) classAndReg[0]);
-					uriReg = StringUtil.replaceFirst(originUriReg, g, (String) classAndReg[1]);
+					uriReg = StringUtil.replaceFirst(uriReg, g, (String) classAndReg[1]);
 				}
 			}
 			if (typeList.size() > 0) {
@@ -100,6 +100,40 @@ public class Route2 {
 		} catch (SecurityException e) {
 			throw new RouteDefineException(e);
 		}
+	}
+
+	public Object[] match(String uri) {
+		uri = StringUtil.ensureEndedWith(uri, "/");
+		if (uri == this.originUriReg)
+			return new Object[0];
+
+		Pattern p = Pattern.compile(uriReg);
+		Matcher m = p.matcher(uri);
+
+		if (m.find()) {
+			int c = m.groupCount();
+			String[] matchStrs = new String[c - 1];
+			for (int i = 1; i < c; i++)
+				matchStrs[i - 1] = m.group(i);
+
+			Object[] objects = new Object[matchStrs.length];
+			for (int i = 0; i < matchStrs.length; i++) {
+				if (types[i] == Integer.TYPE)
+					objects[i] = Integer.valueOf(matchStrs[i]);
+				else if (types[i] == Long.TYPE)
+					objects[i] = Long.valueOf(matchStrs[i]);
+				else if (types[i] == Float.TYPE)
+					objects[i] = Float.valueOf(matchStrs[i]);
+				else if (types[i] == Double.TYPE)
+					objects[i] = Double.valueOf(matchStrs[i]);
+				else if (types[i] == String.class)
+					objects[i] = matchStrs[i];
+				else if (types[i] == List.class)
+					objects[i] = Arrays.asList(StringUtil.split(matchStrs[i], ","));
+			}
+			return objects;
+		}
+		return null;
 	}
 
 	public Class<? extends Controller> getControllerClass() {
@@ -118,34 +152,7 @@ public class Route2 {
 		return httpMethod;
 	}
 
-	public Method getControllerMethod() {
-		return this.controllerMethod;
-	}
-
-	public Object[] match(String uri) {
-		uri = StringUtil.ensureEndedWith(uri, "/");
-		if (uri == this.originUriReg)
-			return new Object[0];
-
-		String[] matchStrs = StringUtil.matchStr(uri, uriReg);
-		if (null == matchStrs)
-			return null;
-
-		Object[] objects = new Object[matchStrs.length];
-		for (int i = 0; i < matchStrs.length; i++) {
-			if (types[i] == Integer.TYPE)
-				objects[i] = Integer.valueOf(matchStrs[i]);
-			else if (types[i] == Long.TYPE)
-				objects[i] = Long.valueOf(matchStrs[i]);
-			else if (types[i] == Float.TYPE)
-				objects[i] = Float.valueOf(matchStrs[i]);
-			else if (types[i] == Double.TYPE)
-				objects[i] = Double.valueOf(matchStrs[i]);
-			else if (types[i] == String.class)
-				objects[i] = matchStrs[i];
-			else if (types[i] == List.class)
-				objects[i] = Arrays.asList(StringUtil.split(matchStrs[i], ","));
-		}
-		return objects;
+	public Method getControllerAction() {
+		return this.controllerAction;
 	}
 }
