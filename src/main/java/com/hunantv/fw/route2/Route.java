@@ -13,7 +13,7 @@ import com.hunantv.fw.Controller;
 import com.hunantv.fw.exceptions.RouteDefineException;
 import com.hunantv.fw.utils.StringUtil;
 
-public class Route2 {
+public class Route {
 
 	Map<String, Object[]> classAndRegMapping = new HashMap<String, Object[]>() {
 		{
@@ -30,15 +30,16 @@ public class Route2 {
 	Pattern uriP = Pattern.compile("<([a-zA-Z_][a-zA-Z_0-9]*)(:[^>]*)?>");
 	Pattern argP = Pattern.compile("^<(int:|long:|float:|double:|str:|string:|list:)?([^>]*)>$");
 
-	private String originUriReg; // 原始传进来的uri, 例如：/save/<name>/<int:age>
+	private String rule; // 传进来的rule, 例如：/save/<name>/<int:age>
 	private String uriReg; // 转换后的uri正则, 例如：/save/\\w+/\\d+
 	Class<?>[] types; // 转换过程中的类型，例如： { String.class, Integer.TYPE }
+	private boolean staticRule; // 是否是静态的rule。如果不含有正则，则是的，否则不是
 
-	private Class<? extends Controller> controllerClass;
+	private Class<? extends Controller> controller;
 	private String httpMethod;
-	private Method controllerAction;
+	private Method action;
 
-	public Route2(String uriReg, String controllerAndMethod) {
+	public Route(String uriReg, String controllerAndMethod) {
 		String[] vs = StringUtil.split(controllerAndMethod, ".");
 		if (vs.length < 2) {
 			throw new RuntimeException();
@@ -57,23 +58,24 @@ public class Route2 {
 		}
 	}
 
-	public Route2(String uriReg, Class<? extends Controller> controllerClass, String methodString, String httpMethod) {
+	public Route(String uriReg, Class<? extends Controller> controllerClass, String methodString, String httpMethod) {
 		init(uriReg, controllerClass, methodString, "GET");
 	}
 
 	protected void init(String uriReg, Class<? extends Controller> controllerClass, String actionString,
 	        String httpMethod) {
-		this.originUriReg = StringUtil.ensureEndedWith(uriReg, "/");
-		this.uriReg = this.originUriReg;
-		this.controllerClass = controllerClass;
+		this.rule = StringUtil.ensureEndedWith(uriReg, "/");
+		this.uriReg = this.rule;
+		this.controller = controllerClass;
 		this.httpMethod = httpMethod;
-		this.controllerAction = initControllerAction(actionString);
+		this.action = initControllerAction(actionString);
 	}
 
 	protected Method initControllerAction(String methodString) {
 		try {
 			List<Class<?>> typeList = new ArrayList<Class<?>>();
-			Matcher uriM = uriP.matcher(originUriReg);
+			Matcher uriM = uriP.matcher(rule);
+			staticRule = uriM.matches();
 			while (uriM.find()) {
 				String g = uriM.group();
 				Matcher argM = argP.matcher(g);
@@ -92,9 +94,9 @@ public class Route2 {
 			}
 			if (typeList.size() > 0) {
 				types = typeList.toArray(new Class<?>[0]);
-				return controllerClass.getMethod(methodString, types);
+				return controller.getMethod(methodString, types);
 			}
-			return controllerClass.getMethod(methodString);
+			return controller.getMethod(methodString);
 		} catch (NoSuchMethodException e) {
 			throw new RouteDefineException(e);
 		} catch (SecurityException e) {
@@ -104,55 +106,59 @@ public class Route2 {
 
 	public Object[] match(String uri) {
 		uri = StringUtil.ensureEndedWith(uri, "/");
-		if (uri == this.originUriReg)
+		if (uri == this.rule)
 			return new Object[0];
 
 		Pattern p = Pattern.compile(uriReg);
 		Matcher m = p.matcher(uri);
 
-		if (m.find()) {
-			int c = m.groupCount();
-			String[] matchStrs = new String[c - 1];
-			for (int i = 1; i < c; i++)
-				matchStrs[i - 1] = m.group(i);
+		if (!m.find())
+			return null;
 
-			Object[] objects = new Object[matchStrs.length];
-			for (int i = 0; i < matchStrs.length; i++) {
-				if (types[i] == Integer.TYPE)
-					objects[i] = Integer.valueOf(matchStrs[i]);
-				else if (types[i] == Long.TYPE)
-					objects[i] = Long.valueOf(matchStrs[i]);
-				else if (types[i] == Float.TYPE)
-					objects[i] = Float.valueOf(matchStrs[i]);
-				else if (types[i] == Double.TYPE)
-					objects[i] = Double.valueOf(matchStrs[i]);
-				else if (types[i] == String.class)
-					objects[i] = matchStrs[i];
-				else if (types[i] == List.class)
-					objects[i] = Arrays.asList(StringUtil.split(matchStrs[i], ","));
-			}
-			return objects;
+		int c = m.groupCount();
+		String[] matchStrs = new String[c - 1];
+		for (int i = 1; i < c; i++)
+			matchStrs[i - 1] = m.group(i);
+
+		Object[] objects = new Object[matchStrs.length];
+		for (int i = 0; i < matchStrs.length; i++) {
+			if (types[i] == Integer.TYPE)
+				objects[i] = Integer.valueOf(matchStrs[i]);
+			else if (types[i] == Long.TYPE)
+				objects[i] = Long.valueOf(matchStrs[i]);
+			else if (types[i] == Float.TYPE)
+				objects[i] = Float.valueOf(matchStrs[i]);
+			else if (types[i] == Double.TYPE)
+				objects[i] = Double.valueOf(matchStrs[i]);
+			else if (types[i] == String.class)
+				objects[i] = matchStrs[i];
+			else if (types[i] == List.class)
+				objects[i] = Arrays.asList(StringUtil.split(matchStrs[i], ","));
 		}
-		return null;
+		return objects;
 	}
 
-	public Class<? extends Controller> getControllerClass() {
-		return controllerClass;
+	public Class<? extends Controller> getController() {
+		return controller;
 	}
 
 	public String getUriReg() {
 		return this.uriReg;
 	}
 
-	public String getOriginUriReg() {
-		return this.originUriReg;
+	public String getRule() {
+		return this.rule;
 	}
 
 	public String getHttpMethod() {
 		return httpMethod;
 	}
 
-	public Method getControllerAction() {
-		return this.controllerAction;
+	public Method getAction() {
+		return this.action;
+	}
+
+	public boolean isStaticRule() {
+		return this.staticRule;
 	}
 }
