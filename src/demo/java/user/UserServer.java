@@ -1,8 +1,8 @@
 package user;
 
 import com.hunantv.fw.Application;
-import com.hunantv.fw.route2.Route;
-import com.hunantv.fw.route2.Routes;
+import com.hunantv.fw.route.Route;
+import com.hunantv.fw.route.Routes;
 
 public class UserServer {
 

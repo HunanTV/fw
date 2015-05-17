@@ -5,8 +5,8 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.hunantv.fw.exceptions.RouteDefineException;
-import com.hunantv.fw.route2.Route;
-import com.hunantv.fw.route2.Route.HttpMethod;
+import com.hunantv.fw.route.Route;
+import com.hunantv.fw.route.Route.HttpMethod;
 import com.hunantv.fw.utils.StringUtil;
 
 public class RouteTest extends TestCase {

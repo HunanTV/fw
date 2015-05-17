@@ -1,27 +1,107 @@
 package com.hunantv.fw.route;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.hunantv.fw.Controller;
 import com.hunantv.fw.ControllerAndAction;
 import com.hunantv.fw.exceptions.HttpException;
+import com.hunantv.fw.exceptions.RouteDefineException;
 import com.hunantv.fw.utils.StringUtil;
 
 public class Route {
-
 	public static enum HttpMethod {
 		GET, POST, PUT, DELETE, OPTIONS, HEAD, TRACE;
 	}
 
-	private HttpMethod routeMethod;
-	private String uriReg;
-	private Class<? extends Controller> controllerClass;
-	private String actionStr;
+	Map<String, Object[]> classAndRegMapping = new HashMap<String, Object[]>() {
+		{
+			put("int:", new Object[] { Integer.TYPE, "(\\d+)" });
+			put("long:", new Object[] { Long.TYPE, "(\\d+)" });
+			put("float:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)*)" });
+			put("double:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)*)" });
+			put("str:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
+			put("string:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
+			put("list:", new Object[] { List.class, "([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)" });
+		}
+	};
 
-	public Route(String uriReg, String controllerAndActionStr) {
-		this(uriReg, controllerAndActionStr, HttpMethod.GET);
+	Pattern uriP = Pattern.compile("<([a-zA-Z_][a-zA-Z_0-9]*)(:[^>]*)?>");
+	Pattern argP = Pattern.compile("^<(int:|long:|float:|double:|str:|string:|list:)?([^>]*)>$");
+
+	private String rule; // 传进来的rule, 例如：/save/<name>/<int:age>
+	private String uriReg; // 转换后的uri正则, 例如：/save/\\w+/\\d+
+	Class<?>[] types; // 转换过程中的类型，例如： { String.class, Integer.TYPE }
+	private boolean staticRule = true; // 是否是静态的rule。如果不含有正则，则是的，否则不是
+
+	private Class<? extends Controller> controller;
+	private HttpMethod httpMethod;
+	private Method action;
+
+	public static Route get(String uriReg, String controllerAndAction) {
+		return new Route(uriReg, controllerAndAction, HttpMethod.GET);
 	}
 
-	public Route(String uriReg, String controllerAndActionStr, HttpMethod httpMethod) {
-		String[] vs = StringUtil.split(controllerAndActionStr, ".");
+	public static Route get(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.GET);
+	}
+
+	public static Route post(String uriReg, String controllerAndAction) {
+		return new Route(uriReg, controllerAndAction, HttpMethod.POST);
+	}
+
+	public static Route post(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.POST);
+	}
+
+	public static Route put(String uriReg, String controllerAndAction) {
+		return new Route(uriReg, controllerAndAction, HttpMethod.PUT);
+	}
+
+	public static Route put(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.PUT);
+	}
+
+	public static Route delete(String uriReg, String controllerAndAction) {
+		return new Route(uriReg, controllerAndAction, HttpMethod.DELETE);
+	}
+
+	public static Route delete(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.DELETE);
+	}
+
+	public static Route options(String uriReg, String controllerAndAction) {
+		return new Route(uriReg, controllerAndAction, HttpMethod.OPTIONS);
+	}
+
+	public static Route options(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.OPTIONS);
+	}
+
+	public static Route head(String uriReg, String controllerAndAction) {
+		return new Route(uriReg, controllerAndAction, HttpMethod.HEAD);
+	}
+
+	public static Route head(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.HEAD);
+	}
+
+	public static Route trace(String uriReg, String controllerAndAction) {
+		return new Route(uriReg, controllerAndAction, HttpMethod.TRACE);
+	}
+
+	public static Route trace(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.TRACE);
+	}
+
+	public Route(String uriReg, String controllerAndAction, HttpMethod httpMethod) {
+		String[] vs = StringUtil.split(controllerAndAction, ".");
 		if (vs.length < 2) {
 			throw new RuntimeException();
 		}
@@ -29,120 +109,137 @@ public class Route {
 		for (int i = 0; i < tmp.length; i++) {
 			tmp[i] = vs[i];
 		}
-		String controllerString = StringUtil.join(tmp, ".");
-		String actionString = vs[vs.length - 1];
+		String controllerStr = StringUtil.join(tmp, ".");
+		String actionStr = vs[vs.length - 1];
 		try {
-			Class<? extends Controller> controllerClass = (Class<? extends Controller>) Class.forName(controllerString);
-			init(uriReg, controllerClass, actionString, httpMethod);
+			Class<? extends Controller> controllerClass = (Class<? extends Controller>) Class.forName(controllerStr);
+			init(uriReg, controllerClass, actionStr, httpMethod);
 		} catch (ClassNotFoundException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	public Route(String uriReg, Class<? extends Controller> controllerClass, String actionStr) {
-		this(uriReg, controllerClass, actionStr, HttpMethod.GET);
+	public Route(String uriReg, Class<? extends Controller> controllerClass, String methodString, HttpMethod httpMethod) {
+		init(uriReg, controllerClass, methodString, httpMethod);
 	}
 
-	public Route(String uriReg, Class<? extends Controller> controllerClass, String actionStr, HttpMethod routeMethod) {
-		init(uriReg, controllerClass, actionStr, routeMethod);
-	}
-
-	private void init(String uriReg, Class<? extends Controller> controllerClass, String actionStr,
+	protected void init(String uriReg, Class<? extends Controller> controllerClass, String actionString,
 	        HttpMethod httpMethod) {
-		this.uriReg = StringUtil.ensureEndedWith(uriReg, "/");
-		this.routeMethod = httpMethod;
-		this.controllerClass = controllerClass;
-		this.actionStr = actionStr;
-
+		this.rule = StringUtil.ensureEndedWith(uriReg, "/");
+		this.uriReg = this.rule;
+		this.controller = controllerClass;
+		this.httpMethod = httpMethod;
+		this.action = initControllerAction(actionString);
 	}
 
-	public HttpMethod getRouteMethod() {
-		return routeMethod;
+	protected Method initControllerAction(String methodString) {
+		try {
+			List<Class<?>> typeList = new ArrayList<Class<?>>();
+			Matcher uriM = uriP.matcher(rule);
+			while (uriM.find()) {
+				staticRule = false;
+				String g = uriM.group();
+				Matcher argM = argP.matcher(g);
+				if (argM.matches()) {
+					String type = argM.group(1);
+					if (null == type)
+						type = "str:";
+					type = type.toLowerCase();
+					if (!classAndRegMapping.containsKey(type)) {
+						throw new RouteDefineException("Can not support type[" + type + "]");
+					}
+					Object[] classAndReg = this.classAndRegMapping.get(type);
+					typeList.add((Class<?>) classAndReg[0]);
+					uriReg = StringUtil.replaceFirst(uriReg, g, (String) classAndReg[1]);
+				}
+			}
+			if (typeList.size() > 0) {
+				types = typeList.toArray(new Class<?>[0]);
+				return controller.getMethod(methodString, types);
+			}
+			return controller.getMethod(methodString);
+		} catch (NoSuchMethodException e) {
+			throw new RouteDefineException(e);
+		} catch (SecurityException e) {
+			throw new RouteDefineException(e);
+		}
 	}
 
-	public HttpMethod getHttpMethod() {
-		return routeMethod;
+	public Object[] match(String uri) {
+		uri = StringUtil.ensureEndedWith(uri, "/");
+		if (uri == this.rule)
+			return new Object[0];
+
+		Pattern p = Pattern.compile(uriReg);
+		Matcher m = p.matcher(uri);
+
+		if (!m.matches())
+			return null;
+
+		int c = m.groupCount();
+		String[] matchStrs = new String[c];
+		for (int i = 1; i <= c; i++)
+			matchStrs[i - 1] = m.group(i);
+
+		Object[] objects = new Object[matchStrs.length];
+		for (int i = 0; i < matchStrs.length; i++) {
+			if (types[i] == Integer.TYPE)
+				objects[i] = Integer.valueOf(matchStrs[i]);
+			else if (types[i] == Long.TYPE)
+				objects[i] = Long.valueOf(matchStrs[i]);
+			else if (types[i] == Float.TYPE)
+				objects[i] = Float.valueOf(matchStrs[i]);
+			else if (types[i] == Double.TYPE)
+				objects[i] = Double.valueOf(matchStrs[i]);
+			else if (types[i] == String.class)
+				objects[i] = matchStrs[i];
+			else if (types[i] == List.class)
+				objects[i] = Arrays.asList(StringUtil.split(matchStrs[i], ","));
+		}
+		return objects;
 	}
 
-	public static Route get(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, HttpMethod.GET);
-	}
-
-	public static Route get(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.GET);
-	}
-
-	public static Route post(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, HttpMethod.POST);
-	}
-
-	public static Route post(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.POST);
-	}
-
-	public static Route put(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, HttpMethod.PUT);
-	}
-
-	public static Route put(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.PUT);
-	}
-
-	public static Route delete(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, HttpMethod.DELETE);
-	}
-
-	public static Route delete(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.DELETE);
-	}
-
-	public static Route options(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, HttpMethod.OPTIONS);
-	}
-
-	public static Route options(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.OPTIONS);
-	}
-
-	public static Route head(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, HttpMethod.HEAD);
-	}
-
-	public static Route head(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.HEAD);
-	}
-
-	public static Route trace(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, HttpMethod.TRACE);
-	}
-
-	public static Route trace(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.TRACE);
+	public Class<? extends Controller> getController() {
+		return controller;
 	}
 
 	public String getUriReg() {
-		return uriReg;
+		return this.uriReg;
 	}
 
-	public Class<? extends Controller> getControllerClass() {
-		return controllerClass;
+	public String getRule() {
+		return this.rule;
 	}
 
-	public String getActionStr() {
-		return actionStr;
+	public HttpMethod getHttpMethod() {
+		return httpMethod;
+	}
+
+	public String getHttpMethodStr() {
+		return httpMethod.toString();
+	}
+
+	public Method getAction() {
+		return this.action;
+	}
+
+	public boolean isStaticRule() {
+		return this.staticRule;
 	}
 
 	public ControllerAndAction buildControllerAndAction() throws HttpException {
+		return buildControllerAndAction(null);
+	}
 
-		Class<? extends Controller> controllerClass = this.getControllerClass();
-		java.lang.reflect.Method method = null;
+	public ControllerAndAction buildControllerAndAction(Object[] args) throws HttpException {
+		Class<? extends Controller> controllerClass = this.getController();
 		Controller controller = null;
 		try {
-			method = controllerClass.getMethod(this.getActionStr());
 			controller = controllerClass.newInstance();
-			return new ControllerAndAction(controller, method);
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-		        | IllegalArgumentException ex) {
+			if (args == null)
+				return new ControllerAndAction(controller, this.action);
+			return new ControllerAndAction(controller, this.action, args);
+		} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
 			throw HttpException.err404();
 		}
 	}

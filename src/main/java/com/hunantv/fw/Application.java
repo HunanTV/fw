@@ -16,7 +16,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import com.hunantv.fw.route2.Routes;
+import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.SysConf;
 

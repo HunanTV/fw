@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.net.URLParser;
-import com.hunantv.fw.route2.Routes;
+import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.view.View;
 
 /**

@@ -1,7 +1,7 @@
 package com.hunantv.fw.tests;
 
 import com.hunantv.fw.Dispatcher;
-import com.hunantv.fw.route2.Routes;
+import com.hunantv.fw.route.Routes;
 
 public class FakeDispatcher extends Dispatcher {
 
