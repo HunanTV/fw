@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.hunantv.fw.Application;
 import com.hunantv.fw.utils.SysConf;
 
+import freemarker.cache.MruCacheStorage;
 import freemarker.cache.SoftCacheStorage;
 import freemarker.template.Configuration;
 
@@ -19,13 +20,18 @@ public class FmExt {
 		try {
 			SysConf sysConf = Application.getInstance().getSysConf();
 			freeMarkerCfg = new Configuration();
-			freeMarkerCfg.setDirectoryForTemplateLoading(new File(sysConf.getSysPath() + "views"));
+			String viewPath = sysConf.getSysPath() + "views";
+			File viewDir = new File(viewPath);
+			if (!viewDir.exists()) {
+				viewDir.mkdirs();
+			}
+			freeMarkerCfg.setDirectoryForTemplateLoading(viewDir);
 			freeMarkerCfg.setDefaultEncoding("UTF-8");
 			freeMarkerCfg.setSharedVariable("block", new BlockDirective());
 			freeMarkerCfg.setSharedVariable("override", new OverrideDirective());
 			freeMarkerCfg.setSharedVariable("extends", new ExtendsDirective());
 			freeMarkerCfg.setClassicCompatible(true);
-			freeMarkerCfg.setCacheStorage(new SoftCacheStorage());
+			freeMarkerCfg.setCacheStorage(new MruCacheStorage(0, Integer.MAX_VALUE));
 			logger.info("init freemarker ok");
 		} catch (Exception ex) {
 			logger.error("init freemarker failed", ex);

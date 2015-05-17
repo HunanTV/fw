@@ -64,10 +64,6 @@ public class Dispatcher extends HttpServlet {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
 		ControllerAndAction controllerAndAction = routes.match(request.getMethod(), uri);
-
-		// Route route = routes.match(request.getMethod(), uri);
-		// ControllerAndAction controllerAndAction =
-		// route.buildControllerAndAction();
 		return controllerAndAction.doAction(request, response);
 	}
 
