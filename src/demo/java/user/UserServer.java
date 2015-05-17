@@ -10,16 +10,12 @@ public class UserServer {
 		Routes routes = new Routes(
 			Route.get("/user/index", UserController.class, "index"),
 			Route.get("/user/list", UserController.class, "list"),
-			
-			Route.get("/user/show", UserController.class, "show"),
-			
-			Route.get("/user/edit", UserController.class, "edit"),
+			Route.get("/user/show/<int:id>", UserController.class, "show"),
+			Route.get("/user/edit/<int:id>", UserController.class, "edit"),
 			Route.post("/user/update", UserController.class, "update"),
-			
 			Route.get("/user/new", UserController.class, "_new"),
 			Route.post("/user/create", UserController.class, "create"),
-
-			Route.post("/user/delete", UserController.class, "delete")
+			Route.post("/user/delete/<int:id>", UserController.class, "delete")
 		);
 		return routes;
     }
@@ -33,12 +29,12 @@ public class UserServer {
 		Routes routes = new Routes(
 			Route.get("/user/index", "user.UserController.index"),
 			Route.get("/user/list", "user.UserController.list"),
-			Route.get("/user/show", "user.UserController.show"),
-			Route.get("/user/edit", "user.UserController.edit"),
+			Route.get("/user/show/<int:id>", "user.UserController.show"),
+			Route.get("/user/edit/<int:id>", "user.UserController.edit"),
 			Route.post("/user/update", "user.UserController.update"),
 			Route.get("/user/new", "user.UserController._new"),
 			Route.post("/user/create", "user.UserController.create"),
-			Route.post("/user/delete", "user.UserController.delete")
+			Route.post("/user/delete/<int:id>", "user.UserController.delete")
 		);
 		return routes;
     }
@@ -47,7 +43,7 @@ public class UserServer {
 		Application app = Application.getInstance();
 		app.setRoutes(initRoutes());
 		app.listener(3333);
-		app.setDebug(true);
+		app.setDebug(false);
 		app.start();
     }
 }

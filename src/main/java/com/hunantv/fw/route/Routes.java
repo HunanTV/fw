@@ -57,11 +57,8 @@ public class Routes {
 			}
 		}
 		if (!found) {
-			Set<String> httpMethods = new HashSet<String>() {
-				{
-					route.getHttpMethodStr();
-				}
-			};
+			Set<String> httpMethods = new HashSet<String>();
+			httpMethods.add(route.getHttpMethodStr());
 			this.dyRoutes.put(route, httpMethods);
 		}
 		return this;
