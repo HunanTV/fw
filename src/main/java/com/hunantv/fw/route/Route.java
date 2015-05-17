@@ -164,10 +164,8 @@ public class Route {
 				return controller.getMethod(methodString, types);
 			}
 			return controller.getMethod(methodString);
-		} catch (NoSuchMethodException e) {
-			throw new RouteDefineException(e);
-		} catch (SecurityException e) {
-			throw new RouteDefineException(e);
+		} catch (NoSuchMethodException | SecurityException ex) {
+			throw new RouteDefineException(ex);
 		}
 	}
 
