@@ -19,11 +19,11 @@ public class Route {
 		{
 			put("int:", new Object[] { Integer.TYPE, "(\\d+)" });
 			put("long:", new Object[] { Long.TYPE, "(\\d+)" });
-			put("float:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)?)" });
-			put("double:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)?)" });
+			put("float:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)*)" });
+			put("double:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)*)" });
 			put("str:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
 			put("string:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
-			put("list:", new Object[] { List.class, "([\\w\u4E00-\u9FA5]+(,[\\w\u4E00-\u9FA5]+)*)" });
+			put("list:", new Object[] { List.class, "([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)" });
 		}
 	};
 
@@ -33,7 +33,7 @@ public class Route {
 	private String rule; // 传进来的rule, 例如：/save/<name>/<int:age>
 	private String uriReg; // 转换后的uri正则, 例如：/save/\\w+/\\d+
 	Class<?>[] types; // 转换过程中的类型，例如： { String.class, Integer.TYPE }
-	private boolean staticRule; // 是否是静态的rule。如果不含有正则，则是的，否则不是
+	private boolean staticRule = true; // 是否是静态的rule。如果不含有正则，则是的，否则不是
 
 	private Class<? extends Controller> controller;
 	private String httpMethod;
@@ -58,7 +58,7 @@ public class Route {
 		}
 	}
 
-	public Route(String uriReg, Class<? extends Controller> controllerClass, String methodString, String httpMethod) {
+	public Route(String uriReg, Class<? extends Controller> controllerClass, String methodString) {
 		init(uriReg, controllerClass, methodString, "GET");
 	}
 
@@ -75,11 +75,11 @@ public class Route {
 		try {
 			List<Class<?>> typeList = new ArrayList<Class<?>>();
 			Matcher uriM = uriP.matcher(rule);
-			staticRule = uriM.matches();
 			while (uriM.find()) {
+				staticRule = false;
 				String g = uriM.group();
 				Matcher argM = argP.matcher(g);
-				if (argM.find()) {
+				if (argM.matches()) {
 					String type = argM.group(1);
 					if (null == type)
 						type = "str:";
@@ -112,13 +112,13 @@ public class Route {
 		Pattern p = Pattern.compile(uriReg);
 		Matcher m = p.matcher(uri);
 
-		if (!m.find())
+		if (!m.matches())
 			return null;
 
 		int c = m.groupCount();
-		String[] matchStrs = new String[c - 1];
-		for (int i = 1; i < c; i++)
-			matchStrs[i - 1] = m.group(i);
+		String[] matchStrs = new String[c];
+		for (int i = 1; i <= c; i++)
+			matchStrs[i-1] = m.group(i);
 
 		Object[] objects = new Object[matchStrs.length];
 		for (int i = 0; i < matchStrs.length; i++) {

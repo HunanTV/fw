@@ -138,10 +138,10 @@ public class StringUtil {
 	public static String matchStrFirst(String str, String regexStr) {
 		Pattern p = Pattern.compile(regexStr);
 		Matcher m = p.matcher(str);
-
-		if (m.find())
-			return m.group();
-		return null;
+		
+		if (!m.matches() || m.groupCount() == 0)
+			return null;
+		return m.group(1); 
 	}
 
 	/**
@@ -155,8 +155,8 @@ public class StringUtil {
 		Pattern p = Pattern.compile(regexStr);
 		Matcher m = p.matcher(str);
 		List<String> lst = new ArrayList<String>();
-		if (m.find()) {
-			for (int i = 1, j = m.groupCount(); i < j; i++) {
+		if (m.matches()) {
+			for (int i = 1, j = m.groupCount(); i <= j; i++) {
 				lst.add(m.group(i));
 			}
 		}
@@ -454,11 +454,33 @@ public class StringUtil {
 		// System.out.println(StringUtil.addMarkIgnoreCase(str, t, "<div>",
 		// "</div>"));
 
-		String str = "/save/中,文，-/29/中文,b,c,d,e/";
-		String r = "^/save/([\\pP\\w\u4E00-\u9FA5]+)/(\\d+)/([\\w\u4E00-\u9FA5]+(,[\\w\u4E00-\u9FA5]+)*)/$";
-		for (String s : StringUtil.matchStr(str, r)) {
-			System.out.println(s);
+		// String str = "/save/中,文，-/29/中文,b,c,d,e/";
+		// String r =
+		// "^/save/([\\pP\\w\u4E00-\u9FA5]+)/(\\d+)/([\\w\u4E00-\u9FA5]+(,[\\w\u4E00-\u9FA5]+)*)/$";
+
+		// String str = "/save/中,文，-/29/";
+		// String r = "^/save/([\\pPa-zA-Z0-9\u4E00-\u9FA5]+)/(\\d+)/$";
+
+		String str = "/save/abc/29/a,b,c,d,e,f";
+		String r = "/save/(\\w+)/(\\d+)/(\\w+(?:,[\\w]+)*)";
+
+		Pattern p = Pattern.compile(r);
+		Matcher m = p.matcher(str);
+		if (m.matches()) {
+			for (int i = 0, j = m.groupCount(); i <= j; i++) {
+				System.out.println(m.group(i));
+			}
 		}
 
+		// for (String s : StringUtil.matchStr(str, r)) {
+		// System.out.println(s);
+		// }
+		//
+		// Pattern uriP =
+		// Pattern.compile("<([a-zA-Z_][a-zA-Z_0-9]*)(:[^>]*)?>");
+		// Matcher uriM =
+		// uriP.matcher("/save/<name>/<int:age>/<list:types>/suffix");
+		// System.out.println(uriM.find());
+		// System.out.println(uriM.groupCount());
 	}
 }
