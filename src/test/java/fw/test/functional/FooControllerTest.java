@@ -18,10 +18,13 @@ public class FooControllerTest extends TestCase {
 	FakeBrowser fb = null;
 
 	public void setUp() {
-		Routes routes = new Routes(Route.get("/demo/index", FooController.class, "index"), Route.get("/demo/list",
-		        FooController.class, "list"), Route.get("/demo/jsonp", FooController.class, "jsonp"), Route.post(
-		        "/demo/update", FooController.class, "update"),
-		        Route.get("/demo/500err", FooController.class, "err500"));
+		Routes routes = new Routes(
+				Route.get("/demo/index", FooController.class, "index"), 
+				Route.get("/demo/list", FooController.class, "list"), 
+				Route.get("/demo/jsonp", FooController.class, "jsonp"), 
+				Route.post("/demo/update", FooController.class, "update"),
+		        Route.get("/demo/500err", FooController.class, "err500")
+		);
 		fb = new FakeBrowser(routes);
 	}
 

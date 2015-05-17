@@ -4,6 +4,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import fw.test.functional.FooControllerTest;
 import fw.test.unit.LocalCacheTest;
+import fw.test.unit.RouteTest;
 import fw.test.unit.ViewTest;
 
 public class All {
@@ -14,6 +15,7 @@ public class All {
 		suite.addTestSuite(FooControllerTest.class);
 		suite.addTestSuite(ViewTest.class);
 		suite.addTestSuite(LocalCacheTest.class);
+		suite.addTestSuite(RouteTest.class);
 		runner.run(suite);
 	}
 }

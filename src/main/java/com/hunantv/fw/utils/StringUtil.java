@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -137,10 +138,10 @@ public class StringUtil {
 	public static String matchStrFirst(String str, String regexStr) {
 		Pattern p = Pattern.compile(regexStr);
 		Matcher m = p.matcher(str);
-
-		if (m.find())
-			return m.group();
-		return null;
+		
+		if (!m.matches() || m.groupCount() == 0)
+			return null;
+		return m.group(1); 
 	}
 
 	/**
@@ -154,8 +155,11 @@ public class StringUtil {
 		Pattern p = Pattern.compile(regexStr);
 		Matcher m = p.matcher(str);
 		List<String> lst = new ArrayList<String>();
-		while (m.find())
-			lst.add(m.group());
+		if (m.matches()) {
+			for (int i = 1, j = m.groupCount(); i <= j; i++) {
+				lst.add(m.group(i));
+			}
+		}
 		if (lst.size() > 0)
 			return lst.toArray(new String[0]);
 		return null;
@@ -434,18 +438,49 @@ public class StringUtil {
 	}
 
 	public static void main(String[] args) {
-		String s1 = "abc abc";
-		String s2 = "中国";
-		System.out.println(StringUtil.isEn(s1));
-		System.out.println(StringUtil.isEn(s2));
-		s1 = StringUtil.replace(s1, " ", "");
-		System.out.println(s1);
-		String str = "123women大家都。3";
-		char ch = 'W';
-		String t = "mEN";
-		System.out.println(StringUtil.indexOfIgnoreCase(str, 3, ch));
-		System.out.println(StringUtil.indexOfIgnoreCase(str, 0, t));
-		System.out.println(StringUtil.addMarkIgnoreCase(str, ch, "<div>", "</div>"));
-		System.out.println(StringUtil.addMarkIgnoreCase(str, t, "<div>", "</div>"));
+		// String s1 = "abc abc";
+		// String s2 = "中国";
+		// System.out.println(StringUtil.isEn(s1));
+		// System.out.println(StringUtil.isEn(s2));
+		// s1 = StringUtil.replace(s1, " ", "");
+		// System.out.println(s1);
+		// String str = "123women大家都。3";
+		// char ch = 'W';
+		// String t = "mEN";
+		// System.out.println(StringUtil.indexOfIgnoreCase(str, 3, ch));
+		// System.out.println(StringUtil.indexOfIgnoreCase(str, 0, t));
+		// System.out.println(StringUtil.addMarkIgnoreCase(str, ch, "<div>",
+		// "</div>"));
+		// System.out.println(StringUtil.addMarkIgnoreCase(str, t, "<div>",
+		// "</div>"));
+
+		// String str = "/save/中,文，-/29/中文,b,c,d,e/";
+		// String r =
+		// "^/save/([\\pP\\w\u4E00-\u9FA5]+)/(\\d+)/([\\w\u4E00-\u9FA5]+(,[\\w\u4E00-\u9FA5]+)*)/$";
+
+		// String str = "/save/中,文，-/29/";
+		// String r = "^/save/([\\pPa-zA-Z0-9\u4E00-\u9FA5]+)/(\\d+)/$";
+
+		String str = "/save/abc/29/a,b,c,d,e,f";
+		String r = "/save/(\\w+)/(\\d+)/(\\w+(?:,[\\w]+)*)";
+
+		Pattern p = Pattern.compile(r);
+		Matcher m = p.matcher(str);
+		if (m.matches()) {
+			for (int i = 0, j = m.groupCount(); i <= j; i++) {
+				System.out.println(m.group(i));
+			}
+		}
+
+		// for (String s : StringUtil.matchStr(str, r)) {
+		// System.out.println(s);
+		// }
+		//
+		// Pattern uriP =
+		// Pattern.compile("<([a-zA-Z_][a-zA-Z_0-9]*)(:[^>]*)?>");
+		// Matcher uriM =
+		// uriP.matcher("/save/<name>/<int:age>/<list:types>/suffix");
+		// System.out.println(uriM.find());
+		// System.out.println(uriM.groupCount());
 	}
 }

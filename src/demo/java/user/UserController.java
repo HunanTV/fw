@@ -32,9 +32,8 @@ public class UserController extends Controller {
 		});
 	}
 	
-	public View show() {
+	public View show(int id) {
 		DB db = new DB();
-		Integer id = this.getIntegerParam("id", 0);
 		Map<String, Object> record = db.get("SELECT * FROM user WHERE id = ?", id);
 		return this.renderHtml("user/show.html", new HashMap() {
 			{
@@ -44,9 +43,8 @@ public class UserController extends Controller {
 
 	}
 	
-	public View edit() {
+	public View edit(int id) {
 		DB db = new DB();
-		Integer id = this.getIntegerParam("id", 0);
 		Map<String, Object> record = db.get("SELECT * FROM user WHERE id = ?", id);
 		return this.renderHtml("user/edit.html", new HashMap() {
 			{
@@ -63,7 +61,7 @@ public class UserController extends Controller {
 			DB db = new DB();
 			db.execute("UPDATE user SET name = ? , age = ? WHERE id = ?", name, age, id);
 		}
-		return this.redirect("/user/show/?id=" + id);
+		return this.redirect("/user/show/" + id);
 	}
 	
 	public View _new() {
@@ -85,9 +83,8 @@ public class UserController extends Controller {
 		}
 	}
 
-	public View delete() {
+	public View delete(int id) {
 		DB db = new DB();
-		Integer id = this.getIntegerParam("id", 0);
 		if (id > 0) {
 			db.execute("DELETE from user WHERE id = ?", id);
 		}
