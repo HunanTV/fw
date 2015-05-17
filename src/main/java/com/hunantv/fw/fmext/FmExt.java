@@ -18,7 +18,8 @@ public class FmExt {
 
 	private FmExt() {
 		try {
-			SysConf sysConf = Application.getInstance().getSysConf();
+			Application app = Application.getInstance();
+			SysConf sysConf = app.getSysConf();
 			freeMarkerCfg = new Configuration();
 			String viewPath = sysConf.getSysPath() + "views";
 			File viewDir = new File(viewPath);
@@ -32,6 +33,8 @@ public class FmExt {
 			freeMarkerCfg.setSharedVariable("extends", new ExtendsDirective());
 			freeMarkerCfg.setClassicCompatible(true);
 			freeMarkerCfg.setCacheStorage(new MruCacheStorage(0, Integer.MAX_VALUE));
+			if (!app.isDebug())
+				freeMarkerCfg.setTemplateUpdateDelay(360 * 24 * 3600); // 1年更新一次
 			logger.info("init freemarker ok");
 		} catch (Exception ex) {
 			logger.error("init freemarker failed", ex);
