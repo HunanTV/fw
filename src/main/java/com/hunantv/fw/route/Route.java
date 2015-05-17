@@ -7,38 +7,20 @@ import com.hunantv.fw.utils.StringUtil;
 
 public class Route {
 
-	public static class Method {
-		public static final Method GET = new Method("GET");
-		public static final Method POST = new Method("POST");
-		public static final Method PUT = new Method("PUT");
-		public static final Method DELETE = new Method("DELETE");
-		public static final Method OPTIONS = new Method("OPTIONS");
-		public static final Method HEAD = new Method("HEAD");
-		public static final Method TRACE = new Method("TRACE");
-		private String v;
-
-		private Method() {
-		}
-
-		private Method(String v) {
-			this.v = v;
-		}
-
-		public String getV() {
-			return v;
-		}
+	public static enum HttpMethod {
+		GET, POST, PUT, DELETE, OPTIONS, HEAD, TRACE;
 	}
 
-	private Method routeMethod;
+	private HttpMethod routeMethod;
 	private String uriReg;
 	private Class<? extends Controller> controllerClass;
 	private String actionStr;
 
 	public Route(String uriReg, String controllerAndActionStr) {
-		this(uriReg, controllerAndActionStr, Method.GET);
+		this(uriReg, controllerAndActionStr, HttpMethod.GET);
 	}
 
-	public Route(String uriReg, String controllerAndActionStr, Method httpMethod) {
+	public Route(String uriReg, String controllerAndActionStr, HttpMethod httpMethod) {
 		String[] vs = StringUtil.split(controllerAndActionStr, ".");
 		if (vs.length < 2) {
 			throw new RuntimeException();
@@ -58,14 +40,15 @@ public class Route {
 	}
 
 	public Route(String uriReg, Class<? extends Controller> controllerClass, String actionStr) {
-		this(uriReg, controllerClass, actionStr, Method.GET);
+		this(uriReg, controllerClass, actionStr, HttpMethod.GET);
 	}
 
-	public Route(String uriReg, Class<? extends Controller> controllerClass, String actionStr, Method routeMethod) {
+	public Route(String uriReg, Class<? extends Controller> controllerClass, String actionStr, HttpMethod routeMethod) {
 		init(uriReg, controllerClass, actionStr, routeMethod);
 	}
 
-	private void init(String uriReg, Class<? extends Controller> controllerClass, String actionStr, Method httpMethod) {
+	private void init(String uriReg, Class<? extends Controller> controllerClass, String actionStr,
+	        HttpMethod httpMethod) {
 		this.uriReg = StringUtil.ensureEndedWith(uriReg, "/");
 		this.routeMethod = httpMethod;
 		this.controllerClass = controllerClass;
@@ -73,68 +56,68 @@ public class Route {
 
 	}
 
-	public Method getRouteMethod() {
+	public HttpMethod getRouteMethod() {
 		return routeMethod;
 	}
 
-	public String getHttpMethod() {
-		return routeMethod.getV();
+	public HttpMethod getHttpMethod() {
+		return routeMethod;
 	}
 
 	public static Route get(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, Method.GET);
+		return new Route(uriReg, controllerAndMethod, HttpMethod.GET);
 	}
 
 	public static Route get(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, Method.GET);
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.GET);
 	}
 
 	public static Route post(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, Method.POST);
+		return new Route(uriReg, controllerAndMethod, HttpMethod.POST);
 	}
 
 	public static Route post(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, Method.POST);
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.POST);
 	}
 
 	public static Route put(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, Method.PUT);
+		return new Route(uriReg, controllerAndMethod, HttpMethod.PUT);
 	}
 
 	public static Route put(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, Method.PUT);
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.PUT);
 	}
 
 	public static Route delete(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, Method.DELETE);
+		return new Route(uriReg, controllerAndMethod, HttpMethod.DELETE);
 	}
 
 	public static Route delete(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, Method.DELETE);
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.DELETE);
 	}
 
 	public static Route options(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, Method.OPTIONS);
+		return new Route(uriReg, controllerAndMethod, HttpMethod.OPTIONS);
 	}
 
 	public static Route options(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, Method.OPTIONS);
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.OPTIONS);
 	}
 
 	public static Route head(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, Method.HEAD);
+		return new Route(uriReg, controllerAndMethod, HttpMethod.HEAD);
 	}
 
 	public static Route head(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, Method.HEAD);
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.HEAD);
 	}
 
 	public static Route trace(String uriReg, String controllerAndMethod) {
-		return new Route(uriReg, controllerAndMethod, Method.TRACE);
+		return new Route(uriReg, controllerAndMethod, HttpMethod.TRACE);
 	}
 
 	public static Route trace(String uriReg, Class<? extends Controller> controllerClass, String controllerMethod) {
-		return new Route(uriReg, controllerClass, controllerMethod, Method.TRACE);
+		return new Route(uriReg, controllerClass, controllerMethod, HttpMethod.TRACE);
 	}
 
 	public String getUriReg() {

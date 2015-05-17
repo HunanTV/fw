@@ -46,7 +46,7 @@ public class Routes {
 			tmpMap = new HashMap<String, Route>();
 			this.routes.put(routeUri, tmpMap);
 		}
-		tmpMap.put(route.getRouteMethod().getV(), route);
+		tmpMap.put(route.getRouteMethod().toString(), route);
 		return this;
 	}
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.hunantv.fw.Controller;
 
-public class TestControllerForRoute extends Controller {
+public class ControllerForTestRoute extends Controller {
 
 	public void save() {
 	}

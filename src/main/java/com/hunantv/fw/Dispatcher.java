@@ -12,22 +12,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 
 import com.hunantv.fw.exceptions.HttpException;
-import com.hunantv.fw.route.Route;
-import com.hunantv.fw.route.Routes;
+import com.hunantv.fw.route2.Routes;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.WebUtil;
-import com.hunantv.fw.view.HtmlView;
-import com.hunantv.fw.view.RedirectView;
 import com.hunantv.fw.view.View;
 
 public class Dispatcher extends HttpServlet {
-	
+
 	public final static FwLogger logger = new FwLogger(Dispatcher.class);
 	protected Routes routes = null;
 	protected boolean debug = false;
-	protected static final MultipartConfigElement MULTI_PART_CONFIG = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
-	
+	protected static final MultipartConfigElement MULTI_PART_CONFIG = new MultipartConfigElement(
+	        System.getProperty("java.io.tmpdir"));
+
 	@Override
 	public void init() {
 		Application app = Application.getInstance();
@@ -43,7 +41,7 @@ public class Dispatcher extends HttpServlet {
 		String charset = "UTF-8";
 		response.setCharacterEncoding(charset);
 		response.setContentType("text/html;charset=" + charset);
-		
+
 		if (WebUtil.isMultipart(request)) {
 			request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, MULTI_PART_CONFIG);
 		}
@@ -65,8 +63,11 @@ public class Dispatcher extends HttpServlet {
 	public View doIt(HttpServletRequest request, HttpServletResponse response) throws HttpException {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
-		Route route = routes.match(request.getMethod(), uri);
-		ControllerAndAction controllerAndAction = route.buildControllerAndAction();
+		ControllerAndAction controllerAndAction = routes.match(request.getMethod(), uri);
+
+		// Route route = routes.match(request.getMethod(), uri);
+		// ControllerAndAction controllerAndAction =
+		// route.buildControllerAndAction();
 		return controllerAndAction.doAction(request, response);
 	}
 
