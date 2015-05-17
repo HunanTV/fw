@@ -44,6 +44,8 @@ public class Route {
 	private HttpMethod httpMethod;
 	private Method action;
 
+	private Pattern matchP;
+
 	public static Route get(String uriReg, String controllerAndAction) {
 		return new Route(uriReg, controllerAndAction, HttpMethod.GET);
 	}
@@ -153,6 +155,10 @@ public class Route {
 					uriReg = StringUtil.replaceFirst(uriReg, g, (String) classAndReg[1]);
 				}
 			}
+			if (!staticRule) {
+				this.matchP = Pattern.compile(uriReg);
+			}
+			
 			if (typeList.size() > 0) {
 				types = typeList.toArray(new Class<?>[0]);
 				return controller.getMethod(methodString, types);
@@ -170,9 +176,7 @@ public class Route {
 		if (uri == this.rule)
 			return new Object[0];
 
-		Pattern p = Pattern.compile(uriReg);
-		Matcher m = p.matcher(uri);
-
+		Matcher m = matchP.matcher(uri);
 		if (!m.matches())
 			return null;
 
