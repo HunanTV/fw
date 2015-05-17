@@ -24,8 +24,8 @@ public class Route {
 		{
 			put("int:", new Object[] { Integer.TYPE, "(\\d+)" });
 			put("long:", new Object[] { Long.TYPE, "(\\d+)" });
-			put("float:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)*)" });
-			put("double:", new Object[] { Long.TYPE, "(\\d+(\\.\\d)*)" });
+			put("float:", new Object[] { Float.TYPE, "(\\d+(?:\\.\\d)?)" });
+			put("double:", new Object[] { Double.TYPE, "(\\d+(?:\\.\\d)?)" });
 			put("str:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
 			put("string:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
 			put("list:", new Object[] { List.class, "([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)" });

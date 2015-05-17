@@ -23,7 +23,10 @@ public class ControllerForTestRoute extends Controller {
 
 	public void search(String key) {
 	}
-
+	
 	public void list(int category, String idStr) {
+	}
+	
+	public void floatAction(float value) {
 	}
 }

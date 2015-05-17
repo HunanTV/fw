@@ -46,7 +46,22 @@ public class RouteTest extends TestCase {
 		assertEquals(ControllerForTestRoute.class.getMethod("save", Integer.TYPE), route.getAction());
 		assertFalse(route.isStaticRule());
 	}
+	public void testFloatRegConstructor() throws Exception {
+		Route route = Route.get("/floatAction/<float:value>", "fw.test.unit.ControllerForTestRoute.floatAction");
+		assertEquals("/floatAction/(\\d+(?:\\.\\d)?)/", route.getUriReg());
+		assertEquals(ControllerForTestRoute.class, route.getController());
+		assertEquals(ControllerForTestRoute.class.getMethod("floatAction", Float.TYPE), route.getAction());
+		assertFalse(route.isStaticRule());
+	}
 
+	public void testFloatRegConstructor2() throws Exception {
+		Route route = Route.get("/floatAction/<float:value>/suffix", "fw.test.unit.ControllerForTestRoute.floatAction");
+		assertEquals("/floatAction/(\\d+(?:\\.\\d)?)/suffix/", route.getUriReg());
+		assertEquals(ControllerForTestRoute.class, route.getController());
+		assertEquals(ControllerForTestRoute.class.getMethod("floatAction", Float.TYPE), route.getAction());
+		assertFalse(route.isStaticRule());
+	}
+	
 	public void testStrRegConstructor() throws Exception {
 		Route route = Route.get("/save/<string:name>", "fw.test.unit.ControllerForTestRoute.save");
 		assertEquals("/save/([\\pP\\w\u4E00-\u9FA5]+)/", route.getUriReg());
@@ -152,5 +167,10 @@ public class RouteTest extends TestCase {
 		assertEquals(2, matchRelts.length);
 		assertEquals(3, ((Integer) matchRelts[0]).intValue());
 		assertEquals("47-1----0-1----1---", (String) matchRelts[1]);
+	}
+	
+	public void testFloatMatch() {
+		Route route = Route.get("/floatAction/<float:value>", "fw.test.unit.ControllerForTestRoute.floatAction");
+		assertEquals(null, route.match("/floatAction/29.91"));
 	}
 }
