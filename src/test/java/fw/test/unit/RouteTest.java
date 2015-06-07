@@ -64,7 +64,7 @@ public class RouteTest extends TestCase {
 	
 	public void testStrRegConstructor() throws Exception {
 		Route route = Route.get("/save/<string:name>", "fw.test.unit.ControllerForTestRoute.save");
-		assertEquals("/save/([\\pP\\w\u4E00-\u9FA5]+)/", route.getUriReg());
+		assertEquals("/save/([^/]*)/", route.getUriReg());
 		assertEquals(ControllerForTestRoute.class, route.getController());
 		assertEquals(ControllerForTestRoute.class.getMethod("save", String.class), route.getAction());
 		assertFalse(route.isStaticRule());
@@ -72,7 +72,7 @@ public class RouteTest extends TestCase {
 
 	public void testStrRegConstructor2() throws Exception {
 		Route route = Route.get("/save/<string:name>/suffix", "fw.test.unit.ControllerForTestRoute.save");
-		assertEquals("/save/([\\pP\\w\u4E00-\u9FA5]+)/suffix/", route.getUriReg());
+		assertEquals("/save/([^/]*)/suffix/", route.getUriReg());
 		assertEquals(ControllerForTestRoute.class, route.getController());
 		assertEquals(ControllerForTestRoute.class.getMethod("save", String.class), route.getAction());
 		assertFalse(route.isStaticRule());
@@ -80,7 +80,7 @@ public class RouteTest extends TestCase {
 
 	public void testStrRegConstructor3() throws Exception {
 		Route route = Route.get("/save/<name>", "fw.test.unit.ControllerForTestRoute.save");
-		assertEquals("/save/([\\pP\\w\u4E00-\u9FA5]+)/", route.getUriReg());
+		assertEquals("/save/([^/]*)/", route.getUriReg());
 		assertEquals(ControllerForTestRoute.class, route.getController());
 		assertEquals(ControllerForTestRoute.class.getMethod("save", String.class), route.getAction());
 		assertFalse(route.isStaticRule());
@@ -88,7 +88,7 @@ public class RouteTest extends TestCase {
 
 	public void testStrRegConstructor4() throws Exception {
 		Route route = Route.get("/save/<name>/suffix", "fw.test.unit.ControllerForTestRoute.save");
-		assertEquals("/save/([\\pP\\w\u4E00-\u9FA5]+)/suffix/", route.getUriReg());
+		assertEquals("/save/([^/]*)/suffix/", route.getUriReg());
 		assertEquals(ControllerForTestRoute.class, route.getController());
 		assertEquals(ControllerForTestRoute.class.getMethod("save", String.class), route.getAction());
 		assertFalse(route.isStaticRule());
@@ -112,7 +112,7 @@ public class RouteTest extends TestCase {
 
 	public void testComplexConstructor() throws Exception {
 		Route route = Route.get("/save/<name>/<int:age>/<list:types>", "fw.test.unit.ControllerForTestRoute.save");
-		assertEquals("/save/([\\pP\\w\u4E00-\u9FA5]+)/(\\d+)/([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)/",
+		assertEquals("/save/([^/]*)/(\\d+)/([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)/",
 		        route.getUriReg());
 		assertEquals(ControllerForTestRoute.class, route.getController());
 		assertEquals(ControllerForTestRoute.class.getMethod("save", String.class, Integer.TYPE, List.class),
@@ -155,7 +155,7 @@ public class RouteTest extends TestCase {
 	}
 
 	public void testSoHunatvComMatch() throws Exception {
-		Route route = Route.get("/so/k-<string:name>", "fw.test.unit.ControllerForTestRoute.search");
+		Route route = Route.get("/so/k-<name>", "fw.test.unit.ControllerForTestRoute.search");
 		Object[] matchRelts = route.match("/so/k-花儿与少年/");
 		assertEquals(1, matchRelts.length);
 		assertEquals("花儿与少年", (String) matchRelts[0]);
@@ -172,5 +172,18 @@ public class RouteTest extends TestCase {
 	public void testFloatMatch() {
 		Route route = Route.get("/floatAction/<float:value>", "fw.test.unit.ControllerForTestRoute.floatAction");
 		assertEquals(null, route.match("/floatAction/29.91"));
+	}
+	
+	public void testSo2Match() throws Exception {
+		Route route = Route.get("/so/k-<name>", "fw.test.unit.ControllerForTestRoute.search");
+		Object[] matchRelts = route.match("/so/k-花儿+少年/");
+		assertEquals(1, matchRelts.length);
+		assertEquals("花儿+少年", (String) matchRelts[0]);
+	}
+	
+	public void testSo2NotMatch() throws Exception {
+		Route route = Route.get("/so/k-<name>", "fw.test.unit.ControllerForTestRoute.search");
+		Object[] matchRelts = route.match("/so/k-花/儿+少年/");
+		assertNull(matchRelts);
 	}
 }
