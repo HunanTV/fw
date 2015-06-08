@@ -26,17 +26,21 @@ public class Route {
 			put("long:", new Object[] { Long.TYPE, "(\\d+)" });
 			put("float:", new Object[] { Float.TYPE, "(\\d+(?:\\.\\d)?)" });
 			put("double:", new Object[] { Double.TYPE, "(\\d+(?:\\.\\d)?)" });
-//			put("str:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
-//			put("string:", new Object[] { String.class, "([\\pP\\w\u4E00-\u9FA5]+)" });
+			// put("str:", new Object[] { String.class,
+			// "([\\pP\\w\u4E00-\u9FA5]+)" });
+			// put("string:", new Object[] { String.class,
+			// "([\\pP\\w\u4E00-\u9FA5]+)" });
 			put("str:", new Object[] { String.class, "([^/]*)" });
 			put("string:", new Object[] { String.class, "([^/]*)" });
 			put("list:", new Object[] { List.class, "([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)" });
-//			put("list:", new Object[] { List.class, "([^/|^,].*(?:,[^/].)*)" });
+			// put("list:", new Object[] { List.class, "([^/|^,].*(?:,[^/].)*)"
+			// });
+			put("reg:", new Object[] {String.class});
 		}
 	};
 
 	Pattern uriP = Pattern.compile("<([a-zA-Z_][a-zA-Z_0-9]*)(:[^>]*)?>");
-	Pattern argP = Pattern.compile("^<(int:|long:|float:|double:|str:|string:|list:)?([^>]*)>$");
+	Pattern argP = Pattern.compile("^<(int:|long:|float:|double:|str:|string:|list:|reg:)?([^>]*)>$");
 
 	private String rule; // 传进来的rule, 例如：/save/<name>/<int:age>
 	private String uriReg; // 转换后的uri正则, 例如：/save/\\w+/\\d+
@@ -153,15 +157,21 @@ public class Route {
 					if (!classAndRegMapping.containsKey(type)) {
 						throw new RouteDefineException("Can not support type[" + type + "]");
 					}
-					Object[] classAndReg = this.classAndRegMapping.get(type);
-					typeList.add((Class<?>) classAndReg[0]);
-					uriReg = StringUtil.replaceFirst(uriReg, g, (String) classAndReg[1]);
+					if (type.equalsIgnoreCase("reg:")) {
+						Object[] classAndReg = this.classAndRegMapping.get(type);
+						typeList.add((Class<?>) classAndReg[0]);
+						uriReg = StringUtil.replace(uriReg, g, argM.group(2));
+					} else {
+						Object[] classAndReg = this.classAndRegMapping.get(type);
+						typeList.add((Class<?>) classAndReg[0]);
+						uriReg = StringUtil.replaceFirst(uriReg, g, (String) classAndReg[1]);
+					}
 				}
 			}
 			if (!staticRule) {
 				this.matchP = Pattern.compile(uriReg);
 			}
-			
+
 			if (typeList.size() > 0) {
 				types = typeList.toArray(new Class<?>[0]);
 				return controller.getMethod(methodString, types);

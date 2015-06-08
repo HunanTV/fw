@@ -186,4 +186,10 @@ public class RouteTest extends TestCase {
 		Object[] matchRelts = route.match("/so/k-花/儿+少年/");
 		assertNull(matchRelts);
 	}
+	
+	public void testSo3Match() throws Exception {
+		Route route = Route.get("/so/k-<reg:(.*)>", "fw.test.unit.ControllerForTestRoute.doReg");
+		Object[] matchRelts = route.match("/so/k-花/儿+少年/");
+		assertEquals("花/儿+少年", (String) matchRelts[0]);
+	}
 }
