@@ -5,9 +5,9 @@ import com.hunantv.fw.route.Routes;
 
 public class FakeDispatcher extends Dispatcher {
 
-	@Override
-	public void init() {
-	}
+//	@Override
+//	public void init() {
+//	}
 
 	public void setRoutes(Routes routes) {
 		this.routes = routes;

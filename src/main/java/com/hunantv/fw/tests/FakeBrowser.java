@@ -33,7 +33,7 @@ public class FakeBrowser {
 		req.setMethod("GET");
 		req.setParameter(urlParser.getQueryPair());
 
-		return dis.doIt(req, null);
+		return dis.doIt(url, req, null);
 	}
 	
 	public View post(String url) throws HttpException {
@@ -49,6 +49,6 @@ public class FakeBrowser {
 		req.setMethod("POST");
 		req.setParameter(urlParser.getQueryPair());
 
-		return dis.doIt(req, null);
+		return dis.doIt(url, req, null);
 	}
 }

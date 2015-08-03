@@ -1,15 +1,14 @@
 package com.hunantv.fw;
 
 import java.io.IOException;
-import java.util.Calendar;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.route.Routes;
@@ -18,49 +17,43 @@ import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.WebUtil;
 import com.hunantv.fw.view.View;
 
-public class Dispatcher extends HttpServlet {
-
+public class Dispatcher extends AbstractHandler {
+	
 	public final static FwLogger logger = new FwLogger(Dispatcher.class);
-	protected Routes routes = null;
-	protected boolean debug = false;
+	Application app = Application.getInstance();
+	protected Routes routes = app.getRoutes();;
+	protected boolean debug = app.isDebug();
+
 	protected static final MultipartConfigElement MULTI_PART_CONFIG = new MultipartConfigElement(
 	        System.getProperty("java.io.tmpdir"));
 
 	@Override
-	public void init() {
-		Application app = Application.getInstance();
-		this.routes = app.getRoutes();
-		this.debug = app.isDebug();
-	}
-
-	@Override
-	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Long btime = Calendar.getInstance().getTimeInMillis();
+	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		baseRequest.setHandled(true);
+		Long btime = System.currentTimeMillis();
 		logger.initSeqid();
-		logger.debug(request.getRequestURL());
-		String charset = "UTF-8";
-		response.setCharacterEncoding(charset);
-		response.setContentType("text/html;charset=" + charset);
-
+		logger.debug(target);
+		response.setContentType("text/html;charset=UTF-8");
 		if (WebUtil.isMultipart(request)) {
 			request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, MULTI_PART_CONFIG);
 		}
 
 		try {
-			View view = doIt(request, response);
+			response.setStatus(HttpServletResponse.SC_OK);
+			View view = doIt(target, request, response);
 			view.renderTo(response);
 		} catch (HttpException ex) {
 			this.httpErr(response, ex);
 		} catch (Exception ex) {
 			this.err500(response, ex);
 		} finally {
-			Long etime = Calendar.getInstance().getTimeInMillis();
+			Long etime = System.currentTimeMillis();
 			logger.delayInfo("cost", new Long(etime - btime).toString());
 			logger.clearSeqid();
 		}
 	}
 
-	public View doIt(HttpServletRequest request, HttpServletResponse response) throws HttpException {
+	public View doIt(String target, HttpServletRequest request, HttpServletResponse response) throws HttpException {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
 		logger.delayInfo("uri", uri);
 		ControllerAndAction controllerAndAction = routes.match(request.getMethod(), uri);
