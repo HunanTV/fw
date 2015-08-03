@@ -8,7 +8,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jetty.version>9.2.1.v20140609</jetty.version>
+		<jetty.version>9.3.1.v20150714</jetty.version>
 		<spring.version>4.0.5.RELEASE</spring.version>
 	</properties>
 
@@ -37,7 +37,8 @@
 						<encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
-                               <plugin>
+                
+                <plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
 					<executions>
@@ -49,6 +50,27 @@
 						</execution>
 					</executions>
 				</plugin>
+				
+				<plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <configuration>
+                        <archive>
+                            <!-- 配置jar包里MANIFEST信息 -->
+                            <manifest>
+                                <mainClass>user.UserServer</mainClass>
+                                <!-- 增加该配置可减少在运行时配置的依赖 -->
+                                <addClasspath>true</addClasspath>
+                                <classpathPrefix>lib</classpathPrefix>
+                            </manifest>
+                        </archive>
+                        <descriptor>assembly.xml</descriptor>
+                        <finalName>fw</finalName>
+                        <outputDirectory>target</outputDirectory>
+                        <workDirectory>target</workDirectory>
+                    </configuration>
+                </plugin>
+
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -70,6 +92,26 @@
             <artifactId>jetty-servlets</artifactId>
             <version>${jetty.version}</version>
         </dependency>
+<!--
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-client</artifactId>
+            <version>${jetty-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty.toolchain</groupId>
+            <artifactId>jetty-test-helper</artifactId>
+            <version>3.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-websocket</artifactId>
+            <version>8.1.17.v20150415</version>
+        </dependency>
+-->
+        
 		<!-- jetty lib end -->
 
 		<dependency>
@@ -129,7 +171,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.3.3</version>
+            <version>4.3.4</version>
         </dependency>
         
         <dependency>
