@@ -1,54 +1,19 @@
 package com.hunantv.fw.utils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.hunantv.fw.Application;
 
-class LoggerData {
-	private String id;
-	private List<String> data;
-
-	public LoggerData() {
-		this(UUID.randomUUID().toString());
-	}
-
-	public LoggerData(String id) {
-		this.id = id;
-		data = new ArrayList<String>();
-		// this.add("SeqID", this.id);
-	}
-
-	public void add(String key, String value) {
-		this.data.add(key + "=" + value);
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String toString() {
-		if (data.size() == 0)
-			return "";
-		StringBuilder strb = new StringBuilder();
-		strb.append("[ ");
-		for (String ele : data) {
-			strb.append(ele).append(" ");
-		}
-		strb.append("]");
-		return strb.toString();
-	}
-}
-
 public class FwLogger {
 
 	private Logger logger = null;
-	private static ThreadLocal<LoggerData> threadLocalVar = new ThreadLocal<LoggerData>();
-	
+	private static ThreadLocal<String> threadLocalUUID = new ThreadLocal<String>();
+	private static ThreadLocal<StringBuilder> threadLocalStrb = new ThreadLocal<StringBuilder>();
+
 	static {
 		try {
 			SysConf sysConf = Application.getInstance().getSysConf();
@@ -59,28 +24,31 @@ public class FwLogger {
 	}
 
 	public String getSeqid() {
-		initSeqid();
-		LoggerData data = (LoggerData) threadLocalVar.get();
-		return data.getId();
+		return initSeqid();
 	}
 
-	public void delayInfo(String key, Object msg) {
+	public FwLogger delayInfo(String key, Object msg) {
 		initSeqid();
-		LoggerData data = (LoggerData) threadLocalVar.get();
-		data.add(key, msg.toString());
+		StringBuilder data = (StringBuilder) threadLocalStrb.get();
+		data.append(key).append("=").append(msg.toString());
+		return this;
 	}
 
-	public void initSeqid() {
-		LoggerData data = (LoggerData) threadLocalVar.get();
-		if (data == null) {
-			FwLogger.threadLocalVar.set(new LoggerData());
+	public String initSeqid() {
+		String uuid = (String) threadLocalUUID.get();
+		if (uuid == null) {
+			uuid = UUID.randomUUID().toString();
+			FwLogger.threadLocalUUID.set(uuid);
+			FwLogger.threadLocalStrb.set(new StringBuilder());
 		}
+		return uuid;
 	}
 
 	public void clearSeqid() {
-		LoggerData data = (LoggerData) threadLocalVar.get();
+		StringBuilder data = (StringBuilder) threadLocalStrb.get();
 		this.info(data.toString());
-		FwLogger.threadLocalVar.remove();
+		FwLogger.threadLocalUUID.remove();
+		FwLogger.threadLocalStrb.remove();
 	}
 
 	public static FwLogger getLogger(Class<?> clz) {
@@ -100,51 +68,63 @@ public class FwLogger {
 	}
 
 	public void debug(Object message) {
-		logger.debug(buildMsg(message));
+		if (logger.isDebugEnabled())
+			logger.debug(buildMsg(message));
 	}
 
 	public void debug(Object message, Throwable t) {
-		logger.debug(buildMsg(message), t);
+		if (logger.isDebugEnabled())
+			logger.debug(buildMsg(message), t);
 	}
 
 	public void info(Object message) {
-		logger.info(buildMsg(message));
+		if (logger.isInfoEnabled())
+			logger.info(buildMsg(message));
 	}
 
 	public void info(Object message, Throwable t) {
-		logger.info(buildMsg(message), t);
+		if (logger.isInfoEnabled())
+			logger.info(buildMsg(message), t);
 	}
 
 	public void fatal(Object message) {
-		logger.fatal(buildMsg(message));
+		if (logger.isEnabledFor(Level.FATAL))
+			logger.fatal(buildMsg(message));
 	}
 
 	public void fatal(Object message, Throwable t) {
-		logger.fatal(buildMsg(message), t);
+		if (logger.isEnabledFor(Level.FATAL))
+			logger.fatal(buildMsg(message), t);
 	}
 
 	public void warn(Object message) {
-		logger.warn(buildMsg(message));
+		if (logger.isEnabledFor(Level.WARN))
+			logger.warn(buildMsg(message));
 	}
 
 	public void warn(Object message, Throwable t) {
-		logger.warn(buildMsg(message), t);
+		if (logger.isEnabledFor(Level.WARN))
+			logger.warn(buildMsg(message), t);
 	}
 
 	public void error(Object message) {
-		logger.error(buildMsg(message));
+		if (logger.isEnabledFor(Level.ERROR))
+			logger.error(buildMsg(message));
 	}
 
 	public void error(Object message, Throwable t) {
-		logger.error(buildMsg(message), t);
+		if (logger.isEnabledFor(Level.ERROR))
+			logger.error(buildMsg(message), t);
 	}
 
 	public void trace(Object message) {
-		logger.trace(buildMsg(message));
+		if (logger.isTraceEnabled())
+			logger.trace(buildMsg(message));
 	}
 
 	public void trace(Object message, Throwable t) {
-		logger.trace(buildMsg(message), t);
+		if (logger.isTraceEnabled())
+			logger.trace(buildMsg(message), t);
 	}
 
 	private String buildMsg(Object message) {

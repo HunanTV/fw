@@ -1,16 +1,7 @@
 package com.hunantv.fw.net;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,19 +11,14 @@ import java.util.Map;
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 
 public class FwHttpClient {
 
@@ -117,7 +103,10 @@ public class FwHttpClient {
 	}
 
 	public static void main(String[] args) throws Exception {
-//		FwHttpResponse res = FwHttpClient.get("localhost:3333/user/list");
+	}
+
+	public static void main1(String[] args) throws Exception {
+		// FwHttpResponse res = FwHttpClient.get("localhost:3333/user/list");
 		String url = "http://hws.hunantv.com/index.php?format=array&debug=0&method=comment.comment.videocomment.getcomment";
 		Map<String, Object> params = new HashMap<String, Object>() {
 			{
@@ -131,8 +120,8 @@ public class FwHttpClient {
 		System.out.println(res.code);
 		System.out.println("***************************");
 
-//		res = FwHttpClient.post("localhost:3333/user/update/1");
-//		System.out.println(res.body);
-//		System.out.println(res.code);
+		// res = FwHttpClient.post("localhost:3333/user/update/1");
+		// System.out.println(res.body);
+		// System.out.println(res.code);
 	}
 }

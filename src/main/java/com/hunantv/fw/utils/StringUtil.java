@@ -343,7 +343,7 @@ public class StringUtil {
 
 	public static String ensureEndedWith(String str, String suffix) {
 		int len = str.length();
-		if (str == null || str.length() == 0) {
+		if (str == null || len == 0) {
 			return suffix;
 		} else if (!str.endsWith(suffix)) {
 			return str + suffix;
