@@ -15,7 +15,11 @@ import com.hunantv.fw.view.View;
 public class UserController extends Controller {
 
 	protected static FwLogger logger = new FwLogger(UserController.class);
-
+	
+	public View HelloWorld() {
+		return this.renderString("Hello, World");
+	}
+	
 	public View index() {
 		return this.redirect("/user/list");
 	}
