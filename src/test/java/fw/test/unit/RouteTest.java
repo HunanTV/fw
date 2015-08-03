@@ -96,7 +96,7 @@ public class RouteTest extends TestCase {
 
 	public void testListRegConstructor() throws Exception {
 		Route route = Route.get("/save/<list:>", "fw.test.unit.ControllerForTestRoute.save");
-		assertEquals("/save/([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)/", route.getUriReg());
+		assertEquals("/save/([^/|^,].*(?:,[^/].)*)/", route.getUriReg());
 		assertEquals(ControllerForTestRoute.class, route.getController());
 		assertEquals(ControllerForTestRoute.class.getMethod("save", List.class), route.getAction());
 		assertFalse(route.isStaticRule());
@@ -104,7 +104,7 @@ public class RouteTest extends TestCase {
 
 	public void testListRegConstructor2() throws Exception {
 		Route route = Route.get("/save/<list:a>/suffix", "fw.test.unit.ControllerForTestRoute.save");
-		assertEquals("/save/([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)/suffix/", route.getUriReg());
+		assertEquals("/save/([^/|^,].*(?:,[^/].)*)/suffix/", route.getUriReg());
 		assertEquals(ControllerForTestRoute.class, route.getController());
 		assertEquals(ControllerForTestRoute.class.getMethod("save", List.class), route.getAction());
 		assertFalse(route.isStaticRule());
@@ -112,7 +112,7 @@ public class RouteTest extends TestCase {
 
 	public void testComplexConstructor() throws Exception {
 		Route route = Route.get("/save/<name>/<int:age>/<list:types>", "fw.test.unit.ControllerForTestRoute.save");
-		assertEquals("/save/([^/]*)/(\\d+)/([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)/",
+		assertEquals("/save/([^/]*)/(\\d+)/([^/|^,].*(?:,[^/].)*)/",
 		        route.getUriReg());
 		assertEquals(ControllerForTestRoute.class, route.getController());
 		assertEquals(ControllerForTestRoute.class.getMethod("save", String.class, Integer.TYPE, List.class),
@@ -121,7 +121,7 @@ public class RouteTest extends TestCase {
 	}
 
 	public void testComplexMatch() {
-		Route route = Route.get("/save/<name>/<int:age>/<list:types>", "fw.test.unit.ControllerForTestRoute.save");
+		Route route = Route.get("/save/<name>/<i:age>/<list:types>", "fw.test.unit.ControllerForTestRoute.save");
 		Object[] matchRelts = route.match("/save/pengyi/29/a,b,c,d,e");
 		assertEquals(3, matchRelts.length);
 		assertEquals("pengyi", (String) matchRelts[0]);
@@ -188,7 +188,7 @@ public class RouteTest extends TestCase {
 	}
 	
 	public void testSo3Match() throws Exception {
-		Route route = Route.get("/so/k-<reg:(.*)>", "fw.test.unit.ControllerForTestRoute.doReg");
+		Route route = Route.get("/so/k-<r:(.*)>", "fw.test.unit.ControllerForTestRoute.doReg");
 		Object[] matchRelts = route.match("/so/k-花/儿+少年/");
 		assertEquals("花/儿+少年", (String) matchRelts[0]);
 	}

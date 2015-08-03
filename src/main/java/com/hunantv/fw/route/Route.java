@@ -23,24 +23,25 @@ public class Route {
 	Map<String, Object[]> classAndRegMapping = new HashMap<String, Object[]>() {
 		{
 			put("int:", new Object[] { Integer.TYPE, "(\\d+)" });
+			put("i:", new Object[] { Integer.TYPE, "(\\d+)" });
 			put("long:", new Object[] { Long.TYPE, "(\\d+)" });
+			put("l:", new Object[] { Long.TYPE, "(\\d+)" });
 			put("float:", new Object[] { Float.TYPE, "(\\d+(?:\\.\\d)?)" });
+			put("f:", new Object[] { Float.TYPE, "(\\d+(?:\\.\\d)?)" });
 			put("double:", new Object[] { Double.TYPE, "(\\d+(?:\\.\\d)?)" });
-			// put("str:", new Object[] { String.class,
-			// "([\\pP\\w\u4E00-\u9FA5]+)" });
-			// put("string:", new Object[] { String.class,
-			// "([\\pP\\w\u4E00-\u9FA5]+)" });
+			put("d:", new Object[] { Double.TYPE, "(\\d+(?:\\.\\d)?)" });
 			put("str:", new Object[] { String.class, "([^/]*)" });
 			put("string:", new Object[] { String.class, "([^/]*)" });
-			put("list:", new Object[] { List.class, "([\\w\u4E00-\u9FA5]+(?:,[\\w\u4E00-\u9FA5]+)*)" });
-			// put("list:", new Object[] { List.class, "([^/|^,].*(?:,[^/].)*)"
-			// });
+			put("s:", new Object[] { String.class, "([^/]*)" });
+			put("list:", new Object[] { List.class, "([^/|^,].*(?:,[^/].)*)" });
+			put("li:", new Object[] { List.class, "([^/|^,].*(?:,[^/].)*)" });
 			put("reg:", new Object[] {String.class});
+			put("r:", new Object[] {String.class});
 		}
 	};
 
 	Pattern uriP = Pattern.compile("<([a-zA-Z_][a-zA-Z_0-9]*)(:[^>]*)?>");
-	Pattern argP = Pattern.compile("^<(int:|long:|float:|double:|str:|string:|list:|reg:)?([^>]*)>$");
+	Pattern argP = Pattern.compile("^<(int:|i:|long:|l:|float:|f:|double:|d:|str:|string:|s:|list:|li:|reg:|r:)?([^>]*)>$");
 
 	private String rule; // 传进来的rule, 例如：/save/<name>/<int:age>
 	private String uriReg; // 转换后的uri正则, 例如：/save/\\w+/\\d+
@@ -157,7 +158,7 @@ public class Route {
 					if (!classAndRegMapping.containsKey(type)) {
 						throw new RouteDefineException("Can not support type[" + type + "]");
 					}
-					if (type.equalsIgnoreCase("reg:")) {
+					if (type.equalsIgnoreCase("reg:") || type.equalsIgnoreCase("r:") ) {
 						Object[] classAndReg = this.classAndRegMapping.get(type);
 						typeList.add((Class<?>) classAndReg[0]);
 						uriReg = StringUtil.replace(uriReg, g, argM.group(2));

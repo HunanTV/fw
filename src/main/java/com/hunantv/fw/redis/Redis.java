@@ -23,7 +23,8 @@ public class Redis implements AutoCloseable {
 		this.pool = conf.getPool(this.name);
 		this.jedis = pool.getResource();
 	}
-
+	
+	@Override
 	public void close() {
 		try {
 			pool.returnResource(this.jedis);

@@ -46,23 +46,7 @@ public class Application {
 
 	private Application() {
 		sysConf = new SysConf();
-//		initSpring();
 	}
-
-//	private void initSpring() {
-//		try {
-//			String springXmlPath = sysConf.getConfUri() + "spring.xml";
-//			springCtx = new ClassPathXmlApplicationContext(springXmlPath);
-//			logger.info("init spring ok");
-//		} catch (Exception ex) {
-//			logger.error("init spring failed", ex);
-//			throw new RuntimeException(ex);
-//		}
-//	}
-//	
-//	public ClassPathXmlApplicationContext getSpringCtx() {
-//		return this.springCtx;
-//	}
 
 	public Map<String, ?> getSettings() {
 		return settings;
@@ -111,16 +95,13 @@ public class Application {
 		
 		QueuedThreadPool threadPool = this.initThreadPool();
 		this.server = new Server(threadPool);
-	    this.handler = new ServletHandler();
-	    this.server.setHandler(handler);
-		
-//		ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
+//	    this.handler = new ServletHandler();
+//	    this.server.setHandler(handler);
 		
 		int cores = Runtime.getRuntime().availableProcessors();
 		ServerConnector connector = new ServerConnector(server, null, null, null, 1+cores/2, -1, httpConnectionFactory);
 		initConnector(connector);
 		connector.setPort(this.port);
-		
 		server.setConnectors(new Connector[] { connector });
 	}
 	
@@ -186,8 +167,10 @@ public class Application {
 //	}
 
     public void start() throws Exception {
-        handler.addServletWithMapping(Dispatcher.class, "/*");
+//        handler.addServletWithMapping(Dispatcher.class, "/*");
+//    	handler.setHandler(new Dispatcher());
         logger.info("Application listen on " + port);
+        this.server.setHandler(new Dispatcher());
         this.server.start();
         this.server.join();
     }
