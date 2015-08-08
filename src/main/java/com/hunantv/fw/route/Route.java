@@ -184,7 +184,7 @@ public class Route {
 		}
 	}
 
-	public Object[] match(String uri) {
+	public Object[] match(String uri) throws HttpException {
 		uri = StringUtil.ensureEndedWith(uri, "/");
 		if (uri == this.rule)
 			return new Object[0];
@@ -206,7 +206,11 @@ public class Route {
 				try {
 					objects[i] = Integer.valueOf(matchStrs[i]);
 				} catch (NumberFormatException ex) {
-					objects[i] = Long.valueOf(matchStrs[i]).intValue();
+					try {
+						objects[i] = Long.valueOf(matchStrs[i]).intValue();
+					} catch (NumberFormatException ex2) {
+						throw HttpException.err404();
+					}
 				}
 			}
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.exceptions.RouteDefineException;
 import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Route.HttpMethod;
@@ -120,7 +121,7 @@ public class RouteTest extends TestCase {
 		assertFalse(route.isStaticRule());
 	}
 
-	public void testComplexMatch() {
+	public void testComplexMatch() throws Exception {
 		Route route = Route.get("/save/<name>/<i:age>/<list:types>", "fw.test.unit.ControllerForTestRoute.save");
 		Object[] matchRelts = route.match("/save/pengyi/29/a,b,c,d,e");
 		assertEquals(3, matchRelts.length);
@@ -130,7 +131,7 @@ public class RouteTest extends TestCase {
 		assertEquals("a,b,c,d,e", StringUtil.join(arg3, ","));
 	}
 
-	public void testComplexMatch2() {
+	public void testComplexMatch2() throws Exception {
 		Route route = Route.get("/save/<name>/<int:age>/<list:types>/suffix",
 		        "fw.test.unit.ControllerForTestRoute.save");
 		Object[] matchRelts = route.match("/save/测试帐号/29/a,b,c,d,e/suffix");
@@ -141,7 +142,7 @@ public class RouteTest extends TestCase {
 		assertEquals("a,b,c,d,e", StringUtil.join(arg3, ","));
 	}
 
-	public void testComplexNotMatch() {
+	public void testComplexNotMatch() throws Exception {
 		Route route = Route.get("/save/<name>/<int:age>/<list:types>/", "fw.test.unit.ControllerForTestRoute.save");
 		assertEquals(null, route.match("/save/pengyi/29"));
 	}
@@ -169,7 +170,7 @@ public class RouteTest extends TestCase {
 		assertEquals("47-1----0-1----1---", (String) matchRelts[1]);
 	}
 	
-	public void testFloatMatch() {
+	public void testFloatMatch() throws Exception {
 		Route route = Route.get("/floatAction/<float:value>", "fw.test.unit.ControllerForTestRoute.floatAction");
 		assertEquals(null, route.match("/floatAction/29.91"));
 	}
