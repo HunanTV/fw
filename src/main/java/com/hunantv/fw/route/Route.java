@@ -35,13 +35,14 @@ public class Route {
 			put("s:", new Object[] { String.class, "([^/]*)" });
 			put("list:", new Object[] { List.class, "([^/|^,].*(?:,[^/].)*)" });
 			put("li:", new Object[] { List.class, "([^/|^,].*(?:,[^/].)*)" });
-			put("reg:", new Object[] {String.class});
-			put("r:", new Object[] {String.class});
+			put("reg:", new Object[] { String.class });
+			put("r:", new Object[] { String.class });
 		}
 	};
 
 	Pattern uriP = Pattern.compile("<([a-zA-Z_][a-zA-Z_0-9]*)(:[^>]*)?>");
-	Pattern argP = Pattern.compile("^<(int:|i:|long:|l:|float:|f:|double:|d:|str:|string:|s:|list:|li:|reg:|r:)?([^>]*)>$");
+	Pattern argP = Pattern
+	        .compile("^<(int:|i:|long:|l:|float:|f:|double:|d:|str:|string:|s:|list:|li:|reg:|r:)?([^>]*)>$");
 
 	private String rule; // 传进来的rule, 例如：/save/<name>/<int:age>
 	private String uriReg; // 转换后的uri正则, 例如：/save/\\w+/\\d+
@@ -158,7 +159,7 @@ public class Route {
 					if (!classAndRegMapping.containsKey(type)) {
 						throw new RouteDefineException("Can not support type[" + type + "]");
 					}
-					if (type.equalsIgnoreCase("reg:") || type.equalsIgnoreCase("r:") ) {
+					if (type.equalsIgnoreCase("reg:") || type.equalsIgnoreCase("r:")) {
 						Object[] classAndReg = this.classAndRegMapping.get(type);
 						typeList.add((Class<?>) classAndReg[0]);
 						uriReg = StringUtil.replace(uriReg, g, argM.group(2));
@@ -199,14 +200,20 @@ public class Route {
 
 		Object[] objects = new Object[matchStrs.length];
 		for (int i = 0; i < matchStrs.length; i++) {
-			if (types[i] == Integer.TYPE)
-				objects[i] = Integer.valueOf(matchStrs[i]);
-			else if (types[i] == Long.TYPE)
+			if (types[i] == Long.TYPE)
 				objects[i] = Long.valueOf(matchStrs[i]);
-			else if (types[i] == Float.TYPE)
-				objects[i] = Float.valueOf(matchStrs[i]);
+			else if (types[i] == Integer.TYPE) {
+				try {
+					objects[i] = Integer.valueOf(matchStrs[i]);
+				} catch (NumberFormatException ex) {
+					objects[i] = Long.valueOf(matchStrs[i]).intValue();
+				}
+			}
+
 			else if (types[i] == Double.TYPE)
 				objects[i] = Double.valueOf(matchStrs[i]);
+			else if (types[i] == Float.TYPE)
+				objects[i] = Float.valueOf(matchStrs[i]);
 			else if (types[i] == String.class)
 				objects[i] = matchStrs[i];
 			else if (types[i] == List.class)

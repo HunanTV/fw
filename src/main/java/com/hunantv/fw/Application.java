@@ -21,7 +21,7 @@ import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.SysConf;
 
 public class Application {
-	
+
 	private static final FwLogger logger = new FwLogger(Application.class);
 
 	private static Application instance = null;
@@ -34,9 +34,9 @@ public class Application {
 	private ServletHandler handler;
 	private SysConf sysConf;
 	private Properties jettyPros;
-//	private ClassPathXmlApplicationContext springCtx;
-	
-	
+
+	// private ClassPathXmlApplicationContext springCtx;
+
 	public static Application getInstance() {
 		if (null == instance) {
 			instance = new Application();
@@ -71,61 +71,60 @@ public class Application {
 	public SysConf getSysConf() {
 		return sysConf;
 	}
-	
+
 	private Map<String, Object> filterProperties(Properties pros, String prefix) {
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (Iterator iter = pros.keySet().iterator(); iter.hasNext();) {
 			String key = (String) iter.next();
 			if (key.startsWith(prefix)) {
-				System.out.println(key.substring(prefix.length()+1));
-				map.put(key.substring(prefix.length()+1), pros.get(key));
+				System.out.println(key.substring(prefix.length() + 1));
+				map.put(key.substring(prefix.length() + 1), pros.get(key));
 			}
 			map.put(key, pros.get(key));
 		}
 		return map;
 	}
-	
+
 	public void listener(int port) {
 		initJettyConfig();
-		
+
 		this.port = port;
 		HttpConfiguration httpConfiguration = initHttpConfiguration();
 		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
-		
+
 		QueuedThreadPool threadPool = this.initThreadPool();
 		this.server = new Server(threadPool);
-//	    this.handler = new ServletHandler();
-//	    this.server.setHandler(handler);
-		
 		int cores = Runtime.getRuntime().availableProcessors();
-		ServerConnector connector = new ServerConnector(server, null, null, null, 1+cores/2, -1, httpConnectionFactory);
+		ServerConnector connector = new ServerConnector(server, null, null, null, 1 + cores / 2, -1,
+		        httpConnectionFactory);
 		initConnector(connector);
 		connector.setPort(this.port);
 		server.setConnectors(new Connector[] { connector });
+		logger.info("Application listen on " + port);
 	}
-	
+
 	private ServerConnector initConnector(ServerConnector connector) {
 		Map<String, Object> poolCfg = filterProperties(jettyPros, "jetty.connector");
 		try {
-	        BeanUtils.populate(connector, poolCfg);
-        } catch (Exception ex) {
-        	throw new RuntimeException(ex);
-        }
+			BeanUtils.populate(connector, poolCfg);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 		return connector;
-    }
+	}
 
 	private QueuedThreadPool initThreadPool() {
 		QueuedThreadPool threadPool = new QueuedThreadPool();
 		Map<String, Object> poolCfg = filterProperties(jettyPros, "jetty.threadpool");
 		try {
-	        BeanUtils.populate(threadPool, poolCfg);
-        } catch (Exception ex) {
-        	throw new RuntimeException(ex);
-        }
+			BeanUtils.populate(threadPool, poolCfg);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 		return threadPool;
 	}
-	
+
 	private void initJettyConfig() {
 		try {
 			this.jettyPros = sysConf.read("jetty.properties");
@@ -140,55 +139,33 @@ public class Application {
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		Map<String, Object> httpCfg = filterProperties(jettyPros, "jetty.http");
 		try {
-	        BeanUtils.populate(httpConfiguration, httpCfg);
-        } catch (Exception ex) {
-        	throw new RuntimeException(ex);
-        }
+			BeanUtils.populate(httpConfiguration, httpCfg);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 		return httpConfiguration;
 	}
-	
-//	public void start() throws Exception {
-//		WebAppContext webAppCtx = new WebAppContext();
-//		webAppCtx.setContextPath("/");
-//		webAppCtx.addServlet(new ServletHolder(new Dispatcher()), "/*");
-//		/*
-//		 * String projectPath = new String("/Users/ryan/Workspace/happy_sunshine");
-//		 * webAppCtx.setDefaultsDescriptor(projectPath + "/demo-war/target/jetty-demo-war/WEB-INF/web.xml");
-//		 * webAppCtx.setResourceBase(projectPath + "/demo-war/target/jetty-demo-war");
-//		 */
-//		webAppCtx.setDefaultsDescriptor("");
-//		webAppCtx.setResourceBase("");
-//		webAppCtx.setParentLoaderPriority(true);
-//		this.server.setHandler(webAppCtx);
-//
-//		logger.info("application listen on " + port);
-//		this.server.start();
-//		this.server.join();
-//	}
 
-    public void start() throws Exception {
-//        handler.addServletWithMapping(Dispatcher.class, "/*");
-//    	handler.setHandler(new Dispatcher());
-        logger.info("Application listen on " + port);
-        this.server.setHandler(new Dispatcher());
-        this.server.start();
-        this.server.join();
-    }
+	public void start() throws Exception {
+		this.server.setHandler(new Dispatcher());
+		this.server.start();
+		this.server.join();
+		logger.info("Application Start OK ");
+	}
 
-    public void addFilterWithMapping(Class<? extends Filter> filter,
-            String pathSpec, int dispatches) {
-        this.handler.addFilterWithMapping(filter, pathSpec, dispatches);
-    }
+	public void addFilterWithMapping(Class<? extends Filter> filter, String pathSpec, int dispatches) {
+		this.handler.addFilterWithMapping(filter, pathSpec, dispatches);
+	}
 
-    public void stop() throws Exception {
-        this.server.stop();
-    }
+	public void stop() throws Exception {
+		this.server.stop();
+	}
 
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
 
-    public boolean isDebug() {
-        return this.debug;
-    }
+	public boolean isDebug() {
+		return this.debug;
+	}
 }
