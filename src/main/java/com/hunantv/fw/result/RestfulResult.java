@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hunantv.fw.Dispatcher;
 import com.hunantv.fw.utils.FwLogger;
 
@@ -14,7 +15,7 @@ public class RestfulResult implements Result {
 	protected String msg = "";
 	protected Object data = null;
 	public FwLogger logger = new FwLogger(RestfulResult.class);
-	
+
 	public RestfulResult() {
 		this(OK, "", null);
 	}
@@ -63,7 +64,7 @@ public class RestfulResult implements Result {
 
 	public String toJson() {
 		Map<String, Object> m = this.toMap();
-		return JSON.toJSONString(m);
+		return JSON.toJSONString(m, SerializerFeature.WriteMapNullValue);
 	}
 
 	public Map<String, Object> toMap() {

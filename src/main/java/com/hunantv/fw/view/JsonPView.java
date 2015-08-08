@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hunantv.fw.result.Result;
 
 public class JsonPView extends AbsView {
@@ -27,7 +28,7 @@ public class JsonPView extends AbsView {
 		if (v instanceof Result) {
 			strb.append(((Result) v).toJson());
 		} else {
-			strb.append(JSON.toJSONString(v));
+			strb.append(JSON.toJSONString(v, SerializerFeature.WriteMapNullValue));
 		}
 		strb.append(")");
 		return strb.toString();
