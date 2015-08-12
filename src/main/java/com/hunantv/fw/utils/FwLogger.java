@@ -37,7 +37,8 @@ public class FwLogger {
 	public String initSeqid() {
 		String uuid = (String) threadLocalUUID.get();
 		if (uuid == null) {
-			uuid = UUID.randomUUID().toString();
+//			uuid = UUID.randomUUID().toString();
+			uuid = SeqID.rnd().toString();
 			FwLogger.threadLocalUUID.set(uuid);
 			FwLogger.threadLocalStrb.set(new StringBuilder());
 		}

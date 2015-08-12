@@ -3,6 +3,7 @@ package com.hunantv.fw.cache;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.ObjectExistsException;
 
 import com.hunantv.fw.utils.FwLogger;
 
@@ -38,16 +39,16 @@ public class LocalCache {
 	}
 
 	public void set(String tableName, String key, Object value) {
-		Cache lru = cacheManager.getCache(tableName);
-		if (null == lru) {
-			// public Cache(String name, int maxElementsInMemory, boolean
-			// overflowToDisk,
-			// boolean eternal, long timeToLiveSeconds, long timeToIdleSeconds)
-			lru = new Cache(tableName, conf.max_len, conf.overflowToDisk, conf.eternal, conf.expired_seconds,
-			        conf.expired_seconds);
-			cacheManager.addCache(lru);
+		try {
+			Cache lru = cacheManager.getCache(tableName);
+			if (null == lru) {
+				// public Cache(String name, int maxElementsInMemory, boolean overflowToDisk, boolean eternal, long timeToLiveSeconds, long timeToIdleSeconds)
+				lru = new Cache(tableName, conf.max_len, conf.overflowToDisk, conf.eternal, conf.expired_seconds, conf.expired_seconds);
+				cacheManager.addCache(lru);
+			}
+			lru.put(new Element(key, value));
+		} catch (ObjectExistsException ex) {
 		}
-		lru.put(new Element(key, value));
 	}
 
 	public Cache table() {
