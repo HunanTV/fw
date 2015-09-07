@@ -4,9 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -27,16 +30,18 @@ import javax.servlet.http.Part;
 
 import com.hunantv.fw.exceptions.NotImplementException;
 import com.hunantv.fw.net.URLParser;
+import com.hunantv.fw.utils.StringUtil;
 
 public class FakeRequest implements HttpServletRequest {
 
 	private Map<String, String> parameter = new HashMap<String, String>();
 	private URLParser urlParser;
 	private String method;
-		
+
 	public void setMethod(String method) {
 		this.method = method;
 	}
+
 	public void setURLParser(URLParser urlParser) {
 		this.urlParser = urlParser;
 	}
@@ -223,8 +228,7 @@ public class FakeRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse)
-	        throws IllegalStateException {
+	public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
 		throw new NotImplementException();
 	}
 
@@ -284,7 +288,7 @@ public class FakeRequest implements HttpServletRequest {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 	@Override
 	public String getMethod() {
 		return this.method;
@@ -307,7 +311,12 @@ public class FakeRequest implements HttpServletRequest {
 
 	@Override
 	public String getQueryString() {
-		throw new NotImplementException();
+		List<String> queryStringList = new ArrayList<String>();
+		for (Iterator<String> iter = parameter.keySet().iterator(); iter.hasNext();) {
+			String key = iter.next();
+			queryStringList.add(key + "=" + parameter.get(key));
+		}
+		return StringUtil.join(queryStringList.toArray(new String[0]), "&");
 	}
 
 	@Override
