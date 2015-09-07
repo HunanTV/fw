@@ -49,6 +49,7 @@ public class UserController extends Controller {
 	
 	public View edit(int id) {
 		DB db = new DB();
+		this.logger.delayInfo("id", id);
 		Map<String, Object> record = db.get("SELECT * FROM user WHERE id = ?", id);
 		return this.renderHtml("user/edit.html", new HashMap() {
 			{

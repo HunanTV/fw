@@ -1,5 +1,7 @@
 package com.hunantv.fw.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Level;
@@ -8,11 +10,41 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.hunantv.fw.Application;
 
+class LoggerData {
+	public String id;
+	private List<String> data;
+
+	public LoggerData() {
+		this(SeqID.rnd().toString());
+	}
+
+	public LoggerData(String id) {
+		this.id = id;
+		data = new ArrayList<String>();
+		// this.add("SeqID", this.id);
+	}
+
+	public void add(String key, String value) {
+		this.data.add(key + "=" + value);
+	}
+
+	public String toString() {
+		if (data.size() == 0)
+			return "";
+		StringBuilder strb = new StringBuilder();
+		strb.append("[ ");
+		for (String ele : data) {
+			strb.append(ele).append(" ");
+		}
+		strb.append("]");
+		return strb.toString();
+	}
+}
+
 public class FwLogger {
 
 	private Logger logger = null;
-	private static ThreadLocal<String> threadLocalUUID = new ThreadLocal<String>();
-	private static ThreadLocal<StringBuilder> threadLocalStrb = new ThreadLocal<StringBuilder>();
+	private static ThreadLocal<LoggerData> threadLocalVar = new ThreadLocal<LoggerData>();
 
 	static {
 		try {
@@ -23,33 +55,30 @@ public class FwLogger {
 		}
 	}
 
-	public String getSeqid() {
-		return initSeqid();
-	}
-
 	public FwLogger delayInfo(String key, Object msg) {
 		initSeqid();
-		StringBuilder data = (StringBuilder) threadLocalStrb.get();
-		data.append(key).append("=").append(msg.toString());
+		LoggerData data = (LoggerData) threadLocalVar.get();
+		data.add(key, msg.toString());
 		return this;
 	}
 
+	public String getSeqid() {
+		return this.initSeqid();
+	}
+
 	public String initSeqid() {
-		String uuid = (String) threadLocalUUID.get();
-		if (uuid == null) {
-//			uuid = UUID.randomUUID().toString();
-			uuid = SeqID.rnd().toString();
-			FwLogger.threadLocalUUID.set(uuid);
-			FwLogger.threadLocalStrb.set(new StringBuilder());
+		LoggerData data = (LoggerData) threadLocalVar.get();
+		if (data == null) {
+			data = new LoggerData();
+			FwLogger.threadLocalVar.set(data);
 		}
-		return uuid;
+		return data.id;
 	}
 
 	public void clearSeqid() {
-		StringBuilder data = (StringBuilder) threadLocalStrb.get();
+		LoggerData data = (LoggerData) threadLocalVar.get();
 		this.info(data.toString());
-		FwLogger.threadLocalUUID.remove();
-		FwLogger.threadLocalStrb.remove();
+		FwLogger.threadLocalVar.remove();
 	}
 
 	public static FwLogger getLogger(Class<?> clz) {

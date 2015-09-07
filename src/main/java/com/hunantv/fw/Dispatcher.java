@@ -18,14 +18,13 @@ import com.hunantv.fw.utils.WebUtil;
 import com.hunantv.fw.view.View;
 
 public class Dispatcher extends AbstractHandler {
-	
+
 	public final static FwLogger logger = new FwLogger(Dispatcher.class);
 	Application app = Application.getInstance();
 	protected Routes routes = app.getRoutes();;
 	protected boolean debug = app.isDebug();
 
-	protected static final MultipartConfigElement MULTI_PART_CONFIG = new MultipartConfigElement(
-	        System.getProperty("java.io.tmpdir"));
+	protected static final MultipartConfigElement MULTI_PART_CONFIG = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
 
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -55,7 +54,11 @@ public class Dispatcher extends AbstractHandler {
 
 	public View doIt(String target, HttpServletRequest request, HttpServletResponse response) throws HttpException {
 		String uri = StringUtil.ensureEndedWith(request.getRequestURI(), "/");
+		String queryStr = request.getQueryString();
+
 		logger.delayInfo("uri", uri);
+		if (null != queryStr)
+			logger.delayInfo("query", queryStr);
 		ControllerAndAction controllerAndAction = routes.match(request.getMethod(), uri);
 		return controllerAndAction.doAction(request, response);
 	}
