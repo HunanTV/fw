@@ -436,6 +436,10 @@ public class StringUtil {
 		}
 		return defaultValue;
 	}
+	
+    public static boolean isEmpty(final CharSequence cs) {
+        return cs == null || cs.length() == 0;
+    }
 
 	public static void main(String[] args) {
 		// String s1 = "abc abc";
