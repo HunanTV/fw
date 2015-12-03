@@ -64,12 +64,8 @@ public class URLParser {
 	}
 
 	public URLParser addQuery(Map<String, Object> queries) {
-		if (null != queries) {
-			for (Iterator<String> iter = queries.keySet().iterator(); iter.hasNext();) {
-				String key = iter.next();
-				this.addQuery(key, queries.get(key));
-			}
-		}
+		if (null != queries)
+			queries.forEach((k, v) -> addQuery(k, v));
 		return this;
 	}
 

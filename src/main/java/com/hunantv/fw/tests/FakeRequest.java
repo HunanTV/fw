@@ -312,10 +312,7 @@ public class FakeRequest implements HttpServletRequest {
 	@Override
 	public String getQueryString() {
 		List<String> queryStringList = new ArrayList<String>();
-		for (Iterator<String> iter = parameter.keySet().iterator(); iter.hasNext();) {
-			String key = iter.next();
-			queryStringList.add(key + "=" + parameter.get(key));
-		}
+		parameter.forEach((k, v) -> queryStringList.add(k + "=" + v));
 		return StringUtil.join(queryStringList.toArray(new String[0]), "&");
 	}
 
