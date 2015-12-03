@@ -91,17 +91,15 @@ public class FwHttpClient {
 	}
 
 	private static String getContent(HttpResponse res) throws Exception {
-		StringBuilder strb = new StringBuilder();
 		BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
-
-		strb = new StringBuilder();
+		StringBuilder strb = new StringBuilder();
 		String line = null;
 		while (null != (line = rd.readLine())) {
 			strb.append(line).append("\n");
 		}
 		return strb.toString();
 	}
-
+/*
 	public static void main(String[] args) throws Exception {
 	}
 
@@ -124,4 +122,5 @@ public class FwHttpClient {
 		// System.out.println(res.body);
 		// System.out.println(res.code);
 	}
+*/
 }
