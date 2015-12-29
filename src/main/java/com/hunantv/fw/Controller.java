@@ -196,7 +196,7 @@ public class Controller {
 
 	public Float getFloatNormalParam(String name, Float defaultValue) {
 		String value = this.request.getParameter(name);
-		return StringUtil.str2Float(value);
+		return StringUtil.str2Float(value, defaultValue);
 	}
 
 	public Float getFloatPartParam(String name) {
@@ -230,7 +230,7 @@ public class Controller {
 
 	public Double getDoubleNormalParam(String name, Double defaultValue) {
 		String value = this.request.getParameter(name);
-		return StringUtil.str2Double(value);
+		return StringUtil.str2Double(value, defaultValue);
 	}
 
 	public Double getDoublePartParam(String name) {
