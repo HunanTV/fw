@@ -39,7 +39,6 @@ public class URLParser {
 		path = url.getPath();
 		String queryStr = url.getQuery();
 		if (null != queryStr && queryStr.length() > 0) {
-			queryStr = URLDecoder.decode(queryStr);
 			String[] vs = StringUtil.split(queryStr, "&");
 			for (String v : vs) {
 				if (v != null && v.trim().length() > 0) {
@@ -81,7 +80,7 @@ public class URLParser {
 			if (vs.length == 1)
 				m.put(vs[0], "");
 			else
-				m.put(vs[0], vs[1]);
+				m.put(vs[0], URLDecoder.decode(vs[1]));
 		}
 		return m;
 	}
