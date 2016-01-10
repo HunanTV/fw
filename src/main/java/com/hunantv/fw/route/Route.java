@@ -16,8 +16,8 @@ import com.hunantv.fw.exceptions.RouteDefineException;
 import com.hunantv.fw.utils.StringUtil;
 
 public class Route {
-	public static enum HttpMethod {
-		GET, POST, PUT, DELETE, OPTIONS, HEAD, TRACE;
+	public enum HttpMethod {
+		GET, POST, PUT, DELETE, OPTIONS, HEAD, TRACE
 	}
 
 	Map<String, Object[]> classAndRegMapping = new HashMap<String, Object[]>() {
@@ -260,9 +260,8 @@ public class Route {
 
 	public ControllerAndAction buildControllerAndAction(Object[] args) throws HttpException {
 		Class<? extends Controller> controllerClass = this.getController();
-		Controller controller = null;
 		try {
-			controller = controllerClass.newInstance();
+			Controller controller = controllerClass.newInstance();
 			if (args == null)
 				return new ControllerAndAction(controller, this.action);
 			return new ControllerAndAction(controller, this.action, args);

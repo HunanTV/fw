@@ -77,10 +77,9 @@ public class SysConf {
 				String path = url.getFile();
 				int fileStrPosition = path.indexOf("file:/");
 				int begin = 0;
-				int end = path.length();
 				if (fileStrPosition >= 0)
 					begin = fileStrPosition + 5;
-				end = path.indexOf("WEB-INF/");
+				int end = path.indexOf("WEB-INF/");
 				if (end > 0) {
 					String rf = path.substring(begin, end);
 					webPath = rf;
