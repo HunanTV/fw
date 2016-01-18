@@ -158,6 +158,9 @@ public class FwLogger {
 	}
 
 	private String buildMsg(Object message) {
+	    if(message == null){
+	        return this.getSeqid() + "|";
+	    }
 		return this.getSeqid() + "|" + message.toString();
 	}
 }
