@@ -33,8 +33,8 @@ public class DummyServletOutputStream extends ServletOutputStream {
 	}
 
 	@Override
-	public void write(byte[] b, int len, int off) throws IOException {
-		outputStream.write(b, len, off);
+	public void write(byte[] b, int off, int len) throws IOException {
+		outputStream.write(b, off, len);
 	}
 
 	@Override

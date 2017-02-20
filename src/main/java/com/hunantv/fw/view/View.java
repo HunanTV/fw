@@ -12,11 +12,11 @@ import java.io.Writer;
 public interface View {
 	FwLogger logger = FwLogger.getLogger(View.class);
 
-	public abstract String render();
+	String render();
 
-	public abstract void renderTo(Writer out) throws IOException;
+	void renderTo(Writer out) throws IOException;
 
-	public abstract Object getV();
+	Object getV();
 
 	/**
 	 * Determine if this view should rendered as byte's stream, <br/>
@@ -24,7 +24,7 @@ public interface View {
 	 *
 	 * @return
 	 */
-	public default boolean isStreamView() {
+	default boolean isStreamView() {
 		return false;
 	}
 
@@ -35,7 +35,7 @@ public interface View {
 	 * @param response: HttpServletResponse
 	 * @throws IOException
 	 */
-	public default void renderTo(HttpServletResponse response) throws IOException {
+	default void renderTo(HttpServletResponse response) throws IOException {
 		if (isStreamView()) {
 			renderTo(response.getOutputStream());
 		} else {
@@ -48,7 +48,7 @@ public interface View {
 	 *
 	 * @return View's bytes
 	 */
-	public default byte[] getBytes() {
+	default byte[] getBytes() {
 		return null;
 	}
 
@@ -61,7 +61,7 @@ public interface View {
 	 * @param out: OutputStream
 	 * @throws IOException
 	 */
-	public default void renderTo(OutputStream out) throws IOException {
+	default void renderTo(OutputStream out) throws IOException {
 		byte[] bytes = getBytes();
 
 		if (bytes == null) {

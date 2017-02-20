@@ -14,12 +14,12 @@ public class Routes {
 	/**
 	 * { uri: { httpMethod: Route } }
 	 */
-	private Map<String, Map<String, Route>> staticRoutes = new HashMap<String, Map<String, Route>>();
+	private Map<String, Map<String, Route>> staticRoutes = new HashMap<>();
 
 	/**
 	 * { Route: { httpMethod } }
 	 */
-	private Map<Route, Set<String>> dyRoutes = new HashMap<Route, Set<String>>();
+	private Map<Route, Set<String>> dyRoutes = new HashMap<>();
 
 	public Routes() {
 	}
@@ -38,7 +38,7 @@ public class Routes {
 		String routeUri = route.getUriReg();
 		Map<String, Route> tmpMap = staticRoutes.get(routeUri);
 		if (null == tmpMap) {
-			tmpMap = new HashMap<String, Route>();
+			tmpMap = new HashMap<>();
 			staticRoutes.put(routeUri, tmpMap);
 		}
 		tmpMap.put(route.getHttpMethod().toString(), route);

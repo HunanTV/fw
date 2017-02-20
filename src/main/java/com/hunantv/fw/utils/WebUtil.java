@@ -8,7 +8,10 @@ public class WebUtil {
 		String contentType = request.getContentType();
 		return contentType != null && contentType.startsWith("multipart/form-data");
 	}
-
+	public static boolean isTextHtml(HttpServletRequest request) {
+		String HeaderValue = request.getHeader("Accept");
+		return  HeaderValue != null && HeaderValue.startsWith("text/html");
+	}
 	private static String[] IP_HEADS = new String[] { 
 		"X-Forwarded-For", 
 		"Proxy-Client-IP", 

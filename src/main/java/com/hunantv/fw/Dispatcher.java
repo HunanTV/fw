@@ -21,7 +21,7 @@ public class Dispatcher extends AbstractHandler {
 
 	public final static FwLogger logger = new FwLogger(Dispatcher.class);
 	Application app = Application.getInstance();
-	protected Routes routes = app.getRoutes();;
+	protected Routes routes = app.getRoutes();
 	protected boolean debug = app.isDebug();
 
 	protected static final MultipartConfigElement MULTI_PART_CONFIG = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
@@ -32,7 +32,9 @@ public class Dispatcher extends AbstractHandler {
 		Long btime = System.currentTimeMillis();
 		logger.initSeqid();
 		logger.debug(target);
-		response.setContentType("text/html;charset=UTF-8");
+		if (WebUtil.isTextHtml(request)) {
+			response.setContentType("text/html;charset=UTF-8");
+		}
 		if (WebUtil.isMultipart(request)) {
 			request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, MULTI_PART_CONFIG);
 		}
@@ -47,7 +49,7 @@ public class Dispatcher extends AbstractHandler {
 			this.err500(response, ex);
 		} finally {
 			Long etime = System.currentTimeMillis();
-			logger.delayInfo("cost", new Long(etime - btime).toString());
+			logger.delayInfo("cost", Long.toString(etime - btime));
 			logger.clearSeqid();
 		}
 	}
