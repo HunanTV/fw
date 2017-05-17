@@ -11,6 +11,7 @@ import javax.servlet.http.Part;
 
 import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.WebUtil;
+import com.hunantv.fw.utils.XssShieldUtil;
 import com.hunantv.fw.view.HtmlView;
 import com.hunantv.fw.view.JsonPView;
 import com.hunantv.fw.view.JsonView;
@@ -20,315 +21,347 @@ import com.hunantv.fw.view.View;
 
 public class Controller {
 
-	protected HttpServletRequest request;
-	protected HttpServletResponse response;
-	protected Map<String, String> partParams = new HashMap<String, String>();
+    protected HttpServletRequest request;
+    protected HttpServletResponse response;
+    protected Map<String, String> partParams = new HashMap<String, String>();
 
-	public HttpServletRequest getRequest() {
-		return request;
-	}
+    public HttpServletRequest getRequest() {
+        return request;
+    }
 
-	public void setRequest(HttpServletRequest request) {
-		this.request = request;
-	}
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
 
-	public HttpServletResponse getResponse() {
-		return response;
-	}
+    public HttpServletResponse getResponse() {
+        return response;
+    }
 
-	public void setResponse(HttpServletResponse response) {
-		this.response = response;
-	}
+    public void setResponse(HttpServletResponse response) {
+        this.response = response;
+    }
 
-	public View renderHtml(String htmlPath) {
-		return new HtmlView(htmlPath, new HashMap<String, Object>());
-	}
+    public View renderHtml(String htmlPath) {
+        return new HtmlView(htmlPath, new HashMap<String, Object>());
+    }
 
-	public View renderHtml(String htmlPath, Map<String, Object> data) {
-		return new HtmlView(htmlPath, data);
-	}
+    public View renderHtml(String htmlPath, Map<String, Object> data) {
+        return new HtmlView(htmlPath, data);
+    }
 
-	public View renderString(String str) {
-		return new StringView(str);
-	}
+    public View renderString(String str) {
+        return new StringView(str);
+    }
 
-	public View renderJson(Object object) {
-		return new JsonView(object);
-	}
+    private void addJsonContentType() {
+        if (this.response != null) {
+            this.response.setContentType("application/json;charset=UTF-8");
+        }
+    }
 
-	public View renderJsonP(Object object) {
-		String callback = this.getStrNormalParam("callback", "JQuery_").trim();
-		return new JsonPView(callback, object);
-	}
+    public View renderJson(Object object) {
+        this.addJsonContentType();
+        return new JsonView(object);
+    }
 
-	public View renderJsonOrJsonP(Object object) {
-		String callback = this.getStrNormalParam("callback", "").trim();
-		if (callback.length() == 0) // json
-			return new JsonView(object);
-		return new JsonPView(callback, object); // jsonp
-	}
+    public View renderJsonP(Object object) {
+        this.addJsonContentType();
+        String callback = this.getStrNormalParam("callback", "JQuery_").trim();
+        callback = XssShieldUtil.stripXss(callback);
+        return new JsonPView(callback, object);
+    }
 
-	public View redirect(String str) {
-		return new RedirectView(str);
-	}
+    public View renderJsonOrJsonP(Object object) {
+        this.addJsonContentType();
+        String callback = this.getStrNormalParam("callback", "").trim();
+        if (callback.length() == 0) // json
+            return new JsonView(object);
+        callback = XssShieldUtil.stripXss(callback);
+        return new JsonPView(callback, object); // jsonp
+    }
 
-	// ////////////////////////////////////////////
-	// get string params //////////////////////////
-	// ////////////////////////////////////////////
-	public String getStrParam(String name) {
-		return getStrParam(name, null);
-	}
+    public View renderJsonP(Object object, boolean isCloseXssFilter) {
+        this.addJsonContentType();
+        String callback = this.getStrNormalParam("callback", "JQuery_").trim();
+        if (!isCloseXssFilter) {
+            callback = XssShieldUtil.stripXss(callback);
+        }
+        return new JsonPView(callback, object);
+    }
 
-	public String getStrParam(String name, String defaultValue) {
-		if (WebUtil.isMultipart(request)) {
-			String value = this.getStrPartParam(name);
-			if (null != value)
-				return value;
-		}
-		return this.getStrNormalParam(name, defaultValue);
-	}
+    public View renderJsonOrJsonP(Object object, boolean isCloseXssFilter) {
+        this.addJsonContentType();
+        String callback = this.getStrNormalParam("callback", "").trim();
+        if (callback.length() == 0) {// json
+            return new JsonView(object);
+        }
+        if (!isCloseXssFilter) {
+            callback = XssShieldUtil.stripXss(callback);
+        }
+        return new JsonPView(callback, object); // jsonp
+    }
 
-	public String getStrNormalParam(String name) {
-		return this.getStrNormalParam(name, null);
-	}
+    public View redirect(String str) {
+        return new RedirectView(str);
+    }
 
-	public String getStrNormalParam(String name, String defaultValue) {
-		String value = this.request.getParameter(name);
-		return value == null ? defaultValue : value;
-	}
+    // ////////////////////////////////////////////
+    // get string params //////////////////////////
+    // ////////////////////////////////////////////
+    public String getStrParam(String name) {
+        return getStrParam(name, null);
+    }
 
-	public String getStrPartParam(String name) {
-		return getStrPartParam(name, null);
-	}
+    public String getStrParam(String name, String defaultValue) {
+        if (WebUtil.isMultipart(request)) {
+            String value = this.getStrPartParam(name);
+            if (null != value)
+                return value;
+        }
+        return this.getStrNormalParam(name, defaultValue);
+    }
 
-	public String getStrPartParam(String name, String defaultValue) {
-		String value = this.getPartParam(name);
-		return value == null ? defaultValue : value;
-	}
+    public String getStrNormalParam(String name) {
+        return this.getStrNormalParam(name, null);
+    }
 
-	// ////////////////////////////////////////////
-	// get Integer params /////////////////////////
-	// ////////////////////////////////////////////
-	public Integer getIntegerParam(String name) {
-		return getIntegerParam(name, null);
-	}
+    public String getStrNormalParam(String name, String defaultValue) {
+        String value = this.request.getParameter(name);
+        return value == null ? defaultValue : value;
+    }
 
-	public Integer getIntegerParam(String name, Integer defaultValue) {
-		if (WebUtil.isMultipart(request)) {
-			Integer value = this.getIntegerPartParam(name);
-			if (null != value)
-				return value;
-		}
-		return this.getIntegerNormalParam(name, defaultValue);
-	}
+    public String getStrPartParam(String name) {
+        return getStrPartParam(name, null);
+    }
 
-	public Integer getIntegerNormalParam(String name) {
-		return getIntegerNormalParam(name, null);
-	}
+    public String getStrPartParam(String name, String defaultValue) {
+        String value = this.getPartParam(name);
+        return value == null ? defaultValue : value;
+    }
 
-	public Integer getIntegerNormalParam(String name, Integer defaultValue) {
-		String value = this.request.getParameter(name);
-		return StringUtil.str2Integer(value, defaultValue);
-	}
+    // ////////////////////////////////////////////
+    // get Integer params /////////////////////////
+    // ////////////////////////////////////////////
+    public Integer getIntegerParam(String name) {
+        return getIntegerParam(name, null);
+    }
 
-	public Integer getIntegerPartParam(String name) {
-		return getIntegerPartParam(name, null);
-	}
+    public Integer getIntegerParam(String name, Integer defaultValue) {
+        if (WebUtil.isMultipart(request)) {
+            Integer value = this.getIntegerPartParam(name);
+            if (null != value)
+                return value;
+        }
+        return this.getIntegerNormalParam(name, defaultValue);
+    }
 
-	public Integer getIntegerPartParam(String name, Integer defaultValue) {
-		String value = getPartParam(name);
-		return StringUtil.str2Integer(value);
-	}
+    public Integer getIntegerNormalParam(String name) {
+        return getIntegerNormalParam(name, null);
+    }
 
-	// ////////////////////////////////////////////
-	// get Long params ////////////////////////////
-	// ////////////////////////////////////////////
-	public Long getLongParam(String name) {
-		return getLongParam(name, null);
-	}
+    public Integer getIntegerNormalParam(String name, Integer defaultValue) {
+        String value = this.request.getParameter(name);
+        return StringUtil.str2Integer(value, defaultValue);
+    }
 
-	public Long getLongParam(String name, Long defaultValue) {
-		if (WebUtil.isMultipart(request)) {
-			Long value = this.getLongPartParam(name);
-			if (null != value)
-				return value;
-		}
-		return this.getLongNormalParam(name, defaultValue);
-	}
+    public Integer getIntegerPartParam(String name) {
+        return getIntegerPartParam(name, null);
+    }
 
-	public Long getLongNormalParam(String name) {
-		return getLongNormalParam(name, null);
-	}
+    public Integer getIntegerPartParam(String name, Integer defaultValue) {
+        String value = getPartParam(name);
+        return StringUtil.str2Integer(value);
+    }
 
-	public Long getLongNormalParam(String name, Long defaultValue) {
-		String value = this.request.getParameter(name);
-		return StringUtil.str2Long(value, defaultValue);
-	}
+    // ////////////////////////////////////////////
+    // get Long params ////////////////////////////
+    // ////////////////////////////////////////////
+    public Long getLongParam(String name) {
+        return getLongParam(name, null);
+    }
 
-	public Long getLongPartParam(String name) {
-		return getLongPartParam(name, null);
-	}
+    public Long getLongParam(String name, Long defaultValue) {
+        if (WebUtil.isMultipart(request)) {
+            Long value = this.getLongPartParam(name);
+            if (null != value)
+                return value;
+        }
+        return this.getLongNormalParam(name, defaultValue);
+    }
 
-	public Long getLongPartParam(String name, Integer defaultValue) {
-		String value = getPartParam(name);
-		return StringUtil.str2Long(value);
-	}
+    public Long getLongNormalParam(String name) {
+        return getLongNormalParam(name, null);
+    }
 
-	// ////////////////////////////////////////////
-	// get Float params ///////////////////////////
-	// ////////////////////////////////////////////
-	public Float getFloatParam(String name) {
-		return getFloatParam(name, null);
-	}
+    public Long getLongNormalParam(String name, Long defaultValue) {
+        String value = this.request.getParameter(name);
+        return StringUtil.str2Long(value, defaultValue);
+    }
 
-	public Float getFloatParam(String name, Float defaultValue) {
-		if (WebUtil.isMultipart(request)) {
-			Float value = this.getFloatPartParam(name);
-			if (null != value)
-				return value;
-		}
-		return this.getFloatNormalParam(name, defaultValue);
-	}
+    public Long getLongPartParam(String name) {
+        return getLongPartParam(name, null);
+    }
 
-	public Float getFloatNormalParam(String name) {
-		return getFloatNormalParam(name, null);
-	}
+    public Long getLongPartParam(String name, Integer defaultValue) {
+        String value = getPartParam(name);
+        return StringUtil.str2Long(value);
+    }
 
-	public Float getFloatNormalParam(String name, Float defaultValue) {
-		String value = this.request.getParameter(name);
-		return StringUtil.str2Float(value, defaultValue);
-	}
+    // ////////////////////////////////////////////
+    // get Float params ///////////////////////////
+    // ////////////////////////////////////////////
+    public Float getFloatParam(String name) {
+        return getFloatParam(name, null);
+    }
 
-	public Float getFloatPartParam(String name) {
-		return getFloatPartParam(name, null);
-	}
+    public Float getFloatParam(String name, Float defaultValue) {
+        if (WebUtil.isMultipart(request)) {
+            Float value = this.getFloatPartParam(name);
+            if (null != value)
+                return value;
+        }
+        return this.getFloatNormalParam(name, defaultValue);
+    }
 
-	public Float getFloatPartParam(String name, Float defaultValue) {
-		String value = getPartParam(name);
-		return StringUtil.str2Float(value);
-	}
+    public Float getFloatNormalParam(String name) {
+        return getFloatNormalParam(name, null);
+    }
 
-	// ////////////////////////////////////////////
-	// get Double params //////////////////////////
-	// ////////////////////////////////////////////
-	public Double getDoubleParam(String name) {
-		return getDoubleParam(name, null);
-	}
+    public Float getFloatNormalParam(String name, Float defaultValue) {
+        String value = this.request.getParameter(name);
+        return StringUtil.str2Float(value, defaultValue);
+    }
 
-	public Double getDoubleParam(String name, Double defaultValue) {
-		if (WebUtil.isMultipart(request)) {
-			Double value = this.getDoublePartParam(name);
-			if (null != value)
-				return value;
-		}
-		return this.getDoubleNormalParam(name, defaultValue);
-	}
+    public Float getFloatPartParam(String name) {
+        return getFloatPartParam(name, null);
+    }
 
-	public Double getDoubleNormalParam(String name) {
-		return getDoubleNormalParam(name, null);
-	}
+    public Float getFloatPartParam(String name, Float defaultValue) {
+        String value = getPartParam(name);
+        return StringUtil.str2Float(value);
+    }
 
-	public Double getDoubleNormalParam(String name, Double defaultValue) {
-		String value = this.request.getParameter(name);
-		return StringUtil.str2Double(value, defaultValue);
-	}
+    // ////////////////////////////////////////////
+    // get Double params //////////////////////////
+    // ////////////////////////////////////////////
+    public Double getDoubleParam(String name) {
+        return getDoubleParam(name, null);
+    }
 
-	public Double getDoublePartParam(String name) {
-		return getDoublePartParam(name, null);
-	}
+    public Double getDoubleParam(String name, Double defaultValue) {
+        if (WebUtil.isMultipart(request)) {
+            Double value = this.getDoublePartParam(name);
+            if (null != value)
+                return value;
+        }
+        return this.getDoubleNormalParam(name, defaultValue);
+    }
 
-	public Double getDoublePartParam(String name, Double defaultValue) {
-		String value = getPartParam(name);
-		return StringUtil.str2Double(value);
-	}
+    public Double getDoubleNormalParam(String name) {
+        return getDoubleNormalParam(name, null);
+    }
 
-	// ////////////////////////////////////////////
-	// get List params ////////////////////////////
-	// ////////////////////////////////////////////
-	public List getListParam(String name) {
-		return getListParam(name, null);
-	}
+    public Double getDoubleNormalParam(String name, Double defaultValue) {
+        String value = this.request.getParameter(name);
+        return StringUtil.str2Double(value, defaultValue);
+    }
 
-	public List getListParam(String name, List defaultValue) {
-		if (WebUtil.isMultipart(request)) {
-			List value = this.getListPartParam(name);
-			if (null != value)
-				return value;
-		}
-		return this.getListNormalParam(name, defaultValue);
-	}
+    public Double getDoublePartParam(String name) {
+        return getDoublePartParam(name, null);
+    }
 
-	public List getListNormalParam(String name) {
-		return this.getListNormalParam(name, null);
-	}
+    public Double getDoublePartParam(String name, Double defaultValue) {
+        String value = getPartParam(name);
+        return StringUtil.str2Double(value);
+    }
 
-	public List getListNormalParam(String name, List defaultValue) {
-		String value = this.request.getParameter(name);
-		return StringUtil.str2List(value, defaultValue);
-	}
+    // ////////////////////////////////////////////
+    // get List params ////////////////////////////
+    // ////////////////////////////////////////////
+    public List<String> getListParam(String name) {
+        return getListParam(name, null);
+    }
 
-	public List getListPartParam(String name) {
-		return this.getListPartParam(name, null);
-	}
+    public List<String> getListParam(String name, List<String> defaultValue) {
+        if (WebUtil.isMultipart(request)) {
+            List<String> value = this.getListPartParam(name);
+            if (null != value)
+                return value;
+        }
+        return this.getListNormalParam(name, defaultValue);
+    }
 
-	public List getListPartParam(String name, List defaultValue) {
-		String value = this.getPartParam(name);
-		return StringUtil.str2List(value, defaultValue);
-	}
+    public List<String> getListNormalParam(String name) {
+        return this.getListNormalParam(name, null);
+    }
 
-	// ////////////////////////////////////////////
-	// get Array params ///////////////////////////
-	// ////////////////////////////////////////////
+    public List<String> getListNormalParam(String name, List<String> defaultValue) {
+        String value = this.request.getParameter(name);
+        return StringUtil.str2List(value, defaultValue);
+    }
 
-	public String[] getArrayParam(String name) {
-		return getArrayParam(name, null);
-	}
+    public List<String> getListPartParam(String name) {
+        return this.getListPartParam(name, null);
+    }
 
-	public String[] getArrayParam(String name, String[] defaultValue) {
-		if (WebUtil.isMultipart(request)) {
-			String[] value = this.getArrayPartParam(name);
-			if (null != value)
-				return value;
-		}
-		return this.getArrayNormalParam(name, defaultValue);
-	}
+    public List<String> getListPartParam(String name, List<String> defaultValue) {
+        String value = this.getPartParam(name);
+        return StringUtil.str2List(value, defaultValue);
+    }
 
-	public String[] getArrayNormalParam(String name) {
-		return this.getArrayNormalParam(name, null);
-	}
+    // ////////////////////////////////////////////
+    // get Array params ///////////////////////////
+    // ////////////////////////////////////////////
 
-	public String[] getArrayNormalParam(String name, String[] defaultValue) {
-		String value = this.request.getParameter(name);
-		return StringUtil.str2Array(value, defaultValue);
-	}
+    public String[] getArrayParam(String name) {
+        return getArrayParam(name, null);
+    }
 
-	public String[] getArrayPartParam(String name) {
-		return this.getArrayPartParam(name, null);
-	}
+    public String[] getArrayParam(String name, String[] defaultValue) {
+        if (WebUtil.isMultipart(request)) {
+            String[] value = this.getArrayPartParam(name);
+            if (null != value)
+                return value;
+        }
+        return this.getArrayNormalParam(name, defaultValue);
+    }
 
-	public String[] getArrayPartParam(String name, String[] defaultValue) {
-		String value = this.getPartParam(name);
-		return StringUtil.str2Array(value, defaultValue);
-	}
+    public String[] getArrayNormalParam(String name) {
+        return this.getArrayNormalParam(name, null);
+    }
 
-	protected String getPartParam(String name) {
-		try {
-			if (!partParams.containsKey(name)) {
-				Part part = this.request.getPart(name);
-				if (part == null)
-					return null;
-				InputStream in = part.getInputStream();
-				StringBuilder strb = new StringBuilder();
-				byte[] bytes = new byte[20 << 10];
-				int len = -1;
-				while (-1 != (len = in.read(bytes))) {
-					strb.append(new String(bytes, 0, len));
-				}
-				partParams.put(name, strb.toString());
-			}
-			return partParams.get(name);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+    public String[] getArrayNormalParam(String name, String[] defaultValue) {
+        String value = this.request.getParameter(name);
+        return StringUtil.str2Array(value, defaultValue);
+    }
+
+    public String[] getArrayPartParam(String name) {
+        return this.getArrayPartParam(name, null);
+    }
+
+    public String[] getArrayPartParam(String name, String[] defaultValue) {
+        String value = this.getPartParam(name);
+        return StringUtil.str2Array(value, defaultValue);
+    }
+
+    protected String getPartParam(String name) {
+        try {
+            if (!partParams.containsKey(name)) {
+                Part part = this.request.getPart(name);
+                if (part == null)
+                    return null;
+                InputStream in = part.getInputStream();
+                StringBuilder strb = new StringBuilder();
+                byte[] bytes = new byte[20 << 10];
+                int len = -1;
+                while (-1 != (len = in.read(bytes))) {
+                    strb.append(new String(bytes, 0, len));
+                }
+                partParams.put(name, strb.toString());
+            }
+            return partParams.get(name);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }
