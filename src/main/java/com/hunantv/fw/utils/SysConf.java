@@ -22,7 +22,7 @@ public class SysConf {
 
     public SysConf() {
     }
-    
+
     static {
         System.out.println("===============================");
         String env = System.getProperty("fw.project.env", "");

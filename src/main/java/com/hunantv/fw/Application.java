@@ -16,6 +16,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
+import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.SysConf;
@@ -46,6 +47,10 @@ public class Application {
 
 	private Application() {
 		sysConf = new SysConf();
+	}
+
+	public void addVersionRoute(){
+	    this.getRoutes().add(Route.get("/version", VersionController.class, "version"));
 	}
 
 	public Map<String, ?> getSettings() {
