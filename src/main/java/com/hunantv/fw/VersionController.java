@@ -39,6 +39,7 @@ public class VersionController extends Controller {
             appInfo.setCommitId(properties.getProperty("git.commit.id", ""));
             appInfo.setCommitTime(properties.getProperty("git.commit.time", ""));
             appInfo.setVersion(properties.getProperty("git.build.version", ""));
+            appInfo.setCommitMessage(properties.getProperty("git.commit.message.full", ""));
         } catch (Exception e) {
             e.printStackTrace();
         }

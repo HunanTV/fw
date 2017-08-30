@@ -6,6 +6,7 @@ public class AppInfo {
     private String buildTime;
     private String commitTime;
     private String commitId;
+    private String commitMessage;
     private String closeTagName;
     private String version;
     private String branch;
@@ -71,4 +72,11 @@ public class AppInfo {
         this.branch = branch;
     }
 
+    public String getCommitMessage() {
+        return commitMessage;
+    }
+
+    public void setCommitMessage(String commitMessage) {
+        this.commitMessage = commitMessage;
+    }
 }
