@@ -49,8 +49,8 @@ public class Application {
 		sysConf = new SysConf();
 	}
 
-	public void addVersionRoute(){
-	    this.getRoutes().add(Route.get("/version", VersionController.class, "version"));
+	public AppInfo getAppInfo(){
+	    return AppInfo.getInfo();
 	}
 
 	public Map<String, ?> getSettings() {
@@ -67,6 +67,7 @@ public class Application {
 
 	public void setRoutes(Routes routes) {
 		this.routes = routes;
+		this.routes.add(Route.get("/app/version", VersionController.class, "version"));
 	}
 
 	public int getPort() {
