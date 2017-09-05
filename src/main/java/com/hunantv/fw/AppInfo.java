@@ -8,7 +8,7 @@ import java.util.Properties;
 import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.StringUtil;
 
-class AppInfo {
+public class AppInfo {
     public final static FwLogger logger = new FwLogger(AppInfo.class);
     private String appName;
     private String buildTime;
@@ -60,7 +60,7 @@ class AppInfo {
         return appName;
     }
 
-    public void setAppName(String appName) {
+    void setAppName(String appName) {
         this.appName = appName;
     }
 
@@ -68,7 +68,7 @@ class AppInfo {
         return buildTime;
     }
 
-    public void setBuildTime(String buildTime) {
+    void setBuildTime(String buildTime) {
         this.buildTime = buildTime;
     }
 
@@ -76,7 +76,7 @@ class AppInfo {
         return commitTime;
     }
 
-    public void setCommitTime(String commitTime) {
+    void setCommitTime(String commitTime) {
         this.commitTime = commitTime;
     }
 
@@ -84,7 +84,7 @@ class AppInfo {
         return commitId;
     }
 
-    public void setCommitId(String commitId) {
+    void setCommitId(String commitId) {
         this.commitId = commitId;
     }
 
@@ -92,7 +92,7 @@ class AppInfo {
         return closeTagName;
     }
 
-    public void setCloseTagName(String closeTagName) {
+    void setCloseTagName(String closeTagName) {
         this.closeTagName = closeTagName;
     }
 
@@ -100,7 +100,7 @@ class AppInfo {
         return version;
     }
 
-    public void setVersion(String version) {
+    void setVersion(String version) {
         this.version = version;
     }
 
@@ -108,7 +108,7 @@ class AppInfo {
         return branch;
     }
 
-    public void setBranch(String branch) {
+    void setBranch(String branch) {
         this.branch = branch;
     }
 
@@ -116,7 +116,7 @@ class AppInfo {
         return commitMessage;
     }
 
-    public void setCommitMessage(String commitMessage) {
+    void setCommitMessage(String commitMessage) {
         this.commitMessage = commitMessage;
     }
 }
