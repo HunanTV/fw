@@ -55,7 +55,7 @@ public class C3P0 {
 				specialPros.put(name, new HashMap<String, Object>());
 			}
 
-			for (Iterator iter = pros.keySet().iterator(); iter.hasNext();) {
+			for (Iterator<Object> iter = pros.keySet().iterator(); iter.hasNext();) {
 				String key = (String) iter.next();
 				if (key.startsWith("c3p0.") && !key.startsWith("c3p0.names")) {
 					for (String specialName : specialPros.keySet()) {
@@ -92,7 +92,7 @@ public class C3P0 {
 	}
 
 	public DataSource getDataSource() {
-		return this.getDataSource(this.DEFUAT_DB_NAME);
+		return this.getDataSource(DEFUAT_DB_NAME);
 	}
 
 	public DataSource getDataSource(String name) {

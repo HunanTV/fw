@@ -43,9 +43,9 @@ public class SysConf {
     public Properties read() throws Exception {
         String path = getConfPath();
         Properties props = new Properties();
-        InputStream is = new java.io.FileInputStream(new File(path + filename));
-        props.load(is);
-        is.close();
+        try(InputStream is = new java.io.FileInputStream(new File(path + filename))){
+            props.load(is);
+        }
         props.put("system.path", sysPath);
         return props;
     }

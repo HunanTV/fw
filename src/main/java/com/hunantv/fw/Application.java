@@ -81,11 +81,11 @@ public class Application {
 	private Map<String, Object> filterProperties(Properties pros, String prefix) {
 
 		Map<String, Object> map = new HashMap<String, Object>();
-		for (Iterator iter = pros.keySet().iterator(); iter.hasNext();) {
+		for (Iterator<Object> iter = pros.keySet().iterator(); iter.hasNext();) {
 			String key = (String) iter.next();
 			if (key.startsWith(prefix)) {
-				System.out.println(key.substring(prefix.length() + 1));
 				map.put(key.substring(prefix.length() + 1), pros.get(key));
+				logger.debug(key.substring(prefix.length() + 1) + ":" + pros.get(key));
 			}
 			map.put(key, pros.get(key));
 		}
@@ -134,9 +134,9 @@ public class Application {
 	private void initJettyConfig() {
 		try {
 			this.jettyPros = sysConf.read("jetty.properties");
-			logger.info("init jetty ok");
+			logger.info("Init jetty ok");
 		} catch (Exception ex) {
-			logger.warn("init jetty failed", ex);
+			logger.warn("Init jetty failed", ex);
 			throw new RuntimeException(ex);
 		}
 	}
