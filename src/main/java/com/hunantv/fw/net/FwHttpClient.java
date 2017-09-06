@@ -62,22 +62,7 @@ public class FwHttpClient {
     }
 
     public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
-        URLParser urlParser = new URLParser(url);
-        urlParser.addQuery(params);
-
-        HttpGet httpGet = new HttpGet(urlParser.getFullUrl());
-        if (connTimeoutSec > 0) {
-            RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000)
-                    .setConnectTimeout(connTimeoutSec * 1000).build();
-            httpGet.setConfig(config);
-        }
-        CloseableHttpClient client = HttpClients.createDefault();
-        CloseableHttpResponse response = client.execute(httpGet);
-        try {
-            return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
-        } finally {
-            response.close();
-        }
+        return get(url, params, connTimeoutSec, null);
     }
 
     public static FwHttpResponse post(String url) throws Exception {
@@ -89,6 +74,11 @@ public class FwHttpClient {
     }
 
     public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
+        return post(url, params, connTimeoutSec, null);
+    }
+
+    public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec,
+            Map<String, String> httpHeaders) throws Exception {
 
         URLParser urlParser = new URLParser(url);
         HttpPost httpPost = new HttpPost(urlParser.getFullUrl());
@@ -112,6 +102,13 @@ public class FwHttpClient {
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
             httpPost.setEntity(entity);
         }
+
+        if (httpHeaders != null && httpHeaders.size() > 0) {
+            httpHeaders.forEach((name, value) -> {
+                httpPost.addHeader(name, value);
+            });
+        }
+
         CloseableHttpClient client = HttpClients.createDefault();
         CloseableHttpResponse response = client.execute(httpPost);
         try {
