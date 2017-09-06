@@ -3,7 +3,6 @@ package com.hunantv.fw.net;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,105 +21,129 @@ import org.apache.http.message.BasicNameValuePair;
 
 public class FwHttpClient {
 
-	public static FwHttpResponse get(String url) throws Exception {
-		return get(url, null);
-	}
+    public static FwHttpResponse get(String url) throws Exception {
+        return get(url, null);
+    }
 
-	public static FwHttpResponse get(String url, Map<String, Object> params) throws Exception {
-		return get(url, params, -1);
-	}
+    public static FwHttpResponse get(String url, Map<String, Object> params) throws Exception {
+        return get(url, params, -1);
+    }
 
-	public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
-		URLParser urlParser = new URLParser(url);
-		urlParser.addQuery(params);
+    public static FwHttpResponse get(String url, Map<String, Object> params, Map<String, String> httpHeaders)
+            throws Exception {
+        return get(url, params, -1, httpHeaders);
+    }
 
-		HttpGet httpGet = new HttpGet(urlParser.getFullUrl());
-		if (connTimeoutSec > 0) {
-			RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000)
-			        .setConnectTimeout(connTimeoutSec * 1000).build();
-			httpGet.setConfig(config);
-		}
-		CloseableHttpClient client = HttpClients.createDefault();
-		CloseableHttpResponse response = client.execute(httpGet);
-		try {
-			return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
-		} finally {
-			response.close();
-		}
-	}
+    public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec,
+            Map<String, String> httpHeaders) throws Exception {
+        URLParser urlParser = new URLParser(url);
+        urlParser.addQuery(params);
 
-	public static FwHttpResponse post(String url) throws Exception {
-		return post(url, null);
-	}
+        HttpGet httpGet = new HttpGet(urlParser.getFullUrl());
+        if (connTimeoutSec > 0) {
+            RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000)
+                    .setConnectTimeout(connTimeoutSec * 1000).build();
+            httpGet.setConfig(config);
+        }
 
-	public static FwHttpResponse post(String url, Map<String, Object> params) throws Exception {
-		return post(url, params, -1);
-	}
+        if (httpHeaders != null && httpHeaders.size() > 0) {
+            httpHeaders.forEach((name, value) -> {
+                httpGet.addHeader(name, value);
+            });
+        }
 
-	public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
+        CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpResponse response = client.execute(httpGet);
+        try {
+            return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
+        } finally {
+            response.close();
+        }
+    }
 
-		URLParser urlParser = new URLParser(url);
-		HttpPost httpPost = new HttpPost(urlParser.getFullUrl());
+    public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
+        URLParser urlParser = new URLParser(url);
+        urlParser.addQuery(params);
 
-		if (connTimeoutSec > 0) {
-			RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000)
-			        .setConnectTimeout(connTimeoutSec * 1000).build();
-			httpPost.setConfig(config);
-		}
-		if (null != params) {
-			List<NameValuePair> formparams = new ArrayList<NameValuePair>();
-			for (Iterator<String> iter = params.keySet().iterator(); iter.hasNext();) {
-				String key = iter.next();
-				Object obj = params.get(key);
-				String value = "";
-				if (null != obj)
-					value = obj.toString();
+        HttpGet httpGet = new HttpGet(urlParser.getFullUrl());
+        if (connTimeoutSec > 0) {
+            RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000)
+                    .setConnectTimeout(connTimeoutSec * 1000).build();
+            httpGet.setConfig(config);
+        }
+        CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpResponse response = client.execute(httpGet);
+        try {
+            return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
+        } finally {
+            response.close();
+        }
+    }
 
-				formparams.add(new BasicNameValuePair(key, value));
-			}
-			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
-			httpPost.setEntity(entity);
-		}
-		CloseableHttpClient client = HttpClients.createDefault();
-		CloseableHttpResponse response = client.execute(httpPost);
-		try {
-			return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
-		} finally {
-			response.close();
-		}
-	}
+    public static FwHttpResponse post(String url) throws Exception {
+        return post(url, null);
+    }
 
-	private static String getContent(HttpResponse res) throws Exception {
-		BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
-		StringBuilder strb = new StringBuilder();
-		String line = null;
-		while (null != (line = rd.readLine())) {
-			strb.append(line).append("\n");
-		}
-		return strb.toString();
-	}
-/*
-	public static void main(String[] args) throws Exception {
-	}
+    public static FwHttpResponse post(String url, Map<String, Object> params) throws Exception {
+        return post(url, params, -1);
+    }
 
-	public static void main1(String[] args) throws Exception {
-		// FwHttpResponse res = FwHttpClient.get("localhost:3333/user/list");
-		String url = "http://hws.hunantv.com/index.php?format=array&debug=0&method=comment.comment.videocomment.getcomment";
-		Map<String, Object> params = new HashMap<String, Object>() {
-			{
-				put("type", "hunantv2014");
-				put("subject_id", 1071865);
-				put("page", 1);
-			}
-		};
-		FwHttpResponse res = FwHttpClient.post(url, params);
-		System.out.println(res.body);
-		System.out.println(res.code);
-		System.out.println("***************************");
+    public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
 
-		// res = FwHttpClient.post("localhost:3333/user/update/1");
-		// System.out.println(res.body);
-		// System.out.println(res.code);
-	}
-*/
+        URLParser urlParser = new URLParser(url);
+        HttpPost httpPost = new HttpPost(urlParser.getFullUrl());
+
+        if (connTimeoutSec > 0) {
+            RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000)
+                    .setConnectTimeout(connTimeoutSec * 1000).build();
+            httpPost.setConfig(config);
+        }
+        if (null != params) {
+            List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+            for (Iterator<String> iter = params.keySet().iterator(); iter.hasNext();) {
+                String key = iter.next();
+                Object obj = params.get(key);
+                String value = "";
+                if (null != obj)
+                    value = obj.toString();
+
+                formparams.add(new BasicNameValuePair(key, value));
+            }
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
+            httpPost.setEntity(entity);
+        }
+        CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpResponse response = client.execute(httpPost);
+        try {
+            return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
+        } finally {
+            response.close();
+        }
+    }
+
+    private static String getContent(HttpResponse res) throws Exception {
+        BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
+        StringBuilder strb = new StringBuilder();
+        String line = null;
+        while (null != (line = rd.readLine())) {
+            strb.append(line).append("\n");
+        }
+        return strb.toString();
+    }
+    /*
+     * public static void main(String[] args) throws Exception { }
+     * 
+     * public static void main1(String[] args) throws Exception { //
+     * FwHttpResponse res = FwHttpClient.get("localhost:3333/user/list"); String
+     * url =
+     * "http://hws.hunantv.com/index.php?format=array&debug=0&method=comment.comment.videocomment.getcomment";
+     * Map<String, Object> params = new HashMap<String, Object>() { {
+     * put("type", "hunantv2014"); put("subject_id", 1071865); put("page", 1); }
+     * }; FwHttpResponse res = FwHttpClient.post(url, params);
+     * System.out.println(res.body); System.out.println(res.code);
+     * System.out.println("***************************");
+     * 
+     * // res = FwHttpClient.post("localhost:3333/user/update/1"); //
+     * System.out.println(res.body); // System.out.println(res.code); }
+     */
 }
