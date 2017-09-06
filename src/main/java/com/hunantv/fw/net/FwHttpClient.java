@@ -73,6 +73,10 @@ public class FwHttpClient {
         return post(url, params, -1);
     }
 
+    public static FwHttpResponse post(String url, Map<String, Object> params, Map<String, String> httpHeaders) throws Exception {
+        return post(url, params, -1, httpHeaders);
+    }
+
     public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
         return post(url, params, connTimeoutSec, null);
     }
