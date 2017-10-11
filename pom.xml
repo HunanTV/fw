@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.hunantv.mpp.fw</groupId>
 	<artifactId>mpp-fw</artifactId>
-	<version>0.2.4</version>
+	<version>0.2.5</version>
 	<name>fw</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jetty.version>9.3.1.v20150714</jetty.version>
+		<jetty.version>9.3.21.v20170918</jetty.version>
 		<spring.version>4.0.5.RELEASE</spring.version>
 		<jdk.version>1.8</jdk.version>
 	</properties>
