@@ -52,12 +52,9 @@ public class FwHttpClient {
             });
         }
 
-        CloseableHttpClient client = HttpClients.createDefault();
-        CloseableHttpResponse response = client.execute(httpGet);
-        try {
+        try (CloseableHttpClient client = HttpClients.createDefault();
+                CloseableHttpResponse response = client.execute(httpGet);) {
             return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
-        } finally {
-            response.close();
         }
     }
 
@@ -73,7 +70,8 @@ public class FwHttpClient {
         return post(url, params, -1);
     }
 
-    public static FwHttpResponse post(String url, Map<String, Object> params, Map<String, String> httpHeaders) throws Exception {
+    public static FwHttpResponse post(String url, Map<String, Object> params, Map<String, String> httpHeaders)
+            throws Exception {
         return post(url, params, -1, httpHeaders);
     }
 
@@ -113,23 +111,21 @@ public class FwHttpClient {
             });
         }
 
-        CloseableHttpClient client = HttpClients.createDefault();
-        CloseableHttpResponse response = client.execute(httpPost);
-        try {
+        try (CloseableHttpClient client = HttpClients.createDefault();
+                CloseableHttpResponse response = client.execute(httpPost);) {
             return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
-        } finally {
-            response.close();
         }
     }
 
     private static String getContent(HttpResponse res) throws Exception {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
-        StringBuilder strb = new StringBuilder();
-        String line = null;
-        while (null != (line = rd.readLine())) {
-            strb.append(line).append("\n");
+        try (BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()))) {
+            StringBuilder strb = new StringBuilder();
+            String line = null;
+            while (null != (line = rd.readLine())) {
+                strb.append(line).append("\n");
+            }
+            return strb.toString();
         }
-        return strb.toString();
     }
     /*
      * public static void main(String[] args) throws Exception { }
