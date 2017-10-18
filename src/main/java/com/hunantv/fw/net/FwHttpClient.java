@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
@@ -15,11 +16,23 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 
 public class FwHttpClient {
+    private static CloseableHttpClient client = null;
+
+    static {
+        SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(3000).setSoKeepAlive(true).build();
+        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(3000, TimeUnit.MILLISECONDS);
+        cm.setMaxTotal(10000);
+        cm.setDefaultMaxPerRoute(2000);
+        cm.setDefaultSocketConfig(socketConfig);
+        client = HttpClients.custom().setConnectionManager(cm).build();
+    }
 
     public static FwHttpResponse get(String url) throws Exception {
         return get(url, null);
@@ -52,8 +65,7 @@ public class FwHttpClient {
             });
         }
 
-        try (CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse response = client.execute(httpGet);) {
+        try (CloseableHttpResponse response = client.execute(httpGet)) {
             return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
         }
     }
@@ -111,8 +123,7 @@ public class FwHttpClient {
             });
         }
 
-        try (CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse response = client.execute(httpPost);) {
+        try (CloseableHttpResponse response = client.execute(httpPost)) {
             return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
         }
     }
@@ -127,20 +138,5 @@ public class FwHttpClient {
             return strb.toString();
         }
     }
-    /*
-     * public static void main(String[] args) throws Exception { }
-     * 
-     * public static void main1(String[] args) throws Exception { //
-     * FwHttpResponse res = FwHttpClient.get("localhost:3333/user/list"); String
-     * url =
-     * "http://hws.hunantv.com/index.php?format=array&debug=0&method=comment.comment.videocomment.getcomment";
-     * Map<String, Object> params = new HashMap<String, Object>() { {
-     * put("type", "hunantv2014"); put("subject_id", 1071865); put("page", 1); }
-     * }; FwHttpResponse res = FwHttpClient.post(url, params);
-     * System.out.println(res.body); System.out.println(res.code);
-     * System.out.println("***************************");
-     * 
-     * // res = FwHttpClient.post("localhost:3333/user/update/1"); //
-     * System.out.println(res.body); // System.out.println(res.code); }
-     */
+
 }
