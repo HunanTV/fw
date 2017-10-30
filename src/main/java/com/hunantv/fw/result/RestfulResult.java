@@ -5,8 +5,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.hunantv.fw.Dispatcher;
-import com.hunantv.fw.utils.FwLogger;
+import com.hunantv.fw.utils.SeqIdThreadLocal;
 
 public class RestfulResult implements Result {
 
@@ -14,7 +13,6 @@ public class RestfulResult implements Result {
 	protected int code = OK;
 	protected String msg = "";
 	protected Object data = null;
-	public FwLogger logger = new FwLogger(RestfulResult.class);
 
 	public RestfulResult() {
 		this(OK, "", null);
@@ -67,9 +65,10 @@ public class RestfulResult implements Result {
 		return JSON.toJSONString(m, SerializerFeature.WriteMapNullValue);
 	}
 
-	public Map<String, Object> toMap() {
+	@SuppressWarnings("rawtypes")
+    public Map<String, Object> toMap() {
 		Map<String, Object> m = new HashMap<String, Object>();
-		m.put("seqid", this.logger.getSeqid());
+		m.put("seqid", SeqIdThreadLocal.get());
 		m.put("code", this.code);
 		m.put("msg", this.msg);
 		m.put("data", this.data == null ? new HashMap() : data);

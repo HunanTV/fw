@@ -15,7 +15,8 @@ import freemarker.template.TemplateModel;
 public class SuperDirective implements TemplateDirectiveModel {
 	public final static String DIRECTIVE_NAME = "super";
 
-	public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+	@SuppressWarnings("rawtypes")
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
 	        throws TemplateException, IOException {
 
 		OverrideDirective.TemplateDirectiveBodyOverrideWraper current = (OverrideDirective.TemplateDirectiveBodyOverrideWraper) env

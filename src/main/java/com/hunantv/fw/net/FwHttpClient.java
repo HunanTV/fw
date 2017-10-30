@@ -22,6 +22,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.hunantv.fw.Dispatcher;
+import com.hunantv.fw.utils.SeqIdThreadLocal;
+
 public class FwHttpClient {
     private static CloseableHttpClient client = null;
 
@@ -64,6 +67,7 @@ public class FwHttpClient {
                 httpGet.addHeader(name, value);
             });
         }
+        httpGet.addHeader(Dispatcher.X_HTTP_TRACEID, SeqIdThreadLocal.get());
 
         try (CloseableHttpResponse response = client.execute(httpGet)) {
             return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
@@ -122,6 +126,7 @@ public class FwHttpClient {
                 httpPost.addHeader(name, value);
             });
         }
+        httpPost.addHeader(Dispatcher.X_HTTP_TRACEID, SeqIdThreadLocal.get());
 
         try (CloseableHttpResponse response = client.execute(httpPost)) {
             return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));

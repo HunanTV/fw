@@ -30,7 +30,7 @@ public class FooControllerTest extends TestCase {
 
 	public void test404() {
 		try {
-			View view = fb.get("/demo/does-not-exists-url");
+			fb.get("/demo/does-not-exists-url");
 			throw new RuntimeException("the line should not be run");
 		} catch (HttpException ex) {
 			assertEquals(404, ex.getCode());
@@ -39,7 +39,7 @@ public class FooControllerTest extends TestCase {
 
 	public void test500() {
 		try {
-			View view = fb.get("/demo/500err");
+			fb.get("/demo/500err");
 			throw new RuntimeException("the line should not be run");
 		} catch (HttpException ex) {
 			assertEquals(500, ex.getCode());
@@ -48,12 +48,17 @@ public class FooControllerTest extends TestCase {
 
 	public void testList() throws Exception {
 		View view = fb.get("/demo/list", new HashMap<String, Object>() {
-			{
+			/**
+             * 
+             */
+            private static final long serialVersionUID = 4763265953209530086L;
+
+            {
 				put("offset", 100);
 				put("limit", 10);
 			}
 		});
-		HashMap m = JSON.parseObject(view.render(), HashMap.class);
+		HashMap<?, ?> m = JSON.parseObject(view.render(), HashMap.class);
 		assertEquals(0, m.get("code"));
 		assertEquals("", m.get("msg"));
 
@@ -64,7 +69,12 @@ public class FooControllerTest extends TestCase {
 
 	public void testIndex() throws Exception {
 		View view = fb.get("/demo/index", new HashMap<String, Object>() {
-			{
+			/**
+             * 
+             */
+            private static final long serialVersionUID = -4565172665336915654L;
+
+            {
 				put("offset", 100);
 				put("limit", 10);
 			}
@@ -75,13 +85,18 @@ public class FooControllerTest extends TestCase {
 
 	public void testUpdate() throws Exception {
 		View view = fb.post("/demo/update", new HashMap<String, Object>() {
-			{
+			/**
+             * 
+             */
+            private static final long serialVersionUID = 8515987343434646177L;
+
+            {
 				put("id", 10);
 				put("age", 100);
 				put("name", "pengyi");
 			}
 		});
-		HashMap m = JSON.parseObject(view.render(), HashMap.class);
+		HashMap<?, ?> m = JSON.parseObject(view.render(), HashMap.class);
 		assertEquals(0, m.get("code"));
 		assertEquals("", m.get("msg"));
 
@@ -93,7 +108,12 @@ public class FooControllerTest extends TestCase {
 
 	public void testJsonP() throws Exception {
 		View view = fb.get("/demo/jsonp", new HashMap<String, Object>() {
-			{
+			/**
+             * 
+             */
+            private static final long serialVersionUID = 315923887050187466L;
+
+            {
 				put("callback", "JQuery_123456");
 			}
 		});

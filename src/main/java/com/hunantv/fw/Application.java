@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.Filter;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -18,21 +19,20 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
-import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.SysConf;
 
 public class Application {
 
-    private static final FwLogger logger = new FwLogger(Application.class);
-
-    private static Application instance = null;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static Application instance = new Application();
     private boolean debug = false;
     private Map<String, ?> settings;
     private int port;
-
     private Routes routes;
     private Server server;
     private ServletHandler handler;
@@ -40,17 +40,17 @@ public class Application {
     private Properties jettyPros;
     private final ConcurrentHashMap<ServerLifeCycleListener, LifeCycle.Listener> _listeners = new ConcurrentHashMap<>();
 
-    // private ClassPathXmlApplicationContext springCtx;
-
     public static Application getInstance() {
-        if (null == instance) {
-            instance = new Application();
-        }
         return instance;
     }
 
     private Application() {
         sysConf = new SysConf();
+        try {
+            PropertyConfigurator.configure(sysConf.getConfPath() + "log4j.properties");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public AppInfo getAppInfo() {
@@ -138,9 +138,9 @@ public class Application {
     private void initJettyConfig() {
         try {
             this.jettyPros = sysConf.read("jetty.properties");
-            logger.info("Init jetty ok");
+            logger.info("Init jetty config ok");
         } catch (Exception ex) {
-            logger.warn("Init jetty failed", ex);
+            logger.warn("Init jetty config failed", ex);
             throw new RuntimeException(ex);
         }
     }

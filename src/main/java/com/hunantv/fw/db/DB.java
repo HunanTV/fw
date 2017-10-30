@@ -15,25 +15,36 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import com.hunantv.fw.utils.FwLogger;
-
 public class DB {
-    protected static FwLogger logger = new FwLogger(DB.class);
     private JdbcTemplate jdbcTemplate;
     private String name;
 
+    /**
+     * 默认数据库名称
+     */
+    public static final String DEFAULT_DB_NAME = "write";
+    /**
+     * 默认事务管理器名称
+     */
+    private static final String DEFAULT_TX_MANAGER = "txManager";
+
     public DB() {
-        this("write");
+        this(DEFAULT_DB_NAME);
     }
 
     public DB(String name) {
-        DataSource ds = C3P0.instance().getDataSource(name);
         this.name = name;
+        DataSource ds = C3P0.instance().getDataSource(this.name);
         jdbcTemplate = new JdbcTemplate(ds);
     }
 
+    /**
+     * 使用默认数据库和默认事务管理器的配置。
+     * 
+     * @return
+     */
     public Transaction beginTransaction() {
-        return this.beginTransaction("txManager", this.name);
+        return this.beginTransaction(DEFAULT_TX_MANAGER, DEFAULT_DB_NAME);
     }
 
     public Transaction beginTransaction(String transactionName, String name) {

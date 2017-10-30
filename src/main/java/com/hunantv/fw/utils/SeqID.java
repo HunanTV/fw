@@ -4,7 +4,8 @@ import java.util.Random;
 
 public final class SeqID implements java.io.Serializable, Comparable<SeqID> {
 
-	/*
+    private static final long serialVersionUID = 2890185068151964179L;
+    /*
 	 * The most significant 64 bits of this UUID.
 	 * 
 	 * @serial

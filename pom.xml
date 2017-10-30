@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.hunantv.mpp.fw</groupId>
 	<artifactId>mpp-fw</artifactId>
-	<version>0.2.7</version>
+	<version>0.3.0</version>
 	<name>fw</name>
 
 	<properties>
@@ -229,28 +229,7 @@
 			<artifactId>jetty-servlets</artifactId>
 			<version>${jetty.version}</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-utils</artifactId> 
-			<version>3.0</version> </dependency> <dependency> <groupId>org.eclipse.jetty</groupId> 
-			<artifactId>jetty-client</artifactId> <version>${jetty-version}</version> 
-			</dependency> <dependency> <groupId>org.eclipse.jetty.toolchain</groupId> 
-			<artifactId>jetty-test-helper</artifactId> <version>3.0</version> </dependency> 
-			<dependency> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-websocket</artifactId> 
-			<version>8.1.17.v20150415</version> </dependency> -->
-
 		<!-- jetty lib end -->
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-		</dependency>
-
-		<dependency>
-			<groupId>c3p0</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.1.2</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -267,6 +246,18 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
 		</dependency>
 
 		<dependency>
@@ -335,12 +326,6 @@
 			<artifactId>jedis</artifactId>
 			<version>2.9.0</version>
 			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.directmemory</groupId>
-			<artifactId>directmemory-cache</artifactId>
-			<version>0.2</version>
 		</dependency>
 
 		<dependency>

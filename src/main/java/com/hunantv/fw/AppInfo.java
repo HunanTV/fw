@@ -5,11 +5,13 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.hunantv.fw.utils.FwLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hunantv.fw.utils.StringUtil;
 
 public class AppInfo {
-    public final static FwLogger logger = new FwLogger(AppInfo.class);
+    public static Logger logger = LoggerFactory.getLogger(AppInfo.class);
     private String appName;
     private String buildTime;
     private String commitTime;

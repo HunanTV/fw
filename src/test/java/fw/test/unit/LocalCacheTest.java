@@ -35,7 +35,7 @@ public class LocalCacheTest extends TestCase {
 		conf.eternal = false;
 
 		LocalCache lc = LocalCache.instance();
-		lc.setConf(conf);
+		LocalCache.setConf(conf);
 
 		lc.set(tbname, "key1", "123456");
 		String value = (String) lc.get(tbname, "key1");

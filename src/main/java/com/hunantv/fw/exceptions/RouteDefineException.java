@@ -2,15 +2,17 @@ package com.hunantv.fw.exceptions;
 
 public class RouteDefineException extends RuntimeException {
 
-	public RouteDefineException() {
-		super();
-	}
+    private static final long serialVersionUID = -2588600982370265727L;
 
-	public RouteDefineException(String msg) {
-		super(msg);
-	}
+    public RouteDefineException() {
+        super();
+    }
 
-	public RouteDefineException(Exception ex) {
-		super(ex);
-	}
+    public RouteDefineException(String msg) {
+        super(msg);
+    }
+
+    public RouteDefineException(Exception ex) {
+        super(ex);
+    }
 }

@@ -6,17 +6,19 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.SysConf;
 
 public class RedisConf {
-    public static final FwLogger logger = new FwLogger(RedisConf.class);
+    public static final Logger logger = LoggerFactory.getLogger(RedisConf.class);
     protected Map<String, JedisPool> pools = new HashMap<String, JedisPool>();
     protected Map<String, JedisCluster> clusterMap = new HashMap<>();
     private static RedisConf conf = null;

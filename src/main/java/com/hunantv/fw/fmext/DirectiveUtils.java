@@ -25,7 +25,8 @@ public class DirectiveUtils {
 		conf.setSharedVariable(SuperDirective.DIRECTIVE_NAME, new SuperDirective());
 	}
 
-	static String getRequiredParam(Map params, String key) throws TemplateException {
+	@SuppressWarnings("rawtypes")
+    static String getRequiredParam(Map params, String key) throws TemplateException {
 		Object value = params.get(key);
 		if (value == null || value.toString().trim().length() == 0) {
 			throw new TemplateModelException("not found required parameter:" + key + " for directive");
@@ -33,7 +34,8 @@ public class DirectiveUtils {
 		return value.toString();
 	}
 
-	static String getParam(Map params, String key, String defaultValue) throws TemplateException {
+	@SuppressWarnings("rawtypes")
+    static String getParam(Map params, String key, String defaultValue) throws TemplateException {
 		Object value = params.get(key);
 		return value == null ? defaultValue : value.toString();
 	}

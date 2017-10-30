@@ -1,16 +1,16 @@
 package com.hunantv.fw.view;
 
-import com.hunantv.fw.utils.FwLogger;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.spi.LoggerFactory;
-
 import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
 public interface View {
-	FwLogger logger = FwLogger.getLogger(View.class);
+	Logger logger = LoggerFactory.getLogger(View.class);
 
 	public abstract String render();
 
