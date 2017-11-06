@@ -4,15 +4,14 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.exceptions.RouteDefineException;
 import com.hunantv.fw.route.Route;
-import com.hunantv.fw.route.Route.HttpMethod;
 import com.hunantv.fw.utils.StringUtil;
 
 public class RouteTest extends TestCase {
 
-	private void p(String s) {
+	@SuppressWarnings("unused")
+    private void p(String s) {
 		System.out.println(String.format("*************** %s ***************", s));
 	}
 
@@ -121,7 +120,8 @@ public class RouteTest extends TestCase {
 		assertFalse(route.isStaticRule());
 	}
 
-	public void testComplexMatch() throws Exception {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+    public void testComplexMatch() throws Exception {
 		Route route = Route.get("/save/<name>/<i:age>/<list:types>", "fw.test.unit.ControllerForTestRoute.save");
 		Object[] matchRelts = route.match("/save/pengyi/29/a,b,c,d,e");
 		assertEquals(3, matchRelts.length);
@@ -131,7 +131,8 @@ public class RouteTest extends TestCase {
 		assertEquals("a,b,c,d,e", StringUtil.join(arg3, ","));
 	}
 
-	public void testComplexMatch2() throws Exception {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+    public void testComplexMatch2() throws Exception {
 		Route route = Route.get("/save/<name>/<int:age>/<list:types>/suffix",
 		        "fw.test.unit.ControllerForTestRoute.save");
 		Object[] matchRelts = route.match("/save/测试帐号/29/a,b,c,d,e/suffix");
@@ -149,7 +150,7 @@ public class RouteTest extends TestCase {
 
 	public void testRouteDefineException() throws Exception {
 		try {
-			Route route = Route.get("/save/<name>/<int:age>", ControllerForTestRoute.class, "save");
+			Route.get("/save/<name>/<int:age>", ControllerForTestRoute.class, "save");
 			throw new Exception("Can not run the line.");
 		} catch (RouteDefineException ex) {
 		}

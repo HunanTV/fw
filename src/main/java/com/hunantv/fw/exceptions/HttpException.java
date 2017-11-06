@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class HttpException extends Exception {
 
-	public final static int ERR_404 = HttpServletResponse.SC_NOT_FOUND;
+    private static final long serialVersionUID = -5164191922690736211L;
+    public final static int ERR_404 = HttpServletResponse.SC_NOT_FOUND;
 	public final static int ERR_405 = HttpServletResponse.SC_METHOD_NOT_ALLOWED;
 	public final static int ERR_500 = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 

@@ -15,108 +15,118 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import com.hunantv.fw.utils.FwLogger;
-
 public class DB {
-	protected static FwLogger logger = new FwLogger(DB.class);
-	private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
+    private String name;
 
-	public DB() {
-		this("write");
-	}
+    /**
+     * 默认数据库名称
+     */
+    public static final String DEFAULT_DB_NAME = "write";
+    /**
+     * 默认事务管理器名称
+     */
+    private static final String DEFAULT_TX_MANAGER = "txManager";
 
-	public DB(String name) {
-		DataSource ds = C3P0.instance().getDataSource(name);
-		jdbcTemplate = new JdbcTemplate(ds);
-	}
+    public DB() {
+        this(DEFAULT_DB_NAME);
+    }
 
-	public Transaction beginTransaction() {
-		return this.beginTransaction("txManager");
-	}
+    public DB(String name) {
+        this.name = name;
+        DataSource ds = C3P0.instance().getDataSource(this.name);
+        jdbcTemplate = new JdbcTemplate(ds);
+    }
 
-	public Transaction beginTransaction(String transactionName) {
-		return new Transaction(transactionName);
-	}
+    /**
+     * 使用默认数据库和默认事务管理器的配置。
+     * 
+     * @return
+     */
+    public Transaction beginTransaction() {
+        return this.beginTransaction(DEFAULT_TX_MANAGER, DEFAULT_DB_NAME);
+    }
 
-	public List<Map<String, Object>> query(String sql) {
-		List<Map<String, Object>> relt = this.jdbcTemplate.queryForList(sql);
-		return relt;
-	}
+    public Transaction beginTransaction(String transactionName, String name) {
+        return new Transaction(transactionName, name);
+    }
 
-	public List<Map<String, Object>> query(String sql, Object... args) {
-		return this.jdbcTemplate.queryForList(sql, args);
-	}
-	
-	public <T> List<T> query(String sql, RowMapper<T> rowMapper, Object... args) {
-		return this.jdbcTemplate.query(sql, args, rowMapper);
-	}
+    public List<Map<String, Object>> query(String sql) {
+        List<Map<String, Object>> relt = this.jdbcTemplate.queryForList(sql);
+        return relt;
+    }
 
-	public void query(String sql, RowCallbackHandler rowCallbackHandler, Object... args) {
-		this.jdbcTemplate.query(sql, args, rowCallbackHandler);
-	}
+    public List<Map<String, Object>> query(String sql, Object... args) {
+        return this.jdbcTemplate.queryForList(sql, args);
+    }
 
-	public <T> T queryForObject(String sql, RowMapper<T> rowMapper, Object... args) {
-		return this.jdbcTemplate.queryForObject(sql, rowMapper, args);
-	}
+    public <T> List<T> query(String sql, RowMapper<T> rowMapper, Object... args) {
+        return this.jdbcTemplate.query(sql, args, rowMapper);
+    }
 
-	public <T> T queryForObject(String sql, Class<T> requiredType, Object... args) {
-		return this.jdbcTemplate.queryForObject(sql, requiredType, args);
-	}
+    public void query(String sql, RowCallbackHandler rowCallbackHandler, Object... args) {
+        this.jdbcTemplate.query(sql, args, rowCallbackHandler);
+    }
 
-	public Map<String, Object> get(String sql) {
-		try {
-			return this.jdbcTemplate.queryForMap(sql);
-		} catch (EmptyResultDataAccessException ex) {
-			return null;
-		}
-	}
+    public <T> T queryForObject(String sql, RowMapper<T> rowMapper, Object... args) {
+        return this.jdbcTemplate.queryForObject(sql, rowMapper, args);
+    }
 
-	public Map<String, Object> get(String sql, Object... args) {
-		try {
-			return this.jdbcTemplate.queryForMap(sql, args);
-		} catch (EmptyResultDataAccessException ex) {
-			return null;
-		}
-	}
-	
-	public int execute(String sql) {
-		return this.jdbcTemplate.update(sql);
-	}
+    public <T> T queryForObject(String sql, Class<T> requiredType, Object... args) {
+        return this.jdbcTemplate.queryForObject(sql, requiredType, args);
+    }
 
-	public int execute(String sql, Object... args) {
-		return this.jdbcTemplate.update(sql, args);
-	}
+    public Map<String, Object> get(String sql) {
+        try {
+            return this.jdbcTemplate.queryForMap(sql);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
 
-	public int[] batchExecute(String... sql) {
-		return this.jdbcTemplate.batchUpdate(sql);
-	}
+    public Map<String, Object> get(String sql, Object... args) {
+        try {
+            return this.jdbcTemplate.queryForMap(sql, args);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
 
-	public int[] batchExecute(String sql, List<Object[]> args) throws DataAccessException {
-		return this.jdbcTemplate.batchUpdate(sql, args, new int[0]);
-	}
+    public int execute(String sql) {
+        return this.jdbcTemplate.update(sql);
+    }
 
-	public class Transaction {
-		private DefaultTransactionDefinition def;
-		private DataSourceTransactionManager transactionManager;
-		private TransactionStatus status;
+    public int execute(String sql, Object... args) {
+        return this.jdbcTemplate.update(sql, args);
+    }
 
-		private Transaction(String transactionName) {
-//			transactionManager = Application.getInstance().getSpringCtx()
-//			        .getBean(transactionName, DataSourceTransactionManager.class);
-//			DataSource ds = (DataSource) Application.getInstance().getSpringCtx().getBean("dataSource");
-			DataSource ds = C3P0.instance().getDataSource();
-			transactionManager = new DataSourceTransactionManager(ds);
-			def = new DefaultTransactionDefinition();
-			def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-			status = transactionManager.getTransaction(def);
-		}
+    public int[] batchExecute(String... sql) {
+        return this.jdbcTemplate.batchUpdate(sql);
+    }
 
-		public void rollback() {
-			transactionManager.rollback(status);
-		}
+    public int[] batchExecute(String sql, List<Object[]> args) throws DataAccessException {
+        return this.jdbcTemplate.batchUpdate(sql, args, new int[0]);
+    }
 
-		public void commit() {
-			transactionManager.commit(status);
-		}
-	}
+    public class Transaction {
+        private DefaultTransactionDefinition def;
+        private DataSourceTransactionManager transactionManager;
+        private TransactionStatus status;
+
+        private Transaction(String transactionName, String name) {
+            DataSource ds = C3P0.instance().getDataSource(name);
+            transactionManager = new DataSourceTransactionManager(ds);
+            def = new DefaultTransactionDefinition();
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+            status = transactionManager.getTransaction(def);
+        }
+
+        public void rollback() {
+            transactionManager.rollback(status);
+        }
+
+        public void commit() {
+            transactionManager.commit(status);
+        }
+    }
 }

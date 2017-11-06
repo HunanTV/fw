@@ -1,14 +1,17 @@
 package fw.test.functional;
 
 import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hunantv.fw.Controller;
 import com.hunantv.fw.result.RestfulResult;
-import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.view.View;
 
 public class FooController extends Controller {
 
-	protected static FwLogger logger = new FwLogger(FooController.class);
+	protected static Logger logger = LoggerFactory.getLogger(FooController.class);
 
 	public View index() {
 		return this.redirect("/demo/list");
@@ -16,7 +19,9 @@ public class FooController extends Controller {
 
 	public View jsonp() {
 		RestfulResult relt = new RestfulResult(new HashMap<String, Integer>() {
-			{
+            private static final long serialVersionUID = 7250539994395099422L;
+
+            {
 				put("req-offset", 100);
 				put("req-limit", 20);
 			}
@@ -31,9 +36,9 @@ public class FooController extends Controller {
 	public View list() throws Exception {
 		// test logger
 		logger.info("Begin List");
-		logger.delayInfo("test1", "Hello");
-		logger.delayInfo("test2", "Word");
-		logger.delayInfo("test3", "Love");
+		logger.info("test1", "Hello");
+		logger.info("test2", "Word");
+		logger.info("test3", "Love");
 		logger.info("End List");
 		// end test logger
 
@@ -41,7 +46,12 @@ public class FooController extends Controller {
 		Integer limit = this.getIntegerParam("limit", 0);
 
 		RestfulResult relt = new RestfulResult(new HashMap<String, Integer>() {
-			{
+			/**
+             * 
+             */
+            private static final long serialVersionUID = 7450057818492450883L;
+
+            {
 				put("req-offset", offset);
 				put("req-limit", limit);
 			}
@@ -58,7 +68,12 @@ public class FooController extends Controller {
 		// try {
 		// tran.commit();
 		return this.renderJson(new RestfulResult(new HashMap<String, Object>() {
-			{
+			/**
+             * 
+             */
+            private static final long serialVersionUID = -3313763577738259899L;
+
+            {
 				put("id", id);
 				put("name", name);
 				put("age", age);

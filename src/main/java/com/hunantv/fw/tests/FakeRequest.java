@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -100,7 +99,8 @@ public class FakeRequest implements HttpServletRequest {
 		return this.parameter.get(name);
 	}
 
-	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
 	public Enumeration<String> getParameterNames() {
 		return new KeysetEnum(parameter);
 	}

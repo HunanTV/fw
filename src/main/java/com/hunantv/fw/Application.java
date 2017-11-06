@@ -4,168 +4,215 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.Filter;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.component.LifeCycle.Listener;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
-import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.SysConf;
 
 public class Application {
 
-	private static final FwLogger logger = new FwLogger(Application.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static Application instance = new Application();
+    private boolean debug = false;
+    private Map<String, ?> settings;
+    private int port;
+    private Routes routes;
+    private Server server;
+    private ServletHandler handler;
+    private SysConf sysConf;
+    private Properties jettyPros;
+    private final ConcurrentHashMap<ServerLifeCycleListener, LifeCycle.Listener> _listeners = new ConcurrentHashMap<>();
 
-	private static Application instance = null;
-	private boolean debug = false;
-	private Map<String, ?> settings;
-	private int port;
+    public static Application getInstance() {
+        return instance;
+    }
 
-	private Routes routes;
-	private Server server;
-	private ServletHandler handler;
-	private SysConf sysConf;
-	private Properties jettyPros;
+    private Application() {
+        sysConf = new SysConf();
+        try {
+            PropertyConfigurator.configure(sysConf.getConfPath() + "log4j.properties");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	// private ClassPathXmlApplicationContext springCtx;
+    public AppInfo getAppInfo() {
+        return AppInfo.getInfo();
+    }
 
-	public static Application getInstance() {
-		if (null == instance) {
-			instance = new Application();
-		}
-		return instance;
-	}
+    public Map<String, ?> getSettings() {
+        return settings;
+    }
 
-	private Application() {
-		sysConf = new SysConf();
-	}
+    public void setSettings(Map<String, ?> settings) {
+        this.settings = settings;
+    }
 
-	public Map<String, ?> getSettings() {
-		return settings;
-	}
+    public Routes getRoutes() {
+        return routes;
+    }
 
-	public void setSettings(Map<String, ?> settings) {
-		this.settings = settings;
-	}
+    public void setRoutes(Routes routes) {
+        this.routes = routes;
+        this.routes.add(Route.get("/app/version", VersionController.class, "version"));
+    }
 
-	public Routes getRoutes() {
-		return routes;
-	}
+    public int getPort() {
+        return port;
+    }
 
-	public void setRoutes(Routes routes) {
-		this.routes = routes;
-	}
+    public SysConf getSysConf() {
+        return sysConf;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    private Map<String, Object> filterProperties(Properties pros, String prefix) {
 
-	public SysConf getSysConf() {
-		return sysConf;
-	}
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (Iterator<Object> iter = pros.keySet().iterator(); iter.hasNext();) {
+            String key = (String) iter.next();
+            if (key.startsWith(prefix)) {
+                map.put(key.substring(prefix.length() + 1), pros.get(key));
+                logger.debug(key.substring(prefix.length() + 1) + ":" + pros.get(key));
+            }
+            map.put(key, pros.get(key));
+        }
+        return map;
+    }
 
-	private Map<String, Object> filterProperties(Properties pros, String prefix) {
+    public void listener(int port) {
+        initJettyConfig();
 
-		Map<String, Object> map = new HashMap<String, Object>();
-		for (Iterator iter = pros.keySet().iterator(); iter.hasNext();) {
-			String key = (String) iter.next();
-			if (key.startsWith(prefix)) {
-				System.out.println(key.substring(prefix.length() + 1));
-				map.put(key.substring(prefix.length() + 1), pros.get(key));
-			}
-			map.put(key, pros.get(key));
-		}
-		return map;
-	}
+        this.port = port;
+        HttpConfiguration httpConfiguration = initHttpConfiguration();
+        HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
 
-	public void listener(int port) {
-		initJettyConfig();
+        QueuedThreadPool threadPool = this.initThreadPool();
+        this.server = new Server(threadPool);
+        int cores = Runtime.getRuntime().availableProcessors();
+        ServerConnector connector = new ServerConnector(server, null, null, null, 1 + cores / 2, -1,
+                httpConnectionFactory);
+        initConnector(connector);
+        connector.setPort(this.port);
+        server.setConnectors(new Connector[] { connector });
+        logger.info("Application listen on " + port);
+    }
 
-		this.port = port;
-		HttpConfiguration httpConfiguration = initHttpConfiguration();
-		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
+    private ServerConnector initConnector(ServerConnector connector) {
+        Map<String, Object> poolCfg = filterProperties(jettyPros, "jetty.connector");
+        try {
+            BeanUtils.populate(connector, poolCfg);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return connector;
+    }
 
-		QueuedThreadPool threadPool = this.initThreadPool();
-		this.server = new Server(threadPool);
-		int cores = Runtime.getRuntime().availableProcessors();
-		ServerConnector connector = new ServerConnector(server, null, null, null, 1 + cores / 2, -1,
-		        httpConnectionFactory);
-		initConnector(connector);
-		connector.setPort(this.port);
-		server.setConnectors(new Connector[] { connector });
-		logger.info("Application listen on " + port);
-	}
+    private QueuedThreadPool initThreadPool() {
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        Map<String, Object> poolCfg = filterProperties(jettyPros, "jetty.threadpool");
+        try {
+            BeanUtils.populate(threadPool, poolCfg);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return threadPool;
+    }
 
-	private ServerConnector initConnector(ServerConnector connector) {
-		Map<String, Object> poolCfg = filterProperties(jettyPros, "jetty.connector");
-		try {
-			BeanUtils.populate(connector, poolCfg);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		return connector;
-	}
+    private void initJettyConfig() {
+        try {
+            this.jettyPros = sysConf.read("jetty.properties");
+            logger.info("Init jetty config ok");
+        } catch (Exception ex) {
+            logger.warn("Init jetty config failed", ex);
+            throw new RuntimeException(ex);
+        }
+    }
 
-	private QueuedThreadPool initThreadPool() {
-		QueuedThreadPool threadPool = new QueuedThreadPool();
-		Map<String, Object> poolCfg = filterProperties(jettyPros, "jetty.threadpool");
-		try {
-			BeanUtils.populate(threadPool, poolCfg);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		return threadPool;
-	}
+    private HttpConfiguration initHttpConfiguration() {
+        HttpConfiguration httpConfiguration = new HttpConfiguration();
+        Map<String, Object> httpCfg = filterProperties(jettyPros, "jetty.http");
+        try {
+            BeanUtils.populate(httpConfiguration, httpCfg);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return httpConfiguration;
+    }
 
-	private void initJettyConfig() {
-		try {
-			this.jettyPros = sysConf.read("jetty.properties");
-			logger.info("init jetty ok");
-		} catch (Exception ex) {
-			logger.warn("init jetty failed", ex);
-			throw new RuntimeException(ex);
-		}
-	}
+    public void start() throws Exception {
+        this.server.setHandler(new Dispatcher());
+        this.server.start();
+        this.server.join();
+    }
 
-	private HttpConfiguration initHttpConfiguration() {
-		HttpConfiguration httpConfiguration = new HttpConfiguration();
-		Map<String, Object> httpCfg = filterProperties(jettyPros, "jetty.http");
-		try {
-			BeanUtils.populate(httpConfiguration, httpCfg);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		return httpConfiguration;
-	}
+    public void addFilterWithMapping(Class<? extends Filter> filter, String pathSpec, int dispatches) {
+        this.handler.addFilterWithMapping(filter, pathSpec, dispatches);
+    }
 
-	public void start() throws Exception {
-		this.server.setHandler(new Dispatcher());
-		this.server.start();
-		this.server.join();
-		logger.info("Application Start OK ");
-	}
+    public void addServerListener(ServerLifeCycleListener listener) {
+        Listener lifeCycleListener = new Listener() {
 
-	public void addFilterWithMapping(Class<? extends Filter> filter, String pathSpec, int dispatches) {
-		this.handler.addFilterWithMapping(filter, pathSpec, dispatches);
-	}
+            @Override
+            public void lifeCycleStopping(LifeCycle event) {
+                listener.stopping();
+            }
 
-	public void stop() throws Exception {
-		this.server.stop();
-	}
+            @Override
+            public void lifeCycleStopped(LifeCycle event) {
+                listener.stopped();
+            }
 
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
+            @Override
+            public void lifeCycleStarting(LifeCycle event) {
+                listener.starting();
+            }
 
-	public boolean isDebug() {
-		return this.debug;
-	}
+            @Override
+            public void lifeCycleStarted(LifeCycle event) {
+                listener.started();
+            }
+
+            @Override
+            public void lifeCycleFailure(LifeCycle event, Throwable cause) {
+                listener.failure(cause);
+            }
+        };
+        _listeners.put(listener, lifeCycleListener);
+        this.server.addLifeCycleListener(lifeCycleListener);
+    }
+
+    public void removeServerListener(ServerLifeCycleListener listener) {
+        if (this._listeners.containsKey(listener)) {
+            this.server.removeLifeCycleListener(this._listeners.get(listener));
+        }
+    }
+
+    public void stop() throws Exception {
+        this.server.stop();
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public boolean isDebug() {
+        return this.debug;
+    }
 }
