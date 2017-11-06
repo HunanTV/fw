@@ -1,18 +1,18 @@
 package com.hunantv.fw.redis;
 
-import com.hunantv.fw.utils.FwLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisException;
 
 public class Redis implements AutoCloseable {
+    public final Logger logger = LoggerFactory.getLogger(Redis.class);
+    public static final String DEFAULT_NAME = "write";
 	public Jedis jedis;
 	public String name;
 	private JedisPool pool;
 	private RedisConf conf = RedisConf.getInstance();
-	public static final FwLogger logger = new FwLogger(Redis.class);
-	public static final String DEFAULT_NAME = "write";
 
 	public Redis() {
 		this(Redis.DEFAULT_NAME);
@@ -26,10 +26,6 @@ public class Redis implements AutoCloseable {
 	
 	@Override
 	public void close() {
-		try {
-			pool.returnResource(this.jedis);
-		} catch (JedisException ex) {
-			logger.warn("redis close error.", ex);
-		}
+		this.jedis.close();
 	}
 }

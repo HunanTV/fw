@@ -2,11 +2,13 @@ package com.hunantv.fw.cache;
 
 import java.util.Properties;
 
-import com.hunantv.fw.utils.FwLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hunantv.fw.utils.SysConf;
 
 public class LocalCacheConf {
-	public static final FwLogger logger = new FwLogger(LocalCacheConf.class);
+	public static final Logger logger = LoggerFactory.getLogger(LocalCacheConf.class);
 
 	public int max_len = 2048;
 	public boolean overflowToDisk = false;

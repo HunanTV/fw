@@ -15,10 +15,10 @@ public class ControllerForTestRoute extends Controller {
 	public void save(String name) {
 	}
 
-	public void save(List name) {
+	public void save(List<?> name) {
 	}
 
-	public void save(String name, int age, List types) {
+	public void save(String name, int age, List<?> types) {
 	}
 
 	public void search(String key) {

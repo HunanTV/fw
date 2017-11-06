@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -426,11 +425,11 @@ public class StringUtil {
 		return defaultValue;
 	}
 
-	public static List str2List(String value) {
+	public static List<String> str2List(String value) {
 		return str2List(value, null);
 	}
 
-	public static List str2List(String value, List defaultValue) {
+	public static List<String> str2List(String value, List<String> defaultValue) {
 		if (value != null) {
 			return Arrays.asList(StringUtil.split(value, ","));
 		}
@@ -439,6 +438,23 @@ public class StringUtil {
 	
     public static boolean isEmpty(final CharSequence cs) {
         return cs == null || cs.length() == 0;
+    }
+
+    public static boolean isBlank(final CharSequence cs) {
+        int strLen;
+        if (cs == null || (strLen = cs.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if (Character.isWhitespace(cs.charAt(i)) == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isNotBlank(final CharSequence cs) {
+        return !StringUtil.isBlank(cs);
     }
 
 	public static void main(String[] args) {
