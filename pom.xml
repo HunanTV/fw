@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.hunantv.mpp.fw</groupId>
 	<artifactId>mpp-fw</artifactId>
-	<version>0.3.1</version>
+	<version>1.0.1</version>
 	<name>fw</name>
 
 	<properties>
@@ -11,6 +11,8 @@
 		<jetty.version>9.3.21.v20170918</jetty.version>
 		<spring.version>4.0.5.RELEASE</spring.version>
 		<jdk.version>1.8</jdk.version>
+        <logback-classic.version>1.2.3</logback-classic.version>
+		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 
 	<distributionManagement>
@@ -279,16 +281,22 @@
 		</dependency>
 
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback-classic.version}</version>
 		</dependency>
 
-	 <dependency>
-	    <groupId>org.slf4j</groupId>
-	    <artifactId>slf4j-log4j12</artifactId>
-	    <version>1.7.25</version>
-	 </dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-access</artifactId>
+			<version>${logback-classic.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

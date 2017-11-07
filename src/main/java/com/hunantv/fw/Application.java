@@ -47,7 +47,7 @@ public class Application {
     private Application() {
         sysConf = new SysConf();
         try {
-            PropertyConfigurator.configure(sysConf.getConfPath() + "log4j.properties");
+            PropertyConfigurator.configure(sysConf.getConfPath() + "logback.xml");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -24,6 +24,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.hunantv.fw.Dispatcher;
 import com.hunantv.fw.utils.SeqIdThreadLocal;
+import org.apache.http.util.EntityUtils;
 
 public class FwHttpClient {
     private static CloseableHttpClient client = null;
@@ -134,14 +135,15 @@ public class FwHttpClient {
     }
 
     private static String getContent(HttpResponse res) throws Exception {
-        try (BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()))) {
-            StringBuilder strb = new StringBuilder();
-            String line = null;
-            while (null != (line = rd.readLine())) {
-                strb.append(line).append("\n");
-            }
-            return strb.toString();
-        }
+        return EntityUtils.toString(res.getEntity(), Consts.UTF_8);
+//        try (BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()))) {
+//            StringBuilder strb = new StringBuilder();
+//            String line = null;
+//            while (null != (line = rd.readLine())) {
+//                strb.append(line).append("\n");
+//            }
+//            return strb.toString();
+//        }
     }
 
 }
