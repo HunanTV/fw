@@ -4,12 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
 import com.hunantv.fw.Controller;
 import com.hunantv.fw.db.DB;
 import com.hunantv.fw.db.DB.Transaction;
-import com.hunantv.fw.result.RestfulResult;
-import com.hunantv.fw.utils.FwLogger;
+import com.hunantv.fw.log.FwLogger;
 import com.hunantv.fw.view.View;
 
 public class UserController extends Controller {
