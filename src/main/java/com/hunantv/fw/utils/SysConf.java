@@ -1,19 +1,14 @@
 package com.hunantv.fw.utils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class SysConf {
+
+    private static String env;
     private static String confPath;
-
     private static String sysPath;
-
-    private static String webPath;
-    
-    private static String envPath = "";
-
     private String filename;
 
     public SysConf(String filename) {
@@ -24,15 +19,10 @@ public class SysConf {
     }
 
     static {
-        System.out.println("===============================");
-        String env = System.getProperty("fw.project.env", "");
-        if (!StringUtil.isEmpty(env)) {
-            System.out.println("Current project env is [" + env + "]");
-            envPath = env + File.separator;
-        }else{
-            System.out.println("Current project env is default.");
-        }
-        System.out.println("===============================");
+        System.out.println("==========sysconf start===========");
+        env = System.getProperty("fw.project.env", "");
+        System.out.println("Current project env is [" + (StringUtil.isNotBlank(env) ? env : "default") + "]");
+        System.out.println("============sysconf end============");
     }
 
     public Properties read(String filename) throws Exception {
@@ -41,44 +31,55 @@ public class SysConf {
     }
 
     public Properties read() throws Exception {
-        String path = getConfPath();
+        String configFilePath = getConfigFilePath();
         Properties props = new Properties();
-        try(InputStream is = new java.io.FileInputStream(new File(path + filename))){
+        System.out.println("====== loading " + configFilePath + " start ======");
+        try(InputStream is = new java.io.FileInputStream(new File(configFilePath))){
             props.load(is);
         }
         props.put("system.path", sysPath);
+        System.out.println("====== loading " + configFilePath + " end ======");
         return props;
     }
 
-    public String getConfUri() throws Exception {
-        return "file:" + this.getConfPath();
+    /**
+     * modified by xuyanbo
+     * @return
+     * @throws Exception
+     */
+    public String getConfigFileDir() throws Exception {
+        return sysPath() + "confs" + File.separator;
     }
 
-    public String getConfPath() throws Exception {
-        if (confPath != null)
+    /**
+     * modified by xuyanbo
+     * @return
+     * @throws Exception
+     */
+    public String getConfigFilePath() throws Exception {
+        if (confPath != null) {
             return confPath;
+        }
         sysPath = sysPath();
-        confPath = sysPath + "confs" + File.separator + envPath;
+        // 优先读取对应环境下的配置
+        String envConfPath = sysPath + "confs" + File.separator +
+                (StringUtil.isNotBlank(env) ? File.separator : "") + filename;
+        File confFile = new File(envConfPath);
+        if(confFile.exists()) {
+            confPath = envConfPath;
+        } else {
+            // 其次读取confs根目录下的配置
+            confPath = sysPath + "confs" + File.separator + filename;
+        }
         return confPath;
     }
 
-    public String getSysUri() throws Exception {
-        return "file:" + this.getSysPath();
-    }
-
     public String getSysPath() throws Exception {
-        if (sysPath != null)
+        if (sysPath != null) {
             return sysPath;
+        }
         sysPath = sysPath();
-        confPath = sysPath + "confs" + File.separator + envPath;
         return sysPath;
-    }
-
-    public String getWebPath() throws Exception {
-        if (webPath != null)
-            return webPath;
-        sysPath();
-        return webPath;
     }
 
     private String sysPath() throws Exception {
@@ -88,52 +89,15 @@ public class SysConf {
         if (cl != null) {
             java.net.URL url = cl.getResource(classname);
             if (url != null) {
-                String path = url.getFile();
-                int fileStrPosition = path.indexOf("file:/");
-                int begin = 0;
-                int end = path.length();
-                if (fileStrPosition >= 0)
-                    begin = fileStrPosition + 5;
-                end = path.indexOf("WEB-INF/");
-                if (end > 0) {
-                    String rf = path.substring(begin, end);
-                    webPath = rf;
-                    File f = new File(rf + "WEB-INF/conf/");
-                    if (f.exists())
-                        res = new File(rf + "WEB-INF/").getAbsolutePath() + File.separator;
-                    else
-                        res = new File(rf).getParentFile().getAbsolutePath() + File.separator;
-                } else {
-                    res = new File(".").getAbsolutePath();
-                    res = res.substring(0, res.length() - 1);
-                }
+                res = new File(".").getAbsolutePath();
+                res = res.substring(0, res.length() - 1);
             }
         }
         return java.net.URLDecoder.decode(res, "UTF-8");
     }
 
-    public Properties readXML(String xmlName) throws Exception {
-        this.filename = xmlName;
-        return readXML();
-    }
-
-    public Properties readXML() throws Exception {
-        String path = getConfPath();
-        Properties props = new Properties();
-        InputStream is = new java.io.FileInputStream(new File(path + filename));
-        props.loadFromXML(is);
-        is.close();
-        // props.put("system.path", sysPath);
-        return props;
-    }
-
-    public void storeXML(Properties prop) throws Exception {
-        String path = getConfPath();
-        prop.storeToXML(new FileOutputStream(new File(path + filename)), "Store By Program");
-    }
-
     public static void main(String[] args) throws Exception {
-        SysConf sc = new SysConf("log4j.conf");
+        SysConf sc = new SysConf("logback.xml");
         System.out.println(sc.read());
     }
 }

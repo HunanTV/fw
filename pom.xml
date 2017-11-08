@@ -27,6 +27,7 @@
 		<mysql-connector-java.version>5.1.37</mysql-connector-java.version>
 		<sqlite-jdbc.version>3.7.2</sqlite-jdbc.version>
 		<junit.version>4.11</junit.version>
+		<maven-jar-plugin.version>2.3.1</maven-jar-plugin.version>
 	</properties>
 
 	<distributionManagement>

@@ -47,7 +47,7 @@ public class Application {
     private Application() {
         sysConf = new SysConf();
         try {
-            PropertyConfigurator.configure(sysConf.getConfPath() + "logback.xml");
+            PropertyConfigurator.configure(sysConf.getConfigFileDir() + "logback.xml");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,16 +83,16 @@ public class Application {
     }
 
     private Map<String, Object> filterProperties(Properties pros, String prefix) {
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (Iterator<Object> iter = pros.keySet().iterator(); iter.hasNext();) {
-            String key = (String) iter.next();
+        Map<String, Object> map = new HashMap<>();
+        pros.forEach((k, v) -> {
+            String key = (String)k;
             if (key.startsWith(prefix)) {
-                map.put(key.substring(prefix.length() + 1), pros.get(key));
-                logger.debug(key.substring(prefix.length() + 1) + ":" + pros.get(key));
+                String subKey = key.substring(prefix.length() + 1);
+                map.put(subKey, v);
+                logger.debug("load properties: {} = {}", subKey, v);
             }
             map.put(key, pros.get(key));
-        }
+        });
         return map;
     }
 
