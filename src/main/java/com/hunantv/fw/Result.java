@@ -1,36 +1,37 @@
-package com.hunantv.fw.result;
+package com.hunantv.fw;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.hunantv.fw.utils.SeqIdThreadLocal;
+import com.hunantv.fw.log.FwLogger;
+import com.hunantv.fw.log.LogData;
 
-public class RestfulResult implements Result {
+public class Result {
 
-	private static final int OK = 0;
+	private static final int OK = 200;
 	protected int code = OK;
 	protected String msg = "";
 	protected Object data = null;
 
-	public RestfulResult() {
+	public Result() {
 		this(OK, "", null);
 	}
 
-	public RestfulResult(int code) {
+	public Result(int code) {
 		this(code, "", null);
 	}
 
-	public RestfulResult(Object data) {
+	public Result(Object data) {
 		this(OK, "", data);
 	}
 
-	public RestfulResult(int code, String msg) {
+	public Result(int code, String msg) {
 		this(code, msg, null);
 	}
 
-	public RestfulResult(int code, String msg, Object data) {
+	public Result(int code, String msg, Object data) {
 		this.code = code;
 		this.msg = msg;
 		this.data = data;
@@ -66,9 +67,9 @@ public class RestfulResult implements Result {
 	}
 
 	@SuppressWarnings("rawtypes")
-    public Map<String, Object> toMap() {
+	public Map<String, Object> toMap() {
 		Map<String, Object> m = new HashMap<String, Object>();
-		m.put("seqid", SeqIdThreadLocal.get());
+		m.put("seqid", LogData.instance().getId());
 		m.put("code", this.code);
 		m.put("msg", this.msg);
 		m.put("data", this.data == null ? new HashMap() : data);

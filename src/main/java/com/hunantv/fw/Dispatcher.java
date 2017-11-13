@@ -17,6 +17,7 @@ import user.UserController;
 
 import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.log.FwLogger;
+import com.hunantv.fw.log.LogData;
 import com.hunantv.fw.route.Routes;
 import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.WebUtil;
@@ -42,11 +43,11 @@ public class Dispatcher extends AbstractHandler {
 		}
 
 		if (traceId != null) {
+			LogData.instance().setId(traceId);
 			logger.delayInfo("traceId", traceId);
 			logger.info("Get traceId from client:" + traceId);
-			logger.initSeqid(traceId);
 		} else {
-			logger.initSeqid();
+
 		}
 
 		logger.debug(target);
@@ -70,7 +71,7 @@ public class Dispatcher extends AbstractHandler {
 			logger.delayInfo("uri", uri);
 			logger.delayInfo("query", queryStr);
 			logger.delayInfo("cost", new Long(etime - btime).toString());
-			logger.clearSeqid();
+			logger.clear();
 		}
 	}
 

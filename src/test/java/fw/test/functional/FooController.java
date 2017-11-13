@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hunantv.fw.Controller;
-import com.hunantv.fw.result.RestfulResult;
+import com.hunantv.fw.Result;
 import com.hunantv.fw.view.View;
 
 public class FooController extends Controller {
@@ -18,7 +18,7 @@ public class FooController extends Controller {
 	}
 
 	public View jsonp() {
-		RestfulResult relt = new RestfulResult(new HashMap<String, Integer>() {
+		Result relt = new Result(new HashMap<String, Integer>() {
             private static final long serialVersionUID = 7250539994395099422L;
 
             {
@@ -45,7 +45,7 @@ public class FooController extends Controller {
 		Integer offset = this.getIntegerParam("offset", 0);
 		Integer limit = this.getIntegerParam("limit", 0);
 
-		RestfulResult relt = new RestfulResult(new HashMap<String, Integer>() {
+		Result relt = new Result(new HashMap<String, Integer>() {
 			/**
              * 
              */
@@ -67,7 +67,7 @@ public class FooController extends Controller {
 		// Transaction tran = db.beginTransaction();
 		// try {
 		// tran.commit();
-		return this.renderJson(new RestfulResult(new HashMap<String, Object>() {
+		return this.renderJson(new Result(new HashMap<String, Object>() {
 			/**
              * 
              */

@@ -5,19 +5,17 @@ import java.io.Writer;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.hunantv.fw.result.Result;
+import com.hunantv.fw.Result;
 
 public class JsonView extends AbsView {
 
-	public JsonView(Object v) {
+	public JsonView(Result v) {
 		this.v = v;
 	}
 
 	@Override
 	public String render() {
-		if (v instanceof Result)
-			return ((Result) v).toJson();
-		return JSON.toJSONString(v, SerializerFeature.WriteMapNullValue);
+		return ((Result) v).toJson();
 	}
 
 	@Override

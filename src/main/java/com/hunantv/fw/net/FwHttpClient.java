@@ -21,127 +21,118 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import com.hunantv.fw.Dispatcher;
-import com.hunantv.fw.utils.SeqIdThreadLocal;
+import com.hunantv.fw.log.FwLogger;
+import com.hunantv.fw.log.LogData;
 
 public class FwHttpClient {
-    private static CloseableHttpClient client = null;
 
-    static {
-        SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(3000).setSoKeepAlive(true).build();
-        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(3000, TimeUnit.MILLISECONDS);
-        cm.setMaxTotal(10000);
-        cm.setDefaultMaxPerRoute(2000);
-        cm.setDefaultSocketConfig(socketConfig);
-        client = HttpClients.custom().setConnectionManager(cm).build();
-    }
+	private static CloseableHttpClient client = null;
 
-    public static FwHttpResponse get(String url) throws Exception {
-        return get(url, null);
-    }
+	static {
+		SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(3000).setSoKeepAlive(true).build();
+		PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(3000, TimeUnit.MILLISECONDS);
+		cm.setMaxTotal(10000);
+		cm.setDefaultMaxPerRoute(2000);
+		cm.setDefaultSocketConfig(socketConfig);
+		client = HttpClients.custom().setConnectionManager(cm).build();
+	}
 
-    public static FwHttpResponse get(String url, Map<String, Object> params) throws Exception {
-        return get(url, params, -1);
-    }
+	public static FwHttpResponse get(String url) throws Exception {
+		return get(url, null);
+	}
 
-    public static FwHttpResponse get(String url, Map<String, Object> params, Map<String, String> httpHeaders)
-            throws Exception {
-        return get(url, params, -1, httpHeaders);
-    }
+	public static FwHttpResponse get(String url, Map<String, Object> params) throws Exception {
+		return get(url, params, -1);
+	}
 
-    public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec,
-            Map<String, String> httpHeaders) throws Exception {
-        URLParser urlParser = new URLParser(url);
-        urlParser.addQuery(params);
+	public static FwHttpResponse get(String url, Map<String, Object> params, Map<String, String> httpHeaders) throws Exception {
+		return get(url, params, -1, httpHeaders);
+	}
 
-        HttpGet httpGet = new HttpGet(urlParser.getFullUrl());
-        if (connTimeoutSec > 0) {
-            RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000)
-                    .setConnectTimeout(connTimeoutSec * 1000).build();
-            httpGet.setConfig(config);
-        }
+	public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec, Map<String, String> httpHeaders) throws Exception {
+		URLParser urlParser = new URLParser(url);
+		urlParser.addQuery(params);
 
-        if (httpHeaders != null && httpHeaders.size() > 0) {
-            httpHeaders.forEach((name, value) -> {
-                httpGet.addHeader(name, value);
-            });
-        }
-        httpGet.addHeader(Dispatcher.X_HTTP_TRACEID, SeqIdThreadLocal.get());
+		HttpGet httpGet = new HttpGet(urlParser.getFullUrl());
+		if (connTimeoutSec > 0) {
+			RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000).setConnectTimeout(connTimeoutSec * 1000).build();
+			httpGet.setConfig(config);
+		}
 
-        try (CloseableHttpResponse response = client.execute(httpGet)) {
-            return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
-        }
-    }
+		if (httpHeaders != null && httpHeaders.size() > 0) {
+			httpHeaders.forEach((name, value) -> {
+				httpGet.addHeader(name, value);
+			});
+		}
+		String id = LogData.instance().getId();
+		httpGet.addHeader(Dispatcher.X_HTTP_TRACEID, id);
+//		System.out.println("baidu-seqid = " + id);
 
-    public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
-        return get(url, params, connTimeoutSec, null);
-    }
+		try (CloseableHttpResponse response = client.execute(httpGet)) {
+			String content = EntityUtils.toString(response.getEntity(), "UTF-8");
+			return new FwHttpResponse(response.getStatusLine().getStatusCode(), content);
+		}
+	}
 
-    public static FwHttpResponse post(String url) throws Exception {
-        return post(url, null);
-    }
+	public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
+		return get(url, params, connTimeoutSec, null);
+	}
 
-    public static FwHttpResponse post(String url, Map<String, Object> params) throws Exception {
-        return post(url, params, -1);
-    }
+	public static FwHttpResponse post(String url) throws Exception {
+		return post(url, null);
+	}
 
-    public static FwHttpResponse post(String url, Map<String, Object> params, Map<String, String> httpHeaders)
-            throws Exception {
-        return post(url, params, -1, httpHeaders);
-    }
+	public static FwHttpResponse post(String url, Map<String, Object> params) throws Exception {
+		return post(url, params, -1);
+	}
 
-    public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
-        return post(url, params, connTimeoutSec, null);
-    }
+	public static FwHttpResponse post(String url, Map<String, Object> params, Map<String, String> httpHeaders) throws Exception {
+		return post(url, params, -1, httpHeaders);
+	}
 
-    public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec,
-            Map<String, String> httpHeaders) throws Exception {
+	public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
+		return post(url, params, connTimeoutSec, null);
+	}
 
-        URLParser urlParser = new URLParser(url);
-        HttpPost httpPost = new HttpPost(urlParser.getFullUrl());
+	public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec, Map<String, String> httpHeaders) throws Exception {
 
-        if (connTimeoutSec > 0) {
-            RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000)
-                    .setConnectTimeout(connTimeoutSec * 1000).build();
-            httpPost.setConfig(config);
-        }
-        if (null != params) {
-            List<NameValuePair> formparams = new ArrayList<NameValuePair>();
-            for (Iterator<String> iter = params.keySet().iterator(); iter.hasNext();) {
-                String key = iter.next();
-                Object obj = params.get(key);
-                String value = "";
-                if (null != obj)
-                    value = obj.toString();
+		URLParser urlParser = new URLParser(url);
+		HttpPost httpPost = new HttpPost(urlParser.getFullUrl());
 
-                formparams.add(new BasicNameValuePair(key, value));
-            }
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
-            httpPost.setEntity(entity);
-        }
+		if (connTimeoutSec > 0) {
+			RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000).setConnectTimeout(connTimeoutSec * 1000).build();
+			httpPost.setConfig(config);
+		}
+		if (null != params) {
+			List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+			for (Iterator<String> iter = params.keySet().iterator(); iter.hasNext();) {
+				String key = iter.next();
+				Object obj = params.get(key);
+				String value = "";
+				if (null != obj)
+					value = obj.toString();
 
-        if (httpHeaders != null && httpHeaders.size() > 0) {
-            httpHeaders.forEach((name, value) -> {
-                httpPost.addHeader(name, value);
-            });
-        }
-        httpPost.addHeader(Dispatcher.X_HTTP_TRACEID, SeqIdThreadLocal.get());
+				formparams.add(new BasicNameValuePair(key, value));
+			}
+			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
+			httpPost.setEntity(entity);
+		}
 
-        try (CloseableHttpResponse response = client.execute(httpPost)) {
-            return new FwHttpResponse(response.getStatusLine().getStatusCode(), getContent(response));
-        }
-    }
+		if (httpHeaders != null && httpHeaders.size() > 0) {
+			httpHeaders.forEach((name, value) -> {
+				httpPost.addHeader(name, value);
+			});
+		}
+		String id = LogData.instance().getId();
+		httpPost.addHeader(Dispatcher.X_HTTP_TRACEID, id);
+//		System.out.println("baidu-seqid = " + id);
 
-    private static String getContent(HttpResponse res) throws Exception {
-        try (BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()))) {
-            StringBuilder strb = new StringBuilder();
-            String line = null;
-            while (null != (line = rd.readLine())) {
-                strb.append(line).append("\n");
-            }
-            return strb.toString();
-        }
-    }
-
+		try (CloseableHttpResponse response = client.execute(httpPost)) {
+			String content = EntityUtils.toString(response.getEntity(), "UTF-8");
+			return new FwHttpResponse(response.getStatusLine().getStatusCode(), content);
+		}
+	}
 }

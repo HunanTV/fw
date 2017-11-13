@@ -5,17 +5,17 @@ import java.io.Writer;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.hunantv.fw.result.Result;
+import com.hunantv.fw.Result;
 
 public class JsonPView extends AbsView {
 
 	protected String callback = "";
 
-	public JsonPView(Object v) {
+	public JsonPView(Result v) {
 		this("", v);
 	}
 
-	public JsonPView(String callback, Object v) {
+	public JsonPView(String callback, Result v) {
 		this.callback = callback;
 		this.v = v;
 	}
@@ -24,12 +24,7 @@ public class JsonPView extends AbsView {
 	public String render() {
 		StringBuilder strb = new StringBuilder();
 		strb.append(callback).append("(");
-
-		if (v instanceof Result) {
-			strb.append(((Result) v).toJson());
-		} else {
-			strb.append(JSON.toJSONString(v, SerializerFeature.WriteMapNullValue));
-		}
+		strb.append(((Result) v).toJson());
 		strb.append(")");
 		return strb.toString();
 	}

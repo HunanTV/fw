@@ -14,46 +14,9 @@ import com.hunantv.fw.Application;
 import com.hunantv.fw.utils.SeqID;
 import com.hunantv.fw.utils.SysConf;
 
-class LoggerData {
-
-	public String id;
-	private List<String> data;
-
-	public LoggerData() {
-		this(SeqID.rnd().toString());
-	}
-
-	public LoggerData(String id) {
-		this.id = id;
-		data = new ArrayList<String>();
-		// this.add("SeqID", this.id);
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public void add(String key, String value) {
-		this.data.add(key + "=" + value);
-	}
-
-	public String toString() {
-		if (data.size() == 0)
-			return "";
-		StringBuilder strb = new StringBuilder();
-		strb.append("[ ");
-		for (String ele : data) {
-			strb.append(ele).append(" ");
-		}
-		strb.append("]");
-		return strb.toString();
-	}
-}
-
 public class FwLogger {
 
 	private Logger logger = null;
-	private static ThreadLocal<LoggerData> threadLocalVar = new ThreadLocal<LoggerData>();
 
 	static {
 		try {
@@ -65,34 +28,17 @@ public class FwLogger {
 	}
 
 	public FwLogger delayInfo(String key, Object msg) {
-		LoggerData data = (LoggerData) threadLocalVar.get();
-		data.add(key, msg.toString());
+		if (msg == null) {
+			msg = "";
+		}
+		LogData.instance().add(key, msg.toString());
 		return this;
 	}
 
-	public String getSeqid() {
-		return this.initSeqid();
-	}
-
-	public String initSeqid(String id) {
-		LoggerData data = (LoggerData) threadLocalVar.get();
-		if (data == null) {
-			data = new LoggerData();
-			if (id != null && !id.trim().equals(""))
-				data.setId(id);
-			FwLogger.threadLocalVar.set(data);
-		}
-		return data.id;
-	}
-
-	public String initSeqid() {
-		return this.initSeqid(null);
-	}
-
-	public void clearSeqid() {
-		LoggerData data = (LoggerData) threadLocalVar.get();
-		this.info(data.toString());
-		FwLogger.threadLocalVar.remove();
+	public FwLogger clear() {
+		this.info(LogData.instance().toString());
+		LogData.instance().clear();
+		return this;
 	}
 
 	public static FwLogger getLogger(Class<?> clz) {
@@ -173,8 +119,8 @@ public class FwLogger {
 
 	private String buildMsg(Object message) {
 		if (message == null) {
-			return this.getSeqid() + "|";
+			return LogData.instance().getId() + "|";
 		}
-		return this.getSeqid() + "|" + message.toString();
+		return LogData.instance().getId() + "|" + message.toString();
 	}
 }
