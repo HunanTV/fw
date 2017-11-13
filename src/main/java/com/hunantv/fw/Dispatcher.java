@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import user.UserController;
 
 import com.hunantv.fw.exceptions.HttpException;
+import com.hunantv.fw.log.FwLogger;
 import com.hunantv.fw.route.Routes;
-import com.hunantv.fw.utils.FwLogger;
 import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.WebUtil;
 import com.hunantv.fw.view.View;

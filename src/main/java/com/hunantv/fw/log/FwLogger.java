@@ -1,4 +1,4 @@
-package com.hunantv.fw.utils;
+package com.hunantv.fw.log;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,6 +11,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.hunantv.fw.Application;
+import com.hunantv.fw.utils.SeqID;
+import com.hunantv.fw.utils.SysConf;
 
 class LoggerData {
 
