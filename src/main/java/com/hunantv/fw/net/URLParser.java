@@ -85,7 +85,7 @@ public class URLParser {
             if (vs.length == 1) {
                 m.put(vs[0], "");
             } else {
-                m.put(vs[0], vs[1]);
+                m.put(vs[0], decode(vs[0], vs[1]));
             }
         }
         return m;
@@ -98,13 +98,13 @@ public class URLParser {
             if (vs.length == 1) {
                 encodeQueries.add(vs[0] + "=");
             } else {
-                encodeQueries.add(vs[0] + "=" + encode(vs[0], vs[1]));
+                encodeQueries.add(vs[0] + "=" + decode(vs[0], vs[1]));
             }
         }
         return encodeQueries;
     }
 
-    private String encode(String name, String s) {
+    private String decode(String name, String s) {
         try {
             return URLEncoder.encode(s, this.charset);
         } catch (UnsupportedEncodingException e) {
