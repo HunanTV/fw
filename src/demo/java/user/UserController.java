@@ -14,9 +14,13 @@ import com.hunantv.fw.view.View;
 public class UserController extends Controller {
 
 	protected FwLogger logger = new FwLogger(UserController.class);
-	
+
 	public View helloBaidu() throws Exception {
-		return this.renderJsonOrJsonP(FwHttpClient.get("http://www.baidu.com").body);
+		return this.renderJsonOrJsonP(new HashMap<String, String>() {
+			{
+				put("baidu-body", FwHttpClient.get("http://www.baidu.com").body);
+			}
+		});
 	}
 
 	public View HelloWorld() {

@@ -18,15 +18,12 @@ public class FooController extends Controller {
 	}
 
 	public View jsonp() {
-		Result relt = new Result(new HashMap<String, Integer>() {
-            private static final long serialVersionUID = 7250539994395099422L;
-
-            {
+		return this.renderJsonP(new HashMap<String, Integer>() {
+			{
 				put("req-offset", 100);
 				put("req-limit", 20);
 			}
 		});
-		return this.renderJsonP(relt);
 	}
 
 	public View err500() throws Exception {
@@ -45,18 +42,13 @@ public class FooController extends Controller {
 		Integer offset = this.getIntegerParam("offset", 0);
 		Integer limit = this.getIntegerParam("limit", 0);
 
-		Result relt = new Result(new HashMap<String, Integer>() {
-			/**
-             * 
-             */
-            private static final long serialVersionUID = 7450057818492450883L;
-
-            {
+		return this.renderJson(new HashMap<String, Integer>() {
+			{
 				put("req-offset", offset);
 				put("req-limit", limit);
 			}
 		});
-		return this.renderJson(relt);
+
 	}
 
 	public View update() {
@@ -67,18 +59,14 @@ public class FooController extends Controller {
 		// Transaction tran = db.beginTransaction();
 		// try {
 		// tran.commit();
-		return this.renderJson(new Result(new HashMap<String, Object>() {
-			/**
-             * 
-             */
-            private static final long serialVersionUID = -3313763577738259899L;
+		return this.renderJson(new HashMap<String, Object>() {
 
-            {
+			{
 				put("id", id);
 				put("name", name);
 				put("age", age);
 			}
-		}));
+		});
 		// } catch (Exception ex) {
 		// tran.rollback();
 		// return this.renderString("failed");

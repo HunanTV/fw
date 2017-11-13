@@ -60,7 +60,7 @@ public class Controller {
 	}
 
 	public View renderJson(Object object) {
-		return this.renderJson(200, "", object);
+		return this.renderJson(Result.OK, "", object);
 	}
 
 	public View renderJson(int code, String msg, Object object) {
@@ -69,7 +69,7 @@ public class Controller {
 	}
 
 	public View renderJsonP(Object object) {
-		return this.renderJsonP(200, "", object);
+		return this.renderJsonP(Result.OK, "", object);
 	}
 
 	public View renderJsonP(int code, String msg, Object object) {
@@ -79,7 +79,7 @@ public class Controller {
 	}
 
 	public View renderJsonOrJsonP(Object object) {
-		return this.renderJsonOrJsonP(200, "", object); // jsonp
+		return this.renderJsonOrJsonP(Result.OK, "", object); // jsonp
 	}
 
 	public View renderJsonOrJsonP(int code, String msg, Object object) {

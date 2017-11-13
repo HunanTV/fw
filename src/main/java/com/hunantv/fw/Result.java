@@ -10,7 +10,7 @@ import com.hunantv.fw.log.LogData;
 
 public class Result {
 
-	private static final int OK = 200;
+	public static final int OK = 0;
 	protected int code = OK;
 	protected String msg = "";
 	protected Object data = null;
