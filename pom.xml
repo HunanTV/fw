@@ -28,6 +28,7 @@
 		<sqlite-jdbc.version>3.7.2</sqlite-jdbc.version>
 		<junit.version>4.11</junit.version>
 		<maven-jar-plugin.version>2.3.1</maven-jar-plugin.version>
+		<commons-lang3.version>3.6</commons-lang3.version>
 	</properties>
 
 	<distributionManagement>
@@ -59,6 +60,12 @@
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlets</artifactId>
 			<version>${jetty.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
 		</dependency>
 		<!-- jetty lib end -->
 		<dependency>

@@ -7,8 +7,8 @@ import java.util.Properties;
 public class SysConf {
 
     private static String env;
-    private static String confPath;
-    private static String sysPath;
+    private String confPath;
+    private String sysPath;
     private String filename;
 
     public SysConf(String filename) {

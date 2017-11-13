@@ -270,7 +270,7 @@ public class FakeRequest implements HttpServletRequest {
 
 	@Override
 	public String getHeader(String name) {
-		throw new NotImplementException();
+		return this.getHeader(name);
 	}
 
 	@Override

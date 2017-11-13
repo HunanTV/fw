@@ -16,7 +16,7 @@ class LoggerData {
     private List<String> data;
 
     public LoggerData() {
-        this(UUID.randomUUID().toString());
+        this(UUID.randomUUID().toString().replaceAll("-", ""));
     }
 
     public LoggerData(String id) {
