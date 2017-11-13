@@ -9,6 +9,7 @@ public class UserServer {
     public static Routes initRoutes() {
 		Routes routes = new Routes(
 			Route.get("/user/hw", UserController.class, "HelloWorld"),
+			Route.get("/user/hb", UserController.class, "helloBaidu"),
 			Route.get("/user/index", UserController.class, "index"),
 			Route.get("/user/list", UserController.class, "list"),
 			Route.get("/user/show/<int:id>", UserController.class, "show"),

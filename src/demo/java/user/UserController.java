@@ -4,22 +4,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
 import com.hunantv.fw.Controller;
 import com.hunantv.fw.db.DB;
 import com.hunantv.fw.db.DB.Transaction;
-import com.hunantv.fw.result.RestfulResult;
-import com.hunantv.fw.utils.FwLogger;
+import com.hunantv.fw.log.FwLogger;
+import com.hunantv.fw.net.FwHttpClient;
 import com.hunantv.fw.view.View;
 
 public class UserController extends Controller {
 
-	protected static FwLogger logger = new FwLogger(UserController.class);
-	
+	protected FwLogger logger = new FwLogger(UserController.class);
+
+	public View helloBaidu() throws Exception {
+		return this.renderString(FwHttpClient.get("http://www.baidu.com").body);
+	}
+
 	public View HelloWorld() {
 		return this.renderString("Hello, World");
 	}
-	
+
 	public View index() {
 		return this.redirect("/user/list");
 	}
@@ -35,7 +38,7 @@ public class UserController extends Controller {
 			}
 		});
 	}
-	
+
 	public View show(int id) {
 		DB db = new DB();
 		Map<String, Object> record = db.get("SELECT * FROM user WHERE id = ?", id);
@@ -46,7 +49,7 @@ public class UserController extends Controller {
 		});
 
 	}
-	
+
 	public View edit(int id) {
 		DB db = new DB();
 		this.logger.delayInfo("id", id);
@@ -57,7 +60,7 @@ public class UserController extends Controller {
 			}
 		});
 	}
-	
+
 	public View update() {
 		Integer id = this.getIntegerParam("id", 0);
 		String name = this.getStrParam("name", "");
@@ -68,11 +71,11 @@ public class UserController extends Controller {
 		}
 		return this.redirect("/user/show/" + id);
 	}
-	
+
 	public View _new() {
 		return this.renderHtml("/user/new.html");
 	}
-	
+
 	public View create() {
 		String name = this.getStrParam("name");
 		Integer age = this.getIntegerParam("age");
