@@ -122,7 +122,7 @@ public class FwLogger {
     }
 
     public void debug(String message,Object ...args){
-        logger.debug(message,args);
+        logger.debug(buildMsg(message),args);
     }
 
     public void info(Object message) {
@@ -130,7 +130,7 @@ public class FwLogger {
     }
 
     public void info(String  message,Object ... objects){
-        logger.info(message,objects);
+        logger.info(buildMsg(message),objects);
     }
 
     public void info(Object message, Throwable t) {
@@ -143,7 +143,7 @@ public class FwLogger {
     }
 
     public void warn(String message,Object ... objects){
-        logger.warn(message,objects);
+        logger.warn(buildMsg(message),objects);
     }
 
     public void warn(Object message, Throwable t) {
@@ -155,7 +155,7 @@ public class FwLogger {
     }
 
     public void error(String message,Object ... objects){
-        logger.error(message,objects);
+        logger.error(buildMsg(message),objects);
     }
 
     public void error(Object message, Throwable t) {
@@ -167,7 +167,7 @@ public class FwLogger {
     }
 
     public void trace(String message,Object ... objects){
-        logger.trace(message,objects);
+        logger.trace(buildMsg(message),objects);
     }
 
 
