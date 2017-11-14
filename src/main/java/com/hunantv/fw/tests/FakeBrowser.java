@@ -21,10 +21,14 @@ public class FakeBrowser {
 	}
 
 	public View get(String url) throws HttpException {
-		return this.get(url, new HashMap<String, Object>());
+		return this.get(url, new HashMap<>(), null);
 	}
 
 	public View get(String url, Map<String, Object> params) throws HttpException {
+		return this.get(url, params, null);
+	}
+
+	public View get(String url, Map<String, Object> params, Map<String, String> headers) throws HttpException {
 		URLParser urlParser = new URLParser(url);
 		urlParser.addQuery(params);
 
@@ -32,15 +36,20 @@ public class FakeBrowser {
 		req.setURLParser(urlParser);
 		req.setMethod("GET");
 		req.setParameter(urlParser.getQueryPair());
+		req.setHeaders(headers);
 
 		return dis.doIt(url, req, null);
 	}
 	
 	public View post(String url) throws HttpException {
-		return this.post(url, new HashMap<String, Object>());
+		return this.post(url, new HashMap<>(), null);
 	}
 
 	public View post(String url, Map<String, Object> params) throws HttpException {
+	    return this.post(url, params, null);
+	}
+
+	public View post(String url, Map<String, Object> params, Map<String, String> headers) throws HttpException {
 		URLParser urlParser = new URLParser(url);
 		urlParser.addQuery(params);
 
@@ -48,6 +57,7 @@ public class FakeBrowser {
 		req.setURLParser(urlParser);
 		req.setMethod("POST");
 		req.setParameter(urlParser.getQueryPair());
+		req.setHeaders(headers);
 
 		return dis.doIt(url, req, null);
 	}

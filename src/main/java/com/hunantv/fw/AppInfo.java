@@ -5,11 +5,14 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.hunantv.fw.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hunantv.fw.utils.StringUtil;
 
+/**
+ * @author zhanglei
+ */
 public class AppInfo {
     public static Logger logger = LoggerFactory.getLogger(AppInfo.class);
     private String appName;
