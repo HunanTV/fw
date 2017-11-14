@@ -33,10 +33,10 @@ import com.hunantv.fw.utils.StringUtil;
 
 public class FakeRequest implements HttpServletRequest {
 
-	private Map<String, String> parameter = new HashMap<>();
+	private Map<String, String> parameter = new HashMap<String, String>();
 	private URLParser urlParser;
 	private String method;
-	private Map<String, String> headers = new HashMap();
+	private Map<String, String> headers = new HashMap<String, String>();
 
 	public void setMethod(String method) {
 		this.method = method;
@@ -105,7 +105,7 @@ public class FakeRequest implements HttpServletRequest {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
+	@Override
 	public Enumeration<String> getParameterNames() {
 		return new KeysetEnum(parameter);
 	}
