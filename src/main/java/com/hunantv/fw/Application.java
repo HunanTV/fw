@@ -1,20 +1,11 @@
 package com.hunantv.fw;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.Filter;
-
+import com.hunantv.fw.route.Route;
+import com.hunantv.fw.route.Routes;
+import com.hunantv.fw.utils.SysConf;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.PropertyConfigurator;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
@@ -22,9 +13,11 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hunantv.fw.route.Route;
-import com.hunantv.fw.route.Routes;
-import com.hunantv.fw.utils.SysConf;
+import javax.servlet.Filter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Application {
 
@@ -47,7 +40,7 @@ public class Application {
     private Application() {
         sysConf = new SysConf();
         try {
-            PropertyConfigurator.configure(sysConf.getConfigFileDir() + "logback.xml");
+            PropertyConfigurator.configure(sysConf.getConfPath() + "logback.xml");
         } catch (Exception e) {
             e.printStackTrace();
         }
