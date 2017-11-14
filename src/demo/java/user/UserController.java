@@ -24,6 +24,7 @@ public class UserController extends Controller {
 	}
 
 	public View HelloWorld() {
+		logger.info("test : {}|{}", "hahaha", 111);
 		return this.renderString("Hello, World");
 	}
 
