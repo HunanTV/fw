@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-    <!--默认只支持udp方式，如需其它方式参考 https://github.com/papertrail/logback-syslog4j 10.27.111.115-->
+    <!--默认只支持udp方式，如需其它方式参考 https://github.com/papertrail/logback-syslog4j-->
     <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
         <syslogHost>127.0.0.1</syslogHost>
         <port>514</port>

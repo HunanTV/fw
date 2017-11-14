@@ -2,6 +2,7 @@ package com.hunantv.fw.log;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
+import com.hunantv.fw.utils.SysConf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ class LoggerData {
 
     public LoggerData(String id) {
         this.id = id;
-        data = new ArrayList<String>();
+        data = new ArrayList<>();
     }
 
     public void add(String key, String value) {
@@ -49,20 +50,21 @@ class LoggerData {
 
 public class FwLogger {
 
-    private static ThreadLocal<LoggerData> threadLocalVar = new ThreadLocal<LoggerData>();
+    private static ThreadLocal<LoggerData> threadLocalVar = new ThreadLocal<>();
 
     static {
         try {
-            File file=new File(System.getProperty("user.dir")+File.separator+"confs/logback.xml");
+            SysConf sysConf = new SysConf();
+            File file=new File(sysConf.getSysPath()+"confs/logback.xml");
             if(file.exists()){
                 LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
                 JoranConfigurator configurator = new JoranConfigurator();
                 configurator.setContext(context);
                 context.reset();
                 configurator.doConfigure(file);
-                FwLogger.getLogger(FwLogger.class).debug("use confs/logback.xml logback.xml");
+                FwLogger.getLogger(FwLogger.class).info("use confs/logback.xml");
             }else{
-                FwLogger.getLogger(FwLogger.class).debug("use default logback.xml");
+                FwLogger.getLogger(FwLogger.class).info("use default logback.xml");
             }
 
         } catch (Exception ex) {
@@ -90,26 +92,24 @@ public class FwLogger {
 
     public String getSeqid() {
         initSeqid();
-        LoggerData data = (LoggerData) threadLocalVar.get();
+        LoggerData data = threadLocalVar.get();
         return data.getId();
     }
 
     public void delayInfo(String key, Object msg) {
         initSeqid();
-        LoggerData data = (LoggerData) threadLocalVar.get();
+        LoggerData data = threadLocalVar.get();
         data.add(key, msg.toString());
     }
 
     public void initSeqid() {
-        LoggerData data = (LoggerData) threadLocalVar.get();
+        LoggerData data = threadLocalVar.get();
         if (data == null) {
             FwLogger.threadLocalVar.set(new LoggerData());
         }
     }
 
     public void clearSeqid() {
-        LoggerData data = (LoggerData) threadLocalVar.get();
-        //this.info(data.toString());
         FwLogger.threadLocalVar.remove();
     }
 
