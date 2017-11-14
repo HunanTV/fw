@@ -50,32 +50,51 @@ public class FwLogger {
 		logger = FwLogger.lc.getLogger(clazz);
 	}
 
-	public void debug(Object... msgs) {
-		logger.debug(buildMarker(msgs), msgs);
+	public void debug(String msg) {
+		logger.debug(buildFormat(null), msg);
 	}
 
-	public void info(Object... msgs) {
-		logger.info(buildMarker(msgs), msgs);
+	public void debug(String format, Object... msgs) {
+		logger.debug(buildFormat(format), msgs);
 	}
 
-	public void warn(Object... msgs) {
-		logger.warn(buildMarker(msgs), msgs);
+	public void info(String msg) {
+		logger.info(buildFormat(null), msg);
 	}
 
-	public void error(Object... msgs) {
-		logger.error(buildMarker(msgs), msgs);
+	public void info(String format, Object... msgs) {
+		logger.info(buildFormat(format), msgs);
 	}
 
-	public void trace(Object... msgs) {
-		logger.trace(buildMarker(msgs), msgs);
+	public void warn(String msg) {
+		logger.warn(buildFormat(null), msg);
 	}
 
-	private String buildMarker(Object... msgs) {
-		StringBuilder strb = new StringBuilder();
-		strb.append(LogData.instance().getId()).append("|");
-		for (Object _ : msgs) {
-			strb.append("{} ");
-		}
-		return strb.toString();
+	public void warn(String format, Object... msgs) {
+		logger.warn(buildFormat(format), msgs);
+	}
+
+	public void trace(String msg) {
+		logger.trace(buildFormat(null), msg);
+	}
+
+	public void trace(String format, Object... msgs) {
+		logger.trace(buildFormat(format), msgs);
+	}
+
+	public void error(String msg) {
+		logger.error(buildFormat(null), msg);
+	}
+
+	public void error(String format, Object... msgs) {
+		logger.error(buildFormat(format), msgs);
+	}
+
+	private String buildFormat(String format) {
+		String id = LogData.instance().getId();
+		if (format == null)
+			return id + "| {}";
+		else
+			return id + "| " + format;
 	}
 }
