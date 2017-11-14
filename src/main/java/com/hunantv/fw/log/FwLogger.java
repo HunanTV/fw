@@ -1,27 +1,28 @@
 package com.hunantv.fw.log;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import org.slf4j.LoggerFactory;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
 
 import com.hunantv.fw.Application;
-import com.hunantv.fw.utils.SeqID;
-import com.hunantv.fw.utils.SysConf;
 
 public class FwLogger {
 
 	private Logger logger = null;
+	private static LoggerContext lc;
 
 	static {
 		try {
-			SysConf sysConf = Application.getInstance().getSysConf();
-			PropertyConfigurator.configure(sysConf.getConfPath() + "log4j.properties");
+			String logbackConfPath = Application.getInstance().getSysConf().getConfPath() + "logback.xml";
+			lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+			JoranConfigurator configurator = new JoranConfigurator();
+			configurator.setContext(lc);
+			lc.reset();
+			configurator.doConfigure(logbackConfPath);
+
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
@@ -45,82 +46,36 @@ public class FwLogger {
 		return new FwLogger(clz);
 	}
 
-	public static FwLogger getLogger(String clz) {
-		return new FwLogger(clz);
-	}
-
 	public FwLogger(Class<?> clazz) {
-		this(clazz.getName());
+		logger = FwLogger.lc.getLogger(clazz);
 	}
 
-	public FwLogger(String clazz) {
-		logger = Logger.getLogger(clazz);
+	public void debug(Object... msgs) {
+		logger.debug(buildMarker(msgs), msgs);
 	}
 
-	public void debug(Object message) {
-		if (logger.isDebugEnabled())
-			logger.debug(buildMsg(message));
+	public void info(Object... msgs) {
+		logger.info(buildMarker(msgs), msgs);
 	}
 
-	public void debug(Object message, Throwable t) {
-		if (logger.isDebugEnabled())
-			logger.debug(buildMsg(message), t);
+	public void warn(Object... msgs) {
+		logger.warn(buildMarker(msgs), msgs);
 	}
 
-	public void info(Object message) {
-		if (logger.isInfoEnabled())
-			logger.info(buildMsg(message));
+	public void error(Object... msgs) {
+		logger.error(buildMarker(msgs), msgs);
 	}
 
-	public void info(Object message, Throwable t) {
-		if (logger.isInfoEnabled())
-			logger.info(buildMsg(message), t);
+	public void trace(Object... msgs) {
+		logger.trace(buildMarker(msgs), msgs);
 	}
 
-	public void warn(Object message) {
-		if (logger.isEnabledFor(Level.WARN))
-			logger.warn(buildMsg(message));
-	}
-
-	public void warn(Object message, Throwable t) {
-		if (logger.isEnabledFor(Level.WARN))
-			logger.warn(buildMsg(message), t);
-	}
-
-	public void error(Object message) {
-		if (logger.isEnabledFor(Level.ERROR))
-			logger.error(buildMsg(message));
-	}
-
-	public void error(Object message, Throwable t) {
-		if (logger.isEnabledFor(Level.ERROR))
-			logger.error(buildMsg(message), t);
-	}
-
-	public void fatal(Object message) {
-		if (logger.isEnabledFor(Level.FATAL))
-			logger.fatal(buildMsg(message));
-	}
-
-	public void fatal(Object message, Throwable t) {
-		if (logger.isEnabledFor(Level.FATAL))
-			logger.fatal(buildMsg(message), t);
-	}
-
-	public void trace(Object message) {
-		if (logger.isTraceEnabled())
-			logger.trace(buildMsg(message));
-	}
-
-	public void trace(Object message, Throwable t) {
-		if (logger.isTraceEnabled())
-			logger.trace(buildMsg(message), t);
-	}
-
-	private String buildMsg(Object message) {
-		if (message == null) {
-			return LogData.instance().getId() + "|";
+	private String buildMarker(Object... msgs) {
+		StringBuilder strb = new StringBuilder();
+		strb.append(LogData.instance().getId()).append("|");
+		for (Object _ : msgs) {
+			strb.append("{} ");
 		}
-		return LogData.instance().getId() + "|" + message.toString();
+		return strb.toString();
 	}
 }

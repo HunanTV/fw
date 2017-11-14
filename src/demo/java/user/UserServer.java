@@ -1,5 +1,7 @@
 package user;
 
+import user.UserController;
+
 import com.hunantv.fw.Application;
 import com.hunantv.fw.route.Route;
 import com.hunantv.fw.route.Routes;
