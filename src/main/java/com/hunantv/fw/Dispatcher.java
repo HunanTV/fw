@@ -44,8 +44,6 @@ public class Dispatcher extends AbstractHandler {
 			LogData.instance().setId(traceId);
 			logger.delayInfo("traceId", traceId);
 			logger.info("Get traceId from client:" + traceId);
-		} else {
-
 		}
 
 		logger.debug(target);
