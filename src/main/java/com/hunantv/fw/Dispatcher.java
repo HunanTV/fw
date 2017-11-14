@@ -37,7 +37,7 @@ public class Dispatcher extends AbstractHandler {
 		Long btime = System.currentTimeMillis();
 		String traceId = request.getHeader(X_HTTP_TRACEID);
 		if (traceId == null) {
-			traceId = request.getParameter("sid");
+			traceId = request.getParameter("seqid");
 		}
 
 		if (traceId != null) {
