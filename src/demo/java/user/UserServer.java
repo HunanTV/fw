@@ -50,7 +50,6 @@ public class UserServer {
 		app.setRoutes(initRoutes());
 		app.listener(port);
 		app.setDebug(false);
-		System.out.println(port);
 		app.start();
     }
 }

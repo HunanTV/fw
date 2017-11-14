@@ -13,8 +13,6 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import user.UserController;
-
 import com.hunantv.fw.exceptions.HttpException;
 import com.hunantv.fw.log.FwLogger;
 import com.hunantv.fw.log.LogData;

@@ -14,6 +14,7 @@ public class LocalCacheConf {
 	public boolean overflowToDisk = false;
 	public int expired_seconds = 0;
 	public boolean eternal = true;
+	public boolean updateCheck = false;
 
 	public LocalCacheConf() {
 		try {
@@ -32,6 +33,7 @@ public class LocalCacheConf {
 			if (expired_seconds != 0) {
 				eternal = false;
 			}
+
 			logger.debug("Local Cache Default Expired Seconds: " + expired_seconds);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);

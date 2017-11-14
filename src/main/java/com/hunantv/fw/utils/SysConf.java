@@ -11,7 +11,7 @@ public class SysConf {
     private static String sysPath;
 
     private static String webPath;
-    
+
     private static String envPath = "";
 
     private String filename;

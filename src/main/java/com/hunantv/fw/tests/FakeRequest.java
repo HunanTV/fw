@@ -33,9 +33,10 @@ import com.hunantv.fw.utils.StringUtil;
 
 public class FakeRequest implements HttpServletRequest {
 
-	private Map<String, String> parameter = new HashMap<String, String>();
+	private Map<String, String> parameter = new HashMap<>();
 	private URLParser urlParser;
 	private String method;
+	private Map<String, String> headers = new HashMap();
 
 	public void setMethod(String method) {
 		this.method = method;
@@ -51,6 +52,10 @@ public class FakeRequest implements HttpServletRequest {
 
 	public void addParameter(String key, Object value) {
 		this.parameter.put(key, value.toString());
+	}
+
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
 	}
 
 	@Override
@@ -270,7 +275,7 @@ public class FakeRequest implements HttpServletRequest {
 
 	@Override
 	public String getHeader(String name) {
-		throw new NotImplementException();
+		return this.headers == null ? "" : this.headers.get(name);
 	}
 
 	@Override

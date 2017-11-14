@@ -1,7 +1,5 @@
 package com.hunantv.fw.net;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +22,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.hunantv.fw.Dispatcher;
-import com.hunantv.fw.log.FwLogger;
 import com.hunantv.fw.log.LogData;
 
 public class FwHttpClient {
@@ -69,7 +66,7 @@ public class FwHttpClient {
 		}
 		String id = LogData.instance().getId();
 		httpGet.addHeader(Dispatcher.X_HTTP_TRACEID, id);
-//		System.out.println("baidu-seqid = " + id);
+		// System.out.println("baidu-seqid = " + id);
 
 		try (CloseableHttpResponse response = client.execute(httpGet)) {
 			String content = EntityUtils.toString(response.getEntity(), "UTF-8");
@@ -128,7 +125,7 @@ public class FwHttpClient {
 		}
 		String id = LogData.instance().getId();
 		httpPost.addHeader(Dispatcher.X_HTTP_TRACEID, id);
-//		System.out.println("baidu-seqid = " + id);
+		// System.out.println("baidu-seqid = " + id);
 
 		try (CloseableHttpResponse response = client.execute(httpPost)) {
 			String content = EntityUtils.toString(response.getEntity(), "UTF-8");
