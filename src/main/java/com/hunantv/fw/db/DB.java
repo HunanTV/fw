@@ -1,5 +1,6 @@
 package com.hunantv.fw.db;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +18,8 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
+
 
 public class DB {
 	private JdbcTemplate jdbcTemplate;
@@ -100,7 +101,7 @@ public class DB {
 	public int insertReturnKey(String sql, Object... args) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(con -> {
-			PreparedStatement ps = (PreparedStatement) con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			for (int i = 0; i < args.length; i++) {
 				ps.setObject(i + 1, args[i]);
 			}
