@@ -1,14 +1,20 @@
 package com.hunantv.fw;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.WebUtil;
 import com.hunantv.fw.utils.XssShieldUtil;
@@ -24,6 +30,7 @@ public class Controller {
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
 	protected Map<String, String> partParams = new HashMap<String, String>();
+	public String bodyString;
 
 	public HttpServletRequest getRequest() {
 		return request;
@@ -142,6 +149,15 @@ public class Controller {
 		return value == null ? defaultValue : value;
 	}
 
+	public String getStrBodyParam(String name) {
+		return this.getStrBodyParam(name, null);
+	}
+
+	public String getStrBodyParam(String name, String defaultValue) {
+		String value = this.bodyJsonObj().getString(name);
+		return value == null ? defaultValue : value;
+	}
+
 	// ////////////////////////////////////////////
 	// get Integer params /////////////////////////
 	// ////////////////////////////////////////////
@@ -174,6 +190,15 @@ public class Controller {
 	public Integer getIntegerPartParam(String name, Integer defaultValue) {
 		String value = getPartParam(name);
 		return StringUtil.str2Integer(value);
+	}
+
+	public Integer getIntegerBodyParam(String name) {
+		return this.getIntegerBodyParam(name, null);
+	}
+
+	public Integer getIntegerBodyParam(String name, Integer defaultValue) {
+		Integer value = this.bodyJsonObj().getInteger(name);
+		return value == null ? defaultValue : value;
 	}
 
 	// ////////////////////////////////////////////
@@ -210,6 +235,15 @@ public class Controller {
 		return StringUtil.str2Long(value);
 	}
 
+	public Long getLongBodyParam(String name) {
+		return this.getLongBodyParam(name, null);
+	}
+
+	public Long getLongBodyParam(String name, Long defaultValue) {
+		Long value = this.bodyJsonObj().getLong(name);
+		return value == null ? defaultValue : value;
+	}
+
 	// ////////////////////////////////////////////
 	// get Float params ///////////////////////////
 	// ////////////////////////////////////////////
@@ -242,6 +276,15 @@ public class Controller {
 	public Float getFloatPartParam(String name, Float defaultValue) {
 		String value = getPartParam(name);
 		return StringUtil.str2Float(value);
+	}
+
+	public Float getFloatBodyParam(String name) {
+		return this.getFloatBodyParam(name, null);
+	}
+
+	public Float getFloatBodyParam(String name, Float defaultValue) {
+		Float value = this.bodyJsonObj().getFloat(name);
+		return value == null ? defaultValue : value;
 	}
 
 	// ////////////////////////////////////////////
@@ -278,6 +321,15 @@ public class Controller {
 		return StringUtil.str2Double(value);
 	}
 
+	public Double getDoubleBodyParam(String name) {
+		return this.getDoubleBodyParam(name, null);
+	}
+
+	public Double getDoubleBodyParam(String name, Double defaultValue) {
+		Double value = this.bodyJsonObj().getDouble(name);
+		return value == null ? defaultValue : value;
+	}
+
 	// ////////////////////////////////////////////
 	// get List params ////////////////////////////
 	// ////////////////////////////////////////////
@@ -310,6 +362,18 @@ public class Controller {
 	public List<String> getListPartParam(String name, List<String> defaultValue) {
 		String value = this.getPartParam(name);
 		return StringUtil.str2List(value, defaultValue);
+	}
+
+	public List getListBodyParam(String name) {
+		return this.getListBodyParam(name, null);
+	}
+
+	public List getListBodyParam(String name, List defaultValue) {
+		String text = this.bodyJsonObj().getString(name);
+		if (text == null) {
+			return defaultValue;
+		}
+		return JSON.parseArray(text);
 	}
 
 	// ////////////////////////////////////////////
@@ -365,6 +429,40 @@ public class Controller {
 			return partParams.get(name);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
+		}
+	}
+
+	public String body() {
+		if (null == bodyString) {
+			bodyString = getBody();
+		}
+		return bodyString;
+	}
+
+	public JSONObject bodyJsonObj() {
+		return JSONObject.parseObject(body());
+	}
+
+	protected String getBody() {
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new InputStreamReader((ServletInputStream) request.getInputStream(), "UTF-8"));
+			StringBuffer sb = new StringBuffer("");
+			String temp;
+			while ((temp = br.readLine()) != null) {
+				sb.append(temp);
+			}
+			return sb.toString();
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		} finally {
+			try {
+				br.close();
+			} catch (Exception ex) {
+
+			} finally {
+				br = null;
+			}
 		}
 	}
 }
