@@ -63,6 +63,10 @@ public class Controller {
 		return this.renderJson(Result.OK, "", object);
 	}
 
+	public View renderJson(int code, String msg) {
+		return this.renderJson(code, msg, null);
+	}
+
 	public View renderJson(int code, String msg, Object object) {
 		this.addJsonContentType();
 		return new JsonView(new Result(code, msg, object));
@@ -70,6 +74,10 @@ public class Controller {
 
 	public View renderJsonP(Object object) {
 		return this.renderJsonP(Result.OK, "", object);
+	}
+
+	public View renderJsonP(int code, String msg) {
+		return this.renderJsonP(code, msg, null);
 	}
 
 	public View renderJsonP(int code, String msg, Object object) {
@@ -80,6 +88,10 @@ public class Controller {
 
 	public View renderJsonOrJsonP(Object object) {
 		return this.renderJsonOrJsonP(Result.OK, "", object); // jsonp
+	}
+
+	public View renderJsonOrJsonP(int code, String msg) {
+		return this.renderJsonOrJsonP(code, msg, null);
 	}
 
 	public View renderJsonOrJsonP(int code, String msg, Object object) {
