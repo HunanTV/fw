@@ -51,6 +51,9 @@ public class FwHttpClient {
 
 	public static FwHttpResponse get(String url, Map<String, Object> params, int connTimeoutSec, Map<String, String> httpHeaders) throws Exception {
 		URLParser urlParser = new URLParser(url);
+		if(!params.containsKey("s")) {
+			params.put("s", LogData.instance().getId());
+		}
 		urlParser.addQuery(params);
 
 		HttpGet httpGet = new HttpGet(urlParser.getFullUrl());
@@ -97,6 +100,9 @@ public class FwHttpClient {
 	public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec, Map<String, String> httpHeaders) throws Exception {
 
 		URLParser urlParser = new URLParser(url);
+		if(!params.containsKey("s")) {
+			params.put("s", LogData.instance().getId());
+		}
 		HttpPost httpPost = new HttpPost(urlParser.getFullUrl());
 
 		if (connTimeoutSec > 0) {

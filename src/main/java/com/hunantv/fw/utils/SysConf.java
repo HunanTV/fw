@@ -25,7 +25,7 @@ public class SysConf {
 
     static {
         System.out.println("===============================");
-        String env = System.getProperty("fw.project.env", "");
+        String env = System.getProperty("fw.project.env", "dev");
         if (!StringUtil.isEmpty(env)) {
             System.out.println("Current project env is [" + env + "]");
             envPath = env + File.separator;
