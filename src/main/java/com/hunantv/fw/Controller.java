@@ -31,6 +31,7 @@ public class Controller {
 	protected HttpServletResponse response;
 	protected Map<String, String> partParams = new HashMap<String, String>();
 	public String bodyString;
+	private JSONObject jsonBodyObject;
 
 	public HttpServletRequest getRequest() {
 		return request;
@@ -440,7 +441,10 @@ public class Controller {
 	}
 
 	public JSONObject bodyJsonObj() {
-		return JSONObject.parseObject(body());
+		if (null == jsonBodyObject) {
+			jsonBodyObject = JSONObject.parseObject(body());
+		}
+		return jsonBodyObject;
 	}
 
 	protected String getBody() {
