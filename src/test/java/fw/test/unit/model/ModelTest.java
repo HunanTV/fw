@@ -1,5 +1,7 @@
 package fw.test.unit.model;
 
+import com.hunantv.fw.model.SqlAndParams;
+
 import junit.framework.TestCase;
 
 public class ModelTest extends TestCase {

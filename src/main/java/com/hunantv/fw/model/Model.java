@@ -11,8 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.hunantv.fw.utils.Inflection;
 
-import fw.test.unit.model.SqlAndParams;
-
 public class Model {
 	protected Map<String, Object> data = new HashMap<String, Object>();
 	private String tableName;

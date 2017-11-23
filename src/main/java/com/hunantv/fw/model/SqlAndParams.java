@@ -1,4 +1,4 @@
-package fw.test.unit.model;
+package com.hunantv.fw.model;
 
 import java.util.ArrayList;
 import java.util.List;
