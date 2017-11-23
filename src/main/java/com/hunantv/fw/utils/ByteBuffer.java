@@ -106,6 +106,12 @@ public class ByteBuffer {
 		return bytes;
 	}
 
+	public byte[] usedArray() {
+		byte[] bs = new byte[this.used];
+		this.copy(bs, 0, bytes, 0, this.used);
+		return bs;
+	}
+
 	public String toString(String encoding) throws UnsupportedEncodingException {
 		return new String(bytes, 0, used, encoding);
 	}
@@ -158,6 +164,6 @@ public class ByteBuffer {
 		buffer.append("abcdefg");
 		buffer.append("OPQRSTV", "gb2312");
 		System.out.println(buffer.array());
-		
+
 	}
 }
