@@ -15,6 +15,7 @@ import javax.servlet.http.Part;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.hunantv.fw.utils.ByteBuffer;
 import com.hunantv.fw.utils.StringUtil;
 import com.hunantv.fw.utils.WebUtil;
 import com.hunantv.fw.utils.XssShieldUtil;
@@ -30,6 +31,8 @@ public class Controller {
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
 	protected Map<String, String> partParams = new HashMap<String, String>();
+	protected Map<String, byte[]> bytePartParams = new HashMap<String, byte[]>();
+
 	public String bodyString;
 	private JSONObject jsonBodyObject;
 
@@ -132,6 +135,19 @@ public class Controller {
 		return this.getStrNormalParam(name, defaultValue);
 	}
 
+	public byte[] getBytesParam(String name) {
+		return getBytesParam(name, null);
+	}
+
+	public byte[] getBytesParam(String name, byte[] defaultValue) {
+		if (WebUtil.isMultipart(request)) {
+			byte[] value = this.getBytesPartParam(name, defaultValue);
+			return null == value ? defaultValue : value;
+
+		}
+		return defaultValue;
+	}
+
 	public String getStrNormalParam(String name) {
 		return this.getStrNormalParam(name, null);
 	}
@@ -147,6 +163,15 @@ public class Controller {
 
 	public String getStrPartParam(String name, String defaultValue) {
 		String value = this.getPartParam(name);
+		return value == null ? defaultValue : value;
+	}
+
+	public byte[] getBytesPartParam(String name) {
+		return getBytesPartParam(name, null);
+	}
+
+	public byte[] getBytesPartParam(String name, byte[] defaultValue) {
+		byte[] value = this.getBinPartParam(name);
 		return value == null ? defaultValue : value;
 	}
 
@@ -410,6 +435,27 @@ public class Controller {
 	public String[] getArrayPartParam(String name, String[] defaultValue) {
 		String value = this.getPartParam(name);
 		return StringUtil.str2Array(value, defaultValue);
+	}
+
+	protected byte[] getBinPartParam(String name) {
+		try {
+			if (!partParams.containsKey(name)) {
+				Part part = this.request.getPart(name);
+				if (part == null)
+					return null;
+				InputStream in = part.getInputStream();
+				ByteBuffer bb = new ByteBuffer();
+				byte[] bytes = new byte[20 << 10];
+				int len = -1;
+				while (-1 != (len = in.read(bytes))) {
+					bb.append(bytes, 0, len);
+				}
+				bytePartParams.put(name, bb.array());
+			}
+			return bytePartParams.get(name);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	protected String getPartParam(String name) {
