@@ -3,7 +3,6 @@ package com.hunantv.fw;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class Controller {
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
 	protected Map<String, String> partParams = new HashMap<String, String>();
-	protected Map<String, byte[]> bytePartParams = new HashMap<String, byte[]>();
+	protected Map<String, RequestFile> files = new HashMap<String, RequestFile>();
 
 	public String bodyString;
 	private JSONObject jsonBodyObject;
@@ -135,19 +134,6 @@ public class Controller {
 		return this.getStrNormalParam(name, defaultValue);
 	}
 
-	public byte[] getBytesParam(String name) {
-		return getBytesParam(name, null);
-	}
-
-	public byte[] getBytesParam(String name, byte[] defaultValue) {
-		if (WebUtil.isMultipart(request)) {
-			byte[] value = this.getBytesPartParam(name, defaultValue);
-			return null == value ? defaultValue : value;
-
-		}
-		return defaultValue;
-	}
-
 	public String getStrNormalParam(String name) {
 		return this.getStrNormalParam(name, null);
 	}
@@ -163,15 +149,6 @@ public class Controller {
 
 	public String getStrPartParam(String name, String defaultValue) {
 		String value = this.getPartParam(name);
-		return value == null ? defaultValue : value;
-	}
-
-	public byte[] getBytesPartParam(String name) {
-		return getBytesPartParam(name, null);
-	}
-
-	public byte[] getBytesPartParam(String name, byte[] defaultValue) {
-		byte[] value = this.getBinPartParam(name);
 		return value == null ? defaultValue : value;
 	}
 
@@ -437,12 +414,17 @@ public class Controller {
 		return StringUtil.str2Array(value, defaultValue);
 	}
 
-	protected byte[] getBinPartParam(String name) {
+	protected RequestFile getFile(String name) {
 		try {
 			if (!partParams.containsKey(name)) {
 				Part part = this.request.getPart(name);
 				if (part == null)
 					return null;
+				RequestFile f = new RequestFile();
+				f.fieldName = part.getName();
+				f.fileName = part.getSubmittedFileName();
+				f.contentType = part.getContentType();
+
 				InputStream in = part.getInputStream();
 				ByteBuffer bb = new ByteBuffer();
 				byte[] bytes = new byte[20 << 10];
@@ -450,9 +432,12 @@ public class Controller {
 				while (-1 != (len = in.read(bytes))) {
 					bb.append(bytes, 0, len);
 				}
-				bytePartParams.put(name, bb.array());
+				f.content = bb.usedArray();
+				f.size = f.content.length;
+				
+				files.put(f.fieldName, f);
 			}
-			return bytePartParams.get(name);
+			return files.get(name);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}

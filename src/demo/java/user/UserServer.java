@@ -10,6 +10,8 @@ public class UserServer {
 
     public static Routes initRoutes() {
 		Routes routes = new Routes(
+			Route.post("/upload", UserController.class, "upload"),
+			Route.get("/pre-upload", UserController.class, "preUpload"),
 			Route.get("/user/hw", UserController.class, "HelloWorld"),
 			Route.get("/user/hb", UserController.class, "helloBaidu"),
 			Route.get("/user/index", UserController.class, "index"),

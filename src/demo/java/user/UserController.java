@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.hunantv.fw.Controller;
+import com.hunantv.fw.RequestFile;
 import com.hunantv.fw.db.DB;
 import com.hunantv.fw.db.DB.Transaction;
 import com.hunantv.fw.log.FwLogger;
@@ -101,6 +102,23 @@ public class UserController extends Controller {
 		if (id > 0) {
 			db.execute("DELETE from user WHERE id = ?", id);
 		}
+		return this.redirect("/user/list");
+	}
+
+	public View preUpload() {
+		return this.renderHtml("/user/upload.html");
+	}
+
+	public View upload() throws Exception {
+		int age = this.getIntegerParam("age");
+		RequestFile file1 = this.getFile("file1");
+		RequestFile file2 = this.getFile("file2");
+		System.out.println("===============");
+		System.out.println(file1);
+		System.out.println("===============");
+		System.out.println(file2);
+		file1.saveTo("/tmp/1.xlsx");
+		file2.saveTo("/tmp/2.js");
 		return this.redirect("/user/list");
 	}
 }
