@@ -1,13 +1,9 @@
 package com.hunantv.fw.net;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
+import com.alibaba.fastjson.JSON;
+import com.hunantv.fw.Dispatcher;
+import com.hunantv.fw.log.LogData;
 import org.apache.http.Consts;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -15,14 +11,18 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.SocketConfig;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import com.hunantv.fw.Dispatcher;
-import com.hunantv.fw.log.LogData;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class FwHttpClient {
 
@@ -95,6 +95,39 @@ public class FwHttpClient {
 
 	public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec) throws Exception {
 		return post(url, params, connTimeoutSec, null);
+	}
+
+	public static FwHttpResponse postBody(String url, Map<String, Object> params, int connTimeoutSec, Map<String, String> httpHeaders) throws Exception {
+		String payload = JSON.toJSONString(params);
+		URLParser urlParser = new URLParser(url);
+		if(!params.containsKey("s")) {
+			params.put("s", LogData.instance().getId());
+		}
+		HttpPost httpPost = new HttpPost(urlParser.getFullUrl());
+
+		if (connTimeoutSec > 0) {
+			RequestConfig config = RequestConfig.custom().setSocketTimeout(connTimeoutSec * 1000).setConnectTimeout(connTimeoutSec * 1000).build();
+			httpPost.setConfig(config);
+		}
+		if (null != params) {
+			StringEntity entity = new StringEntity(payload, Consts.UTF_8);
+			entity.setContentEncoding("UTF-8");
+			httpPost.setEntity(entity);
+		}
+
+		if (httpHeaders != null && httpHeaders.size() > 0) {
+			httpHeaders.forEach((name, value) -> {
+				httpPost.addHeader(name, value);
+			});
+		}
+		String id = LogData.instance().getId();
+		httpPost.addHeader(Dispatcher.X_HTTP_TRACEID, id);
+		// System.out.println("baidu-seqid = " + id);
+
+		try (CloseableHttpResponse response = client.execute(httpPost)) {
+			String content = EntityUtils.toString(response.getEntity(), "UTF-8");
+			return new FwHttpResponse(response.getStatusLine().getStatusCode(), content);
+		}
 	}
 
 	public static FwHttpResponse post(String url, Map<String, Object> params, int connTimeoutSec, Map<String, String> httpHeaders) throws Exception {
